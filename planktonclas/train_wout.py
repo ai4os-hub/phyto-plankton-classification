@@ -32,11 +32,12 @@ import numpy as np
 import tensorflow as tf
 import tensorflow.keras.backend as K
 
-from data_utils import load_data_splits, compute_meanRGB, compute_classweights, load_class_names, data_sequence, \
+from planktonclas.data_utils import load_data_splits, compute_meanRGB, compute_classweights, load_class_names, data_sequence, \
     json_friendly
-import paths, config, model_utils, utils
-from optimizers import customAdam
+from planktonclas import paths, config, model_utils, utils
+from planktonclas.optimizers import customAdam
 
+print("yes")
 
 # Set Tensorflow verbosity logs
 tf.logging.set_verbosity(tf.logging.ERROR)
@@ -53,6 +54,7 @@ def train_fn(TIMESTAMP, CONF):
     paths.timestamp = TIMESTAMP
     paths.CONF = CONF
     print(paths.get_dirs())
+    print("JAAAAAAAAAAAAAAAAAAA")
 
 #     utils.create_dir_tree()
 #     utils.backup_splits()
