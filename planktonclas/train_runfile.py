@@ -38,14 +38,17 @@ from planktonclas import paths, config, model_utils, utils
 from planktonclas.optimizers import customAdam
 
 
-# Set Tensorflow verbosity logs
-tf.logging.set_verbosity(tf.logging.ERROR)
+import logging
 
-# Dynamically grow the memory used on the GPU (https://github.com/keras-team/keras/issues/4161)
-gpu_options = tf.GPUOptions(allow_growth=True)
-tfconfig = tf.ConfigProto(gpu_options=gpu_options)
-sess = tf.Session(config=tfconfig)
-K.set_session(sess)
+# Set Tensorflow verbosity logs
+tf.get_logger().setLevel(logging.ERROR)
+
+
+# Allow GPU memory growth
+gpus = tf.config.experimental.list_physical_devices('GPU')
+if gpus:
+    for gpu in gpus:
+        tf.config.experimental.set_memory_growth(gpu, True)
 
 
 def train_fn(TIMESTAMP, CONF):
@@ -138,11 +141,7 @@ def train_fn(TIMESTAMP, CONF):
         for layer in base_model.layers:
             layer.trainable = False
 
-    model.compile(optimizer=customAdam(lr=CONF['training']['initial_lr'],
-                                       amsgrad=True,
-                                       lr_mult=0.1,
-                                       excluded_vars=top_vars
-                                       ),
+    model.compile('adam',
                   loss='categorical_crossentropy',
                   metrics=['accuracy'])
 

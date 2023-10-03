@@ -134,8 +134,8 @@ def get_callbacks(CONF, use_lr_decay=True):
                                            profile_batch=0))  # https://github.com/tensorflow/tensorboard/issues/2084#issuecomment-483395808
 
         # # Let the user launch Tensorboard
-        # print('Monitor your training in Tensorboard by executing the following comand on your console:')
-        # print('    tensorboard --logdir={}'.format(paths.get_logs_dir()))
+        print('Monitor your training in Tensorboard by executing the following comand on your console:')
+        print('    tensorboard --logdir={}'.format(paths.get_logs_dir()))
 
         # Run Tensorboard on a separate Thread/Process on behalf of the user
         port = os.getenv('monitorPORT', 6006)
