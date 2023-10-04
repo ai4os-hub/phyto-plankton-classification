@@ -1,13 +1,13 @@
 """
 Training runfile
 
-Date: September 2018
-Author: Ignacio Heredia
-Email: iheredia@ifca.unican.es
-Github: ignacioheredia
+Date: September 20123
+Author: Wout Decrop (based on code from Ignacio Heredia)
+Email: wout.decrop@VLIZ.be
+Github: woutdecrop/lifewatch
 
 Description:
-This file contains the commands for training a convolutional net for image classification.
+This file contains the commands for training a convolutional net for image classification for phytoplankton.
 
 Additional notes:
 * On the training routine: Preliminary tests show that using a custom lr multiplier for the lower layers yield to better
@@ -141,9 +141,13 @@ def train_fn(TIMESTAMP, CONF):
         for layer in base_model.layers:
             layer.trainable = False
 
-    model.compile('adam',
-                  loss='categorical_crossentropy',
-                  metrics=['accuracy'])
+    model.compile(optimizer=customAdam(lr=CONF['training']['initial_lr'],
+                                        amsgrad=True,
+                                        lr_mult=0.1,
+                                        excluded_vars=top_vars
+                                        ),
+                    loss='categorical_crossentropy',
+                    metrics=['accuracy'])
 
     history = model.fit_generator(generator=train_gen,
                                   steps_per_epoch=train_steps,

@@ -13,7 +13,7 @@ pipeline {
         author_name = "Ignacio Heredia (CSIC)"
         author_email = "iheredia@ifca.unican.es"
         app_name = "phyto-plankton-classification"
-        job_location = "Pipeline-as-code/DEEP-OC-org/UC-woutdecrop-DEEP-OC-phyto-plankton-classification/${env.BRANCH_NAME}"
+        job_location = "Pipeline-as-code/DEEP-OC-org/UC-woutdecrop-phyto-plankton-classification/${env.BRANCH_NAME}"
     }
 
     stages {
