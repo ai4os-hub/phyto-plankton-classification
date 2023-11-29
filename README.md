@@ -9,7 +9,7 @@ DEEP Open Catalogue: Image classification
 **Project:** This work is part of the [DEEP Hybrid-DataCloud](https://deep-hybrid-datacloud.eu/) project that has
 received funding from the European Union’s Horizon 2020 research and innovation programme under grant agreement No 777435.
 
-This is a plug-and-play tool to train and evaluate an image classifier on a custom dataset using deep neural networks.
+This is a plug-and-play tool to train and evaluate an phytoplankton classifier on a custom dataset using deep neural networks.
 
 You can find more information about it in the [DEEP Marketplace](https://marketplace.deep-hybrid-datacloud.eu/modules/deep-oc-phyto-plankton-classification.html).
 
@@ -34,7 +34,7 @@ You can find more information about it in the [DEEP Marketplace](https://marketp
 >
 > This project has been tested in Ubuntu 18.04 with Python 3.6.5. Further package requirements are described in the
 > `requirements.txt` file.
-> - It is a requirement to have [Tensorflow>=1.14.0 installed](https://www.tensorflow.org/install/pip) (either in gpu 
+> - It is a requirement to have [Tensorflow>=2.3.3 installed](https://www.tensorflow.org/install/pip) (either in gpu 
 > or cpu mode). This is not listed in the `requirements.txt` as it [breaks GPU support](https://github.com/tensorflow/tensorflow/issues/7166). 
 > - Run `python -c 'import cv2'` to check that you installed correctly the `opencv-python` package (sometimes
 > [dependencies are missed](https://stackoverflow.com/questions/47113029/importerror-libsm-so-6-cannot-open-shared-object-file-no-such-file-or-directo) in `pip` installations).
@@ -142,10 +142,7 @@ You can have more info on how to interact directly with the module (not through 
   Make and store the predictions of the `test.txt` file (if you provided one). Once you have done that you can visualize
   the statistics of the predictions like popular metrics (accuracy, recall, precision, f1-score), the confusion matrix, etc.
 
-* [saliency maps notebook](./notebooks/3.2-Saliency_maps.ipynb):
-  Visualize the saliency maps of the predicted images, which show what were the most relevant pixels in order to make the prediction.
 
-![Saliency maps](./reports/figures/demo-saliency.png)
 
 Finally you can [launch a simple webpage](./planktonclas/webpage/README.md) to use the trained classifier to predict images (both local and urls) on your favorite browser.
 

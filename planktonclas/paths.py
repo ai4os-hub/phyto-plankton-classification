@@ -70,6 +70,8 @@ def get_ts_splits_dir():
 def get_predictions_dir():
     return os.path.join(get_timestamped_dir(), "predictions")
 
+def get_results_dir():
+    return os.path.join(get_timestamped_dir(), "results")
 
 def get_dirs():
     return {'base dir': get_base_dir(),
@@ -83,6 +85,7 @@ def get_dirs():
             'statistics dir': get_stats_dir(),
             'timestamped data splits dir': get_ts_splits_dir(),
             'predictions dir': get_predictions_dir(),
+            'results dir': get_results_dir(),
             }
 
 
