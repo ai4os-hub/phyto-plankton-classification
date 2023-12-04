@@ -116,17 +116,17 @@ pass = ***some-userpassword**  --> this is equivalent to `rclone obscure <passwo
 Copy the location to the rclone.config location (e.g., C:/Users/wout.decrop/project_environment/module_imagine/rclone.conf) and apply the line of code
 
 ```bash
-docker run -ti -p 8888:8888 -p 5000:5000 -v "LOCATION/rclone.conf:/root/.config/rclone/rclone.conf" -v "$(pwd):/srv/phyto-plankton-classification" deephdc/uc-woutdecrop-deep-oc-phyto-plankton-classification:latest /bin/bash
+docker run -ti -p 8888:8888 -p 5000:5000 -v "LOCATION/rclone.conf:/root/.config/rclone/rclone.conf" -v "$(pwd):/srv/phyto-plankton-classification" deephdc/uc-lifewatch-deep-oc-phyto-plankton-classification:latest /bin/bash
 ```
 For example
 ```bash
-docker run -ti -p 8888:8888 -p 5000:5000 -v "C:/Users/wout.decrop/project_environment/module_imagine/rclone.conf:/root/.config/rclone/rclone.conf" -v "$(pwd):/srv/phyto-plankton-classification" deephdc/uc-woutdecrop-deep-oc-phyto-plankton-classification:latest /bin/bash
+docker run -ti -p 8888:8888 -p 5000:5000 -v "C:/Users/wout.decrop/project_environment/module_imagine/rclone.conf:/root/.config/rclone/rclone.conf" -v "$(pwd):/srv/phyto-plankton-classification" deephdc/uc-lifewatch-deep-oc-phyto-plankton-classification:latest /bin/bash
 ```
 
 ##### option 2) Run container and only have local access
 All files can be locally saved but rclone needs to be configured after activation to acces nextcloud server, follow [Tutorial](https://docs.ai4eosc.eu/en/latest/user/howto/rclone.html#configuring-rclone)
 ```bash
-docker run -ti -p 8888:8888 -p 5000:5000 -v "$(pwd):/srv/phyto-plankton-classification" deephdc/uc-woutdecrop-deep-oc-phyto-plankton-classification:latest /bin/bash
+docker run -ti -p 8888:8888 -p 5000:5000 -v "$(pwd):/srv/phyto-plankton-classification" deephdc/uc-lifewatch-deep-oc-phyto-plankton-classification:latest /bin/bash
 ```
 Now open http://0.0.0.0:5000/ui and look for the methods belonging to the `planktonclas` module.
 
