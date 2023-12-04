@@ -1,7 +1,7 @@
 DEEP Open Catalogue: Image classification
 =========================================
 
-[![Build Status](https://jenkins.indigo-datacloud.eu/buildStatus/icon?job=Pipeline-as-code/DEEP-OC-org/phyto-plankton-classification/master)](https://jenkins.indigo-datacloud.eu/job/Pipeline-as-code/job/DEEP-OC-org/job/phyto-plankton-classification/job/master/)
+[![Build Status](https://jenkins.indigo-datacloud.eu/buildStatus/icon?job=Pipeline-as-code%2FDEEP-OC-org%2FUC-woutdecrop-phyto-plankton-classification%2Fmaster)](https://jenkins.indigo-datacloud.eu/job/Pipeline-as-code/job/DEEP-OC-org/job/UC-woutdecrop-phyto-plankton-classification/job/master/)
 
 
 **Author:** [Ignacio Heredia & Wout Decrop](https://github.com/IgnacioHeredia) (CSIC)
