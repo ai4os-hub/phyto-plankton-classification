@@ -6,14 +6,14 @@ def job_result_url = ''
 
 pipeline {
     agent {
-        label 'python3.6'
+        docker { image 'indigodatacloud/ci-images:python3.8' }
     }
 
     environment {
         author_name = "Ignacio Heredia (CSIC)"
         author_email = "iheredia@ifca.unican.es"
         app_name = "phyto-plankton-classification"
-        job_location = "Pipeline-as-code/DEEP-OC-org/UC-lifewatch-phyto-plankton-classification/${env.BRANCH_NAME}"
+        job_location = "Pipeline-as-code/DEEP-OC-org/UC-lifewatch-DEEP-OC-phyto-plankton-classification/${env.BRANCH_NAME}"
     }
 
     stages {
