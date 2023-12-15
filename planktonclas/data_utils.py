@@ -105,9 +105,12 @@ def load_aphia_ids(splits_dir):
     Numpy array of shape (N) containing strs with class names
     """
     print("Loading aphia_ids...")
-    aphia_ids = np.genfromtxt(
-        os.path.join(splits_dir, "aphia_ids.txt"), dtype="str", delimiter="/n"
-    )
+    try: 
+        aphia_ids = np.genfromtxt(
+        os.path.join(splits_dir, "aphia_ids.txt"), dtype="str", delimiter="/n")
+    except:
+        aphia_ids=None
+        
     return aphia_ids
 
 

@@ -4,7 +4,7 @@ Training runfile
 Date: September 20123
 Author: Wout Decrop (based on code from Ignacio Heredia)
 Email: wout.decrop@VLIZ.be
-Github: woutdecrop/lifewatch
+Github: lifewatch
 
 Description:
 This file contains the commands for training a convolutional net for image classification for phytoplankton.

@@ -21,7 +21,7 @@ from planktonclas import paths, plot_utils
 #     os.makedirs(pred_path, exist_ok=True)
 #     return pred_path
 
-def create_pred_path(save_path, dir="", aimed=False, weighted=False,**kwargs):
+def create_pred_path(save_path, dir="", weighted=False,**kwargs):
     """
     Create the directory path for saving the plots based on the provided options.
 
@@ -35,11 +35,7 @@ def create_pred_path(save_path, dir="", aimed=False, weighted=False,**kwargs):
         str: Directory path for saving the plots.
     """
     value = next(iter(kwargs.values()))
-    if aimed and weighted:
-        pred_path = save_path or os.path.join(paths.get_timestamped_dir(), "results",dir, "confusion_weighted_aimed")
-    elif aimed:
-        pred_path = save_path or os.path.join(paths.get_timestamped_dir(), "results",dir, "confusion_aimed")
-    elif weighted:
+    if weighted:
         pred_path = save_path or os.path.join(paths.get_timestamped_dir(), "results",dir, "confusion_weighted")
     else:
         pred_path = save_path or os.path.join(paths.get_timestamped_dir(), "results",dir,  value)
