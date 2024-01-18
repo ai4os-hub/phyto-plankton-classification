@@ -710,7 +710,11 @@ def compute_classweights(labels, max_dim=None, mode="balanced"):
     if mode is None:
         return None
 
-    weights = np.bincount(labels)
+    try:
+        weights = np.bincount(labels)
+    except TypeError:
+        _, weights = np.unique(labels, return_counts=True)
+        
     weights = np.sum(weights) / weights
 
     # Fill the count if some high number labels are not present in the sample
