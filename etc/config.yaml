@@ -171,6 +171,12 @@ training:
           Whether to use or not class_weights for the loss function computation. It's sometimes useful when the dataset
           classes are very imbalanced although it can make training more unstable.
 
+  use_test
+    value: True
+    type: "bool"
+    help: >
+          Whether to use or not test. If True you have to provide a `test.txt` file in the `splits` directory.
+
   use_validation:
     value: True
     type: "bool"
