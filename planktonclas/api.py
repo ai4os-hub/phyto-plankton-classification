@@ -162,10 +162,14 @@ def load_inference_model(timestamp=None, ckpt_name=None):
         update_with_saved_conf(conf)
 
     # Load the model
-    model = load_model(
-        os.path.join(paths.get_checkpoints_dir(), ckpt_name),
-        custom_objects=utils.get_custom_objects(),
-    )
+    model = load_model(os.path.join(paths.get_checkpoints_dir(), ckpt_name),
+                       custom_objects=utils.get_custom_objects())
+    graph = tf.get_default_graph()
+
+    # model = load_model(
+    #     os.path.join(paths.get_checkpoints_dir(), ckpt_name),
+    #     custom_objects=utils.get_custom_objects(),
+    # )
     # graph = tf.get_default_graph()
     # graph = tf.compat.v1.get_default_graph()
     # Set the model as loaded
@@ -305,15 +309,17 @@ def predict_url(args):
         conf = config.conf_dict
 
     # Make the predictions
-    pred_lab, pred_prob = test_utils.predict(
-        model=model,
-        X=args["urls"],
-        conf=conf,
-        top_K=top_K,
-        filemode="url",
-        merge=merge,
-        use_multiprocessing=False,
-    )  # safer to avoid memory fragmentation in failed queries
+    with graph.as_default():
+
+        pred_lab, pred_prob = test_utils.predict(
+            model=model,
+            X=args["urls"],
+            conf=conf,
+            top_K=top_K,
+            filemode="url",
+            merge=merge,
+            use_multiprocessing=False,
+        )  # safer to avoid memory fragmentation in failed queries
 
     if merge:
         pred_lab, pred_prob = np.squeeze(pred_lab), np.squeeze(pred_prob)
@@ -350,20 +356,18 @@ def predict_data(args):
 
     # Make the predictions
     try:
-        # Your existing code that involves TensorFlow operations (e.g., model prediction)
-        pred_lab, pred_prob = test_utils.predict(
-            model=model,
-            X=filenames,
-            conf=conf,
-            top_K=top_K,
-            filemode="local",
-            merge=merge,
-            use_multiprocessing=False,
-        )  # safer to avoid memory fragmentation in failed queries
+        with graph.as_default():
+            pred_lab, pred_prob = test_utils.predict(model=model,
+                                                    X=filenames,
+                                                    conf=conf,
+                                                    top_K=top_K,
+                                                    filemode='local',
+                                                    merge=merge,
+                                                    use_multiprocessing=False)  # safer to avoid memory fragmentation in failed queries
     finally:
-        # Removing files after TensorFlow operations are completed or if an exception occurred
         for f in filenames:
             os.remove(f)
+
 
     if merge:
         pred_lab, pred_prob = np.squeeze(pred_lab), np.squeeze(pred_prob)
