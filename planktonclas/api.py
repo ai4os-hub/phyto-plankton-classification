@@ -56,13 +56,7 @@ from planktonclas.train_runfile import train_fn
 NOW = str("{:%Y_%m_%d_%H_%M_%S}".format(datetime.now()))
 # print(NOW, ": Starting the process")
 # Mount NextCloud folders (if NextCloud is available)
-try:
-    mount_nextcloud("rshare:Imagine_UC5/data/dataset_files", paths.get_splits_dir())
-    mount_nextcloud("rshare:Imagine_UC5/data/images", paths.get_images_dir())
-    # mount_nextcloud('rshare:/models', paths.get_models_dir())
-    print("Mount from nextcloud to local machine successfull! ")
-except Exception as e:
-    print("Initial loading not succesfull: ", e)
+
 
 # Empty model variables for inference (will be loaded the first time we perform inference)
 loaded_ts, loaded_ckpt = None, None
@@ -401,11 +395,11 @@ def format_prediction(labels, probabilities, original_filename):
     with open(pred_path, "w") as outfile:
         json.dump(pred_dict, outfile, sort_keys=True)
 
-    try:
-        mount_nextcloud(pred_path, "rshare:Imagine_UC5/predictions")
-        print("Mount predictions from local to nextcloud successful!")
-    except Exception as e:
-        print("Final loading not successful: ", e)
+    # try:
+    #     mount_nextcloud(pred_path, "rshare:Imagine_UC5/predictions")
+    #     print("Mount predictions from local to nextcloud successful!")
+    # except Exception as e:
+    #     print("Final loading not successful: ", e)
 
     return pred_dict
 
