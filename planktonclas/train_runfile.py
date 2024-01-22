@@ -37,18 +37,26 @@ from planktonclas.data_utils import load_data_splits, compute_meanRGB, compute_c
 from planktonclas import paths, config, model_utils, utils
 from planktonclas.optimizers import customAdam
 
-
-import logging
-
 # Set Tensorflow verbosity logs
-tf.get_logger().setLevel(logging.ERROR)
+tf.logging.set_verbosity(tf.logging.ERROR)
+
+# Dynamically grow the memory used on the GPU (https://github.com/keras-team/keras/issues/4161)
+gpu_options = tf.GPUOptions(allow_growth=True)
+tfconfig = tf.ConfigProto(gpu_options=gpu_options)
+sess = tf.Session(config=tfconfig)
+K.set_session(sess)
+
+# import logging
+
+# # Set Tensorflow verbosity logs
+# tf.get_logger().setLevel(logging.ERROR)
 
 
-# Allow GPU memory growth
-gpus = tf.config.experimental.list_physical_devices('GPU')
-if gpus:
-    for gpu in gpus:
-        tf.config.experimental.set_memory_growth(gpu, True)
+# # Allow GPU memory growth
+# gpus = tf.config.experimental.list_physical_devices('GPU')
+# if gpus:
+#     for gpu in gpus:
+#         tf.config.experimental.set_memory_growth(gpu, True)
 
 
 def train_fn(TIMESTAMP, CONF):
