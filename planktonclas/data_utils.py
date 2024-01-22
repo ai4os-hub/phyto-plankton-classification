@@ -23,7 +23,65 @@ import cv2
 import albumentations
 from albumentations.augmentations import transforms
 from albumentations.imgaug import transforms as imgaug_transforms
+import random
 
+# Function to create the text files
+def create_data_splits(splits_dir, im_dir, split_ratios= [0.8,0.1,0.1]):
+
+    train_txt_file=os.path.join(splits_dir,'train.txt')
+    test_txt_file =os.path.join(splits_dir,'test.txt')
+    val_txt_file=os.path.join(splits_dir,'val.txt')
+    class_txt_file=os.path.join(splits_dir,'classes.txt')
+    file_paths = []
+    for root, _, files in tqdm(os.walk(im_dir), desc="Searching files"):
+        for file in tqdm(files, desc=f"Processing {root}"):
+            file_path = os.path.join(root, file)
+            relative_path = os.path.relpath(file_path, im_dir)
+            file_paths.append(relative_path)
+
+    # Get a list of folder names within the "absence_boats" directory
+    folder_names = next(os.walk(im_dir))[1]
+
+    # Assign numbers based on the location of each folder in the list
+    folder_numbers = {}
+    index_counter = 0
+
+    for i in range(len(folder_names)):
+        if folder_names[i] != ".ipynb_checkpoints":
+            folder_numbers[folder_names[i]] = index_counter
+            index_counter += 1
+
+    # Split the boat files into training, testing, and validation sets
+    random.shuffle(file_paths)
+    num_samples = len(file_paths)
+    train_cutoff = int(num_samples * split_ratios[0])
+    test_cutoff = train_cutoff + int(num_samples * split_ratios[1])
+
+    train_files = file_paths[:train_cutoff]
+    test_files = file_paths[train_cutoff:test_cutoff]
+    val_files = file_paths[test_cutoff:]
+#     return train_files, folder_numbers
+    # Create the training text file
+    with open(train_txt_file, 'w') as f_train:
+        for file in tqdm(train_files, desc="Writing training file"):
+            file = file.replace('\\', '/')
+            f_train.write(file + ' ' + str(folder_numbers[file.split("/")[0]]) + '\n')
+
+    # Create the testing text file
+    with open(test_txt_file, 'w') as f_test:
+        for file in tqdm(test_files, desc="Writing testing file"):
+            file = file.replace('\\', '/')
+            f_test.write(file + ' ' + str(folder_numbers[file.split("/")[0]]) + '\n')
+
+    # Create the validation text file
+    with open(val_txt_file, 'w') as f_val:
+        for file in tqdm(val_files, desc="Writing validation file"):
+            file = file.replace('\\', '/')
+            f_val.write(file + ' ' + str(folder_numbers[file.split("/")[0]]) + '\n')
+    # Create the validation text file
+    with open(class_txt_file, 'w') as f_class:
+        for label in tqdm(folder_numbers, desc="Writing classes file"):
+            f_class.write(str(label) + '\n')
 
 def load_data_splits(splits_dir, im_dir, split_name="train"):
     """

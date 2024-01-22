@@ -25,7 +25,7 @@ general:
           If path is relative it will be appended to the package path.
 
   images_directory:
-    value: "data/images"
+    value: "/storage/Imagine_UC5_new/data/images"
     type: "str"
     help: >
           Base directory for images. If the path is relative, it will be appended to the package path.
@@ -48,7 +48,7 @@ model:
             "NASNetLarge" has been disabled as a choice as it gave compilation errors.
 
   image_size:
-    value: 224
+    value: 100
     type: "int"
     range: [32, 1000]
     help: >
@@ -75,7 +75,7 @@ model:
 
 dataset:
   mean_RGB:
-    value:
+    value: [158.33844060679408, 158.33844060679408, 158.33844060679408]
     type: "list"
     help: >
           Mean RGB value of the image dataset. If not provided it will be automatically computed before the training
@@ -83,13 +83,18 @@ dataset:
           different training configurations with the same dataset.
           Example: [122.4, 142.6, 113.8]
 
-  std_RGB:
-    value:
+  std_RGB: 
+    value: [48.89589490647217, 48.89589490647217, 48.89589490647217]
     type: "list"
     help: >
           Standard deviation of the RGB value of the image dataset. It is actually not needed for training.
           Example: [22.4, 13.9, 17.2]
 
+  split_ratios: 
+    value: [0.8, 0.1, 0.1]
+    type: "list"
+    help: >
+          Split the dataset in [training, validation, test]
 
 #####################################################
 #  Options about your training routine
@@ -171,12 +176,6 @@ training:
           Whether to use or not class_weights for the loss function computation. It's sometimes useful when the dataset
           classes are very imbalanced although it can make training more unstable.
 
-  use_test
-    value: True
-    type: "bool"
-    help: >
-          Whether to use or not test. If True you have to provide a `test.txt` file in the `splits` directory.
-
   use_validation:
     value: True
     type: "bool"
@@ -221,6 +220,12 @@ monitor:
 #####################################################
 
 augmentation:
+
+  use_augmentation: 
+    value: False
+    type: "bool"
+    help: >
+          Use image augmentation during the training process.
 
   train_mode:
     value:
@@ -285,6 +290,12 @@ augmentation:
 #####################################################
 
 testing:
+
+  use_test:
+    value: True
+    type: "bool"
+    help: >
+          Whether to use or not test. If True you have to provide a `test.txt` file in the `splits` directory.
 
   timestamp:
     value:

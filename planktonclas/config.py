@@ -45,6 +45,7 @@ def check_conf(conf=CONF):
                 if (g_val['range'][1] != 'None') and (g_val['range'][1] < g_val['value']):
                     raise ValueError('The selected value for {} is higher than the maximal possible value.'.format(g_key))
 
+
     # Check augmentation dict
     for d_name in ['train_mode', 'val_mode']:
         d = conf['augmentation'][d_name]['value']
@@ -75,6 +76,10 @@ def get_conf_dict(conf=CONF):
         conf_d[group] = {}
         for g_key, g_val in val.items():
             conf_d[group][g_key] = g_val['value']
+        # Make dict empty if it's not needed
+    if not conf_d['augmentation']['use_augmentation']:
+        conf_d['augmentation']["train_mode"]= None
+        conf_d['augmentation']["val_mode"]= None
     return conf_d
 
 

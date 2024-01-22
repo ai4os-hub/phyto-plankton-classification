@@ -1,7 +1,7 @@
 """
 Training runfile
 
-Date: September 20123
+Date: September 2023
 Author: Wout Decrop (based on code from Ignacio Heredia)
 Email: wout.decrop@VLIZ.be
 Github: lifewatch
@@ -15,13 +15,12 @@ results than freezing them at the beginning and unfreezing them after a few epoc
 tutorials.
 """
 
-#TODO List:
+from tensorflow.keras.metrics import Accuracy, Precision, Recall, AUC
+from sklearn.metrics import f1_score
+import tensorflow as tf
 
-#TODO: Implement resuming training
-#TODO: Try that everything works out with validation data
-#TODO: Try several regularization parameters
 #TODO: Add additional metrics for test time in addition to accuracy
-#TODO: Implement additional techniques to deal with class imbalance (not only class_weigths)
+
 
 import os
 import time
@@ -31,32 +30,25 @@ from datetime import datetime
 import numpy as np
 import tensorflow as tf
 import tensorflow.keras.backend as K
-
-from planktonclas.data_utils import load_data_splits, compute_meanRGB, compute_classweights, load_class_names, data_sequence, \
-    json_friendly
+from planktonclas.data_utils import create_data_splits, load_data_splits, compute_meanRGB, compute_classweights, load_class_names, data_sequence, \
+    json_friendly, k_crop_data_sequence
 from planktonclas import paths, config, model_utils, utils
 from planktonclas.optimizers import customAdam
 
+
+
+import logging
+# from planktonclas.api import load_inference_model
+
 # Set Tensorflow verbosity logs
-tf.logging.set_verbosity(tf.logging.ERROR)
-
-# Dynamically grow the memory used on the GPU (https://github.com/keras-team/keras/issues/4161)
-gpu_options = tf.GPUOptions(allow_growth=True)
-tfconfig = tf.ConfigProto(gpu_options=gpu_options)
-sess = tf.Session(config=tfconfig)
-K.set_session(sess)
-
-# import logging
-
-# # Set Tensorflow verbosity logs
-# tf.get_logger().setLevel(logging.ERROR)
+tf.get_logger().setLevel(logging.ERROR)
 
 
-# # Allow GPU memory growth
-# gpus = tf.config.experimental.list_physical_devices('GPU')
-# if gpus:
-#     for gpu in gpus:
-#         tf.config.experimental.set_memory_growth(gpu, True)
+# Allow GPU memory growth
+gpus = tf.config.experimental.list_physical_devices('GPU')
+if gpus:
+    for gpu in gpus:
+        tf.config.experimental.set_memory_growth(gpu, True)
 
 
 def train_fn(TIMESTAMP, CONF):
@@ -67,6 +59,19 @@ def train_fn(TIMESTAMP, CONF):
     utils.create_dir_tree()
     utils.backup_splits()
 
+    if 'train.txt' not in os.listdir(paths.get_ts_splits_dir()):
+        if not (CONF['dataset']['split_ratios']):
+            if (CONF['training']['use_validation']) & (CONF['testing']['use_test']):
+                split_ratios=[0.8,0.1,0.1]
+            elif (CONF['training']['use_validation']) & (~CONF['testing']['use_test']):
+                split_ratios=[0.9,0.1,0]
+            else:
+                split_ratios=[1,0,0]
+        else:
+            split_ratios=(CONF['dataset']['split_ratios'])
+        create_data_splits(splits_dir=paths.get_ts_splits_dir(),
+                                        im_dir=paths.get_images_dir(),
+                                        split_ratios=split_ratios)
     # Load the training data
     X_train, y_train = load_data_splits(splits_dir=paths.get_ts_splits_dir(),
                                         im_dir=paths.get_images_dir(),
@@ -154,8 +159,13 @@ def train_fn(TIMESTAMP, CONF):
                                         lr_mult=0.1,
                                         excluded_vars=top_vars
                                         ),
-                    loss='categorical_crossentropy',
-                    metrics=['accuracy'])
+                  loss='categorical_crossentropy',
+                  metrics=[Accuracy(name='accuracy'),
+                           Precision(name='precision'),
+                           Recall(name='recall'),
+                           AUC(name='auc'),
+                           model_utils.f1_metric   # Custom F1 Score Metric
+                       ])
 
     history = model.fit_generator(generator=train_gen,
                                   steps_per_epoch=train_steps,
@@ -192,8 +202,52 @@ def train_fn(TIMESTAMP, CONF):
     # fpath = os.path.join(paths.get_checkpoints_dir(), 'final_model.proto')
     # model_utils.save_to_pb(model, fpath)
 
-    print('Finished')
+    print('Finished training')
 
+    if CONF['training']['use_test']:
+        print("Start testing")
+        X_test, y_test = load_data_splits(splits_dir=paths.get_ts_splits_dir(),
+                                        im_dir=paths.get_images_dir(),
+                                        split_name='test')
+        crop_num=10
+        filemode='local'
+        test_gen = k_crop_data_sequence(inputs=X_test,
+                                    im_size=CONF['model']['image_size'],
+                                    mean_RGB=CONF['dataset']['mean_RGB'],
+                                    std_RGB=CONF['dataset']['std_RGB'],
+                                    preprocess_mode=CONF['model']['preprocess_mode'],
+                                    aug_params=CONF['augmentation']['val_mode'],
+                                    crop_mode='random',
+                                    crop_number=crop_num,
+                                    filemode=filemode)
+        top_K=5
+
+    
+        output = model.predict(test_gen,
+                                  verbose=1, max_queue_size=10, workers=4,
+                                  use_multiprocessing=CONF['training']['use_multiprocessing'])
+
+        output = output.reshape(len(X_test), -1, output.shape[-1])  # reshape to (N, crop_number, num_classes)
+        output = np.mean(output, axis=1)  # take the mean across the crops
+
+        lab = np.argsort(output, axis=1)[:, ::-1]  # sort labels in descending prob
+        lab = lab[:, :top_K]  # keep only top_K labels
+        prob = output[np.repeat(np.arange(len(lab)), lab.shape[1]),
+        lab.flatten()].reshape(lab.shape)  # retrieve corresponding probabilities
+
+        pred_lab, pred_prob = lab, prob
+        # Save the predictions
+        pred_dict = {'filenames': list(X_test),
+                     'pred_lab': pred_lab.tolist(),
+                     'pred_prob': pred_prob.tolist()}
+        if y_test is not None:
+            pred_dict['true_lab'] = y_test.tolist()
+
+        pred_path = os.path.join(paths.get_predictions_dir(), '{}+{}+top{}.json'.format('final_model.h5', 'DS_split', top_K))
+        with open(pred_path, 'w') as outfile:
+            json.dump(pred_dict, outfile, sort_keys=True)
+        print(f"Predictions file saved in: {pred_path}")
+    print("finished testing")
 
 if __name__ == '__main__':
 

@@ -20,7 +20,7 @@ from tensorflow.python.saved_model import builder as saved_model_builder
 from tensorflow.python.saved_model.signature_def_utils import predict_signature_def
 from tensorflow.python.saved_model import tag_constants
 from tensorflow.keras.layers import Dense, GlobalAveragePooling2D, Flatten
-
+import tensorflow as tf
 from planktonclas import paths, config, utils
 
 
@@ -177,3 +177,10 @@ def save_default_imagenet_model():
     save_conf(CONF)
     model.save(fpath=os.path.join(paths.get_checkpoints_dir(), 'final_model.h5'),
                include_optimizer=False)
+
+    
+def f1_metric(y_true, y_pred):
+    y_pred = tf.round(y_pred)
+    f1 = 2 * (tf.reduce_sum(y_true * y_pred) + tf.keras.backend.epsilon()) / (
+            tf.reduce_sum(y_true) + tf.reduce_sum(y_pred) + tf.keras.backend.epsilon())
+    return f1
