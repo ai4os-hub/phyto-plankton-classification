@@ -204,7 +204,7 @@ def train_fn(TIMESTAMP, CONF):
 
     print('Finished training')
 
-    if CONF['training']['use_test']:
+    if CONF['testing']['use_test']:
         print("Start testing")
         X_test, y_test = load_data_splits(splits_dir=paths.get_ts_splits_dir(),
                                         im_dir=paths.get_images_dir(),
