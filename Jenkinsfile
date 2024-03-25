@@ -6,7 +6,7 @@ def job_result_url = ''
 
 pipeline {
     agent {
-        label 'python3.6'
+        docker { image 'indigodatacloud/ci-images:python3.6' }
     }
 
     environment {
