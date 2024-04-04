@@ -77,6 +77,9 @@ target/
 
 # exclude data from source control by default
 data/
+!data/samples/
+!data/dataset_files/
+!data/change_images/
 # hytoplankton_species_classifier/
 # phytoplankton_species_classifier.egg-info/
 # Mac OS-specific storage files
@@ -157,6 +160,8 @@ notebooks/1.1-Image_transormation_not_finished.ipynb
 notebooks/3.2-Saliency_maps
 notebooks/test.ipynb
 notebooks/test copy.ipynb
+notebooks/3.1-Prediction_statistics_old.ipynb
 notebooks/3.2-Saliency_maps copy.ipynb
 notebooks/test copy 2.ipynb
 planktonclas/train_iter.py
+!data/dataset_files/

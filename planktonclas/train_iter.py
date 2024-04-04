@@ -75,14 +75,6 @@ def train_fn(TIMESTAMP, CONF):
         X_val, y_val = None, None
         CONF['training']['use_validation'] = False
 
-    if (CONF['training']['use_test']) and ('test.txt' in os.listdir(paths.get_ts_splits_dir())):
-        X_test, y_test = load_data_splits(splits_dir=paths.get_ts_splits_dir(),
-                                        dataset_dir=paths.get_dataset_dir(),
-                                       split_name='test')
-    else:
-        print('No validation data.')
-        X_test, y_test = None, None
-        CONF['training']['use_test'] = False
         
     # Load the class names
     class_names = load_class_names(splits_dir=paths.get_ts_splits_dir())
@@ -202,23 +194,24 @@ def train_fn(TIMESTAMP, CONF):
 
     print('Finished')
 
-    X_test, y_test = load_data_splits(splits_dir=paths.get_ts_splits_dir(),
-                                    im_dir=paths.get_images_dir(),
-                                    split_name='test')
-    crop_num=10
-    filemode='local'
-    test_gen = k_crop_data_sequence(inputs=X_test,
-                                im_size=CONF['model']['image_size'],
-                                mean_RGB=CONF['dataset']['mean_RGB'],
-                                std_RGB=CONF['dataset']['std_RGB'],
-                                preprocess_mode=CONF['model']['preprocess_mode'],
-                                aug_params=CONF['augmentation']['val_mode'],
-                                crop_mode='random',
-                                crop_number=crop_num,
-                                filemode=filemode)
-    top_K=5
+    if CONF['testing']['use_test']:
 
-    if CONF['training']['use_test']:
+        X_test, y_test = load_data_splits(splits_dir=paths.get_ts_splits_dir(),
+                                        im_dir=paths.get_images_dir(),
+                                        split_name='test')
+        crop_num=10
+        filemode='local'
+        test_gen = k_crop_data_sequence(inputs=X_test,
+                                    im_size=CONF['model']['image_size'],
+                                    mean_RGB=CONF['dataset']['mean_RGB'],
+                                    std_RGB=CONF['dataset']['std_RGB'],
+                                    preprocess_mode=CONF['model']['preprocess_mode'],
+                                    aug_params=CONF['augmentation']['val_mode'],
+                                    crop_mode='random',
+                                    crop_number=crop_num,
+                                    filemode=filemode)
+        top_K=5
+
         output = model.predict(test_gen,
                                   verbose=1, max_queue_size=10, workers=4,
                                   use_multiprocessing=CONF['training']['use_multiprocessing'])
