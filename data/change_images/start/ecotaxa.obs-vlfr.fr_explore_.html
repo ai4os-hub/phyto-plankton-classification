@@ -1,0 +1,1659 @@
+<!DOCTYPE html>
+<!-- saved from url=(0036)https://ecotaxa.obs-vlfr.fr/explore/ -->
+<html><head lang="en"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" type="text/css" href="./ecotaxa.obs-vlfr.fr_explore__files/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="./ecotaxa.obs-vlfr.fr_explore__files/jquery-ui.min.css">
+  <link rel="stylesheet" type="text/css" href="./ecotaxa.obs-vlfr.fr_explore__files/style20211027.css">
+  <link rel="stylesheet" type="text/css" href="./ecotaxa.obs-vlfr.fr_explore__files/select2.css">
+  <link rel="stylesheet" type="text/css" href="./ecotaxa.obs-vlfr.fr_explore__files/dataTables.bootstrap.min.css">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title></title>
+  
+  <!-- Google tag (gtag.js) -->
+  <script async="" src="./ecotaxa.obs-vlfr.fr_explore__files/analytics.js.download"></script><script async="" src="./ecotaxa.obs-vlfr.fr_explore__files/js"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-FQGS0MYN66');
+  </script>
+  
+<style type="text/css">.featuredimagezoomerhidden {visibility: hidden!important;}</style></head>
+<body data-new-gr-c-s-check-loaded="14.1034.0" data-gr-ext-installed="">
+<script src="./ecotaxa.obs-vlfr.fr_explore__files/jquery.min.js.download"></script>
+<script src="./ecotaxa.obs-vlfr.fr_explore__files/jquery-ui.min.js.download"></script>
+<script src="./ecotaxa.obs-vlfr.fr_explore__files/bootstrap.min.js.download"></script>
+<script src="./ecotaxa.obs-vlfr.fr_explore__files/select2.full.js.download"></script>
+<script src="./ecotaxa.obs-vlfr.fr_explore__files/jquery.lazy.1.7.10.min.js.download"></script>
+<link rel="stylesheet" href="./ecotaxa.obs-vlfr.fr_explore__files/multizoom.css" type="text/css">
+<script type="text/javascript" src="./ecotaxa.obs-vlfr.fr_explore__files/multizoom.js.download"></script>
+<script src="./ecotaxa.obs-vlfr.fr_explore__files/common_20201020.js.download"></script>
+<link rel="stylesheet" href="./ecotaxa.obs-vlfr.fr_explore__files/all.min.css">
+<link rel="stylesheet" href="./ecotaxa.obs-vlfr.fr_explore__files/bootstrap.dropdown.submenu.css">
+
+<script>
+    function AddZoom(element) {
+//index=element.attr("id").substring(1,10)
+        var pos = element.attr("pos");
+        element.addimagezoom({ // single image zoom
+            zoomrange: [4, 10],
+            magnifiersize: [400, 400],
+            magnifierpos: pos,
+            cursorshade: true,
+            largeimage: '/vault/' + element.attr('data-zoom-image')
+        });
+    };
+
+    $(document).ready(function () {
+    });
+</script>
+
+<div id="empty_fixed" style="position: fixed; z-index: 13; top: 0px; left: 0px; display: block;"></div>
+<div id="divheadinfo" class="headinfo">
+  <div class="headinfo panel panel-default">
+    <div class="panel-body" style="padding: 1px 5px 1px 5px;">
+      <table width="100%">
+        <tbody><tr>
+          <td width="140px"><a href="https://ecotaxa.obs-vlfr.fr/"><img height="30" src="./ecotaxa.obs-vlfr.fr_explore__files/logo_ecotaxa_26-4Amanada.png" style="margin: 10px 0"></a>
+          </td>
+
+          <td>
+  <script src="./ecotaxa.obs-vlfr.fr_explore__files/jquery.datetimepicker.full.min.js.download" type="text/javascript"></script>
+  <link href="./ecotaxa.obs-vlfr.fr_explore__files/jquery.datetimepicker.min.css" rel="stylesheet" type="text/css">
+
+  <table width="100%">
+    <tbody><tr>
+      <td width="160px">
+
+      </td>
+      <td><span style="font-size: 24px;">Exploration </span><span data-toggle="tooltip" data-placement="bottom" data-html="true" title="" class="glyphicon glyphicon-question-sign" data-original-title="
+        &lt;p style=&#39;text-align: left&#39;&gt;&lt;ul style=&#39;text-align: left&#39;&gt;
+        &lt;li&gt;By default, the Explore Mode proposes a selection of images from a randomly selected project. You may however select any project and samples from this (these) project(s). Several additional filters can be activated whereas only 1000 objects can be displayed. You may request a full access to a project of interest by contacting the project manager by email (get contact in an object page or “Contribute to Project” page).
+&lt;li&gt;Only annotated objects from public projects are visible.
+&lt;li&gt;The abundance statistics in the taxonomic tree are updated daily.
+&lt;/ul&gt;
+&lt;/p&gt;"></span><br>
+        <span id="headersubtitle" style="color:#FF6600;">Filter:  Project=<a href="https://ecotaxa.obs-vlfr.fr/prj/169">Flowcam composite NBP1409_FLASH 4x</a></span><br>
+
+      </td>
+    </tr>
+  </tbody></table>
+
+
+</td>
+          <td align="right"></td>
+          <td align="right" width="300px">
+            
+              Not logged ( <a href="https://ecotaxa.obs-vlfr.fr/login">log in / register</a> )
+              
+          </td>
+        </tr>
+      </tbody></table>
+    </div>
+  </div>
+  
+  
+</div>
+
+<!-- Main body -->
+<div id="bodydiv">
+  
+  <div id="topbar">
+    <table>
+      <tbody><tr>
+        <td>
+          <button type="button" class="btn btn-xs btn-primary" onclick="LoadRightPane();" style="width: 260px;">
+            <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span> Update view &amp; apply filters
+          </button>
+
+          # images :
+        </td>
+        <td style="padding-right: 5px;"><select class="form-control" name="ipp" id="ipp">
+    
+      <option value="50">50</option>
+    
+      <option value="100" selected="">100</option>
+    
+      <option value="200">200</option>
+    
+      <option value="500">500</option>
+    
+      <option value="1000">1000</option>
+    
+  </select>
+        </td>
+        <td style="padding-right: 5px;">Zoom :
+        </td>
+        <td style="padding-right: 5px;"><select class="form-control" name="zoom" id="zoom">
+    
+      <option value="10">10</option>
+    
+      <option value="20">20</option>
+    
+      <option value="30">30</option>
+    
+      <option value="40">40</option>
+    
+      <option value="50">50</option>
+    
+      <option value="60">60</option>
+    
+      <option value="70">70</option>
+    
+      <option value="80">80</option>
+    
+      <option value="90">90</option>
+    
+      <option value="100" selected="">100</option>
+    
+  </select>
+        </td>
+        <td>
+          <label for="magenabled">
+            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+          </label>
+
+          <input type="checkbox" name="magenabled" id="magenabled" value="1" style="margin:0px;">
+        </td>
+        <td>&nbsp;
+
+          
+        </td>
+      </tr>
+    </tbody></table>
+  </div>
+  <script>
+    // Care about initial setup of the taxonomy select + small utility
+
+    function FormatTaxoItem(t) {
+        if (t.pr == 1)
+            return $("<u>" + XSSStrEscape(t.text) + "</u>")
+        else return t.text;
+    }
+
+    function EnableSelect2Taxolb(selector) {
+
+        var the_sel2 = $(selector).select2({
+            ajax: {
+                url: "/search/taxo",
+                dataType: 'json',
+                delay: 100,
+                data: function (query) {
+                    // Cook the query params for above url, from control's content
+                    const first = $(this).data('first_keys');
+                    if (first) {
+                        // If first letter(s) typed, use (once) for filtering
+                        query.term = first;
+                        $(this).data('first_keys', null);
+                    }
+                    return {
+                        q: query.term
+                        
+                    };
+                },
+                processResults: function (data, page) {
+                    // If a function was registered for call just after query, schedule it now
+                    const todo = the_sel2.data('todo_after_ajax');
+                    if (todo) {
+                        setTimeout(todo, 10);
+                        the_sel2.data('todo_after_ajax', null);
+                    }
+                    return {results: data};
+                },
+                cache: true
+            },
+            templateResult: FormatTaxoItem,
+            dropdownCssClass: "width240 taxopopup",
+            language: {
+                noResults: function () {
+                    
+                        var msg = "<a href=\"mailto:\">Request category</a>";
+                    
+                    return $("<span>No recent/result found. " + msg + "</span>");
+                }
+            }
+        }); // Select2 Ajax
+    }
+
+    function SetTaxolbValue(selector, taxoid, taxoname) {
+        // Set the value on category select
+        var taxolb = $(selector);
+        taxolb.append($('<option>', {value: taxoid, text: taxoname}));
+        taxolb.val([taxoid]);
+        taxolb.change();
+    }
+
+</script>
+
+  <div id="bodycontainer">
+    <script>
+        $(document).ready(function () {
+            $("#taxolb").select2({
+                ajax: {
+                    url: "/search/taxo",
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {q: params.term, page: params.page};
+                    },
+                    processResults: function (data, page) {
+                        return {results: data};
+                    },
+                    cache: true
+                },
+                minimumInputLength: 3
+            }); // Select2 Ajax
+            $('#TaxoModal').on('show.bs.modal', function (e) {
+                $("#TaxoModalBody").html("Loading...");
+                $("#TaxoModalBody").load("/search/taxotree");
+            });
+            $('[data-toggle="tooltip"]').tooltip();
+            $('[data-toggle="popover"]').popover();
+        }); // Ready
+    </script>
+    <style> 
+    UL#select2-taxolb-results {
+        max-height: 500px;
+    }
+    </style>
+
+    <div id="column-left" class="" style="position: fixed;	top: 120px;	left: 2px;	bottom: 0px;	width: 260px;
+                overflow-y: auto; overflow-x: auto;  margin-bottom: 0px; ">
+      <div class="bodyleft" style="margin-left: 2px; width: 231px; margin-top: 3px;">
+        <a href="https://ecotaxa.obs-vlfr.fr/explore/?" class="btn btn-info " style="width: 49%"><span class="glyphicon glyphicon-remove"></span> Clear
+          filters</a>
+        <button class="btn btn-info" style="width: 49%" onclick="LoadRightPane(true);"><span class="glyphicon glyphicon-link"></span> Share page
+        </button>
+        <br>
+
+        
+
+        <div class="filter" style="margin-top: 3px;">
+          <button class="btn btn-block btn-xs btn-info left-button" onclick="$(&#39;.filter&#39;).toggle();">Hide filters
+          </button>
+        </div>
+        <div class="filter" style="display: none;margin-top: 3px;">
+          <button class="btn btn-block btn-xs btn-info left-button" onclick="$(&#39;.filter&#39;).toggle();">Show filters
+          </button>
+        </div>
+
+        <div class="filter ">
+          <div class="form-group-sm">
+            <label class="title">Project</label>
+            <a class="pull-right clear" href="javascript:ClearProjects();"></a>
+            <select class="form-control select2-hidden-accessible" id="projid" name="projid" style="width: 100%" multiple="" autocomplete="off" tabindex="-1" aria-hidden="true"> <option value="168">Flowcam composite NBP1409_FLASH 10x</option><option value="169">Flowcam composite NBP1409_FLASH 4x</option></select><span class="select2 select2-container select2-container--default select2-container--below" dir="ltr" style="width: 100%;"><span class="selection"><span class="select2-selection select2-selection--multiple" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="-1"><ul class="select2-selection__rendered"><li class="select2-selection__choice" title="Flowcam composite NBP1409_FLASH 4x"><span class="select2-selection__choice__remove" role="presentation">×</span>Flowcam composite NBP1409_FLASH 4x</li><li class="select2-search select2-search--inline"><input class="select2-search__field" type="search" tabindex="0" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" role="textbox" aria-autocomplete="list" placeholder="" style="width: 0.75em;"></li></ul></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+          </div>
+        </div>
+
+        
+
+<style>
+  
+  #select2-sampleid-results li {
+      font-size: 12px;
+      padding: 3px;
+  }
+
+  #TabB .select2-selection__rendered {
+      font-size: 12px;
+  }
+</style>
+
+<div class="filter ">
+  <div class="form-group-sm">
+    <label class="title">Sample</label>
+    
+      <span title="" data-toggle="tooltip" data-placement="right" class="glyphicon glyphicon-info-sign" data-original-title="Available only when a project is selected"></span>
+    
+    <a class="pull-right label label-default" style="padding: 1px 3px 3px 3px; margin-top: 5px;font-size: 90%;" href="https://ecotaxa.obs-vlfr.fr/explore/#" onclick="ClearSamples();return false;">Clear</a>
+    <a class="pull-right label label-info" style="padding: 1px 3px 3px 3px; margin-top: 5px;margin-right:5px;font-size: 90%;" href="https://ecotaxa.obs-vlfr.fr/explore/#" onclick="AdvancedSamples();return false;">Advanced</a>
+    <select class="form-control select2-hidden-accessible" id="sampleid" name="sampleid" style="width: 100%" multiple="" autocomplete="off" tabindex="-1" aria-hidden="true"> </select><span class="select2 select2-container select2-container--default" dir="ltr" style="width: 100%;"><span class="selection"><span class="select2-selection select2-selection--multiple" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="-1"><ul class="select2-selection__rendered"><li class="select2-search select2-search--inline"><input class="select2-search__field" type="search" tabindex="0" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" role="textbox" aria-autocomplete="list" placeholder="Sample" style="width: 229px;"></li></ul></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+  </div>
+</div>
+<div class="filter ">
+  <div class="form-group-sm">
+    <label class="title">Depth</label>
+    <span title="" data-toggle="tooltip" data-container="body" data-placement="right" class="glyphicon glyphicon-info-sign" data-original-title="Positive values. Both values are required. Each object has a min and max depths. Both values must be in the selected range for the object to be displayed."></span>
+    <a class="pull-right label label-default" style="padding: 1px 3px 3px 3px; margin-top: 5px;font-size: 90%;" href="https://ecotaxa.obs-vlfr.fr/explore/#" onclick="ClearDepths();return false;">Clear</a>
+
+    <div class="form-inline">
+      <div class="input-group" style="width: 49%">
+        <div class="input-group-addon"><span class="glyphicon glyphicon-triangle-bottom"></span></div>
+        <input class="form-control" type="text" id="filt_depthmin" autocomplete="off" value="" placeholder="Min [m]">
+      </div>
+      <div class="input-group" style="width: 49%">
+        <div class="input-group-addon"><span class="glyphicon glyphicon-triangle-top"></span></div>
+        <input class="form-control" type="text" id="filt_depthmax" autocomplete="off" value="" placeholder="Max [m]">
+      </div>
+    </div>
+  </div>
+</div>
+<div class="filter ">
+  <div class="form-group-sm">
+    <label class="title">Location</label>
+    <a class="pull-right label label-default" style="padding: 1px 3px 3px 3px; margin-top: 5px;font-size: 90%;" href="https://ecotaxa.obs-vlfr.fr/explore/#" onclick="ClearCoord();return false;">Clear</a>
+
+    <table>
+      <tbody><tr>
+        <td><input class="form-control" type="text" id="filt_MapOutW" name="filt_MapOutW" value="" placeholder="West"></td>
+        <td><input class="form-control" type="text" id="filt_MapOutN" name="filt_MapOutN" value="" placeholder="North">
+          <input class="form-control" type="text" id="filt_MapOutS" name="filt_MapOutS" value="" placeholder="South"></td>
+        <td><input class="form-control" type="text" id="filt_MapOutE" name="filt_MapOutE" autocomplete="off" value="" placeholder="East"></td>
+      </tr>
+    </tbody></table>
+
+    <button type="button" class="btn btn-sm btn-default btn-block active" style="margin-top: 3px;" onclick="OpenMap();">Open map
+    </button>
+  </div>
+</div>
+<div class="filter ">
+  <div class="form-group-sm">
+    <label class="title">Date</label>
+    <a class="pull-right label label-default" style="padding: 1px 3px 3px 3px; margin-top: 5px;font-size: 90%;" href="https://ecotaxa.obs-vlfr.fr/explore/#" onclick="ClearDates();return false;">Clear</a>
+    <input class="form-control hasDatepicker" type="text" style="width: 100%" id="filt_fromdate" name="filt_fromdate" value="" autocomplete="off" placeholder="Begin">
+    <input class="form-control hasDatepicker" type="text" style="width: 100%" id="filt_todate" name="filt_todate" value="" autocomplete="off" placeholder="End">
+    <select class="form-control select2-hidden-accessible" id="month" name="month" style="width: 100%" multiple="" autocomplete="off" tabindex="-1" aria-hidden="true">
+      
+<option value="1">January</option> 
+<option value="2">February</option> 
+<option value="3">March</option> 
+<option value="4">April</option> 
+<option value="5">May</option> 
+<option value="6">June</option> 
+<option value="7">July</option> 
+<option value="8">August</option> 
+<option value="9">September</option> 
+<option value="10">October</option> 
+<option value="11">November</option> 
+<option value="12">December</option> 
+    </select><span class="select2 select2-container select2-container--default" dir="ltr" style="width: 100%;"><span class="selection"><span class="select2-selection select2-selection--multiple" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="-1"><ul class="select2-selection__rendered"><li class="select2-search select2-search--inline"><input class="select2-search__field" type="search" tabindex="0" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" role="textbox" aria-autocomplete="list" placeholder="Month" style="width: 229px;"></li></ul></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+  </div>
+</div>
+<div class="filter ">
+  <div class="form-group-sm">
+
+    <label class="title">Time</label>
+    <input type="checkbox" value="Y" id="filt_inverttime" name="filt_inverttime" autocomplete="off"> <label for="filt_inverttime">invert</label>
+    <a class="pull-right label label-default" style="padding: 1px 3px 3px 3px; margin-top: 5px;font-size: 90%;" href="https://ecotaxa.obs-vlfr.fr/explore/#" onclick="ClearTimes();return false;">Clear</a>
+    <form class="form-inline">
+      <input class="form-control" type="text" style="width: 49%" id="filt_fromtime" name="filt_fromtime" autocomplete="off" value="" placeholder="Begin">
+      <input class="form-control" type="text" style="width: 49%" id="filt_totime" name="filt_totime" autocomplete="off" value="" placeholder="End">
+    </form>
+    <div style="margin: 7px; background-color: rgb(255, 255, 255);" id="time-slider-range" class="ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all"><div class="ui-slider-range ui-widget-header ui-corner-all" style="left: 0%; width: 100%; background-color: rgb(85, 85, 85);"></div><span class="ui-slider-handle ui-state-default ui-corner-all" tabindex="0" style="left: 0%;"></span><span class="ui-slider-handle ui-state-default ui-corner-all" tabindex="0" style="left: 100%;"></span></div>
+    <select class="form-control select2-hidden-accessible" id="daytime" name="daytime" style="width: 100%" multiple="" autocomplete="off" tabindex="-1" aria-hidden="true">
+      
+<option value="A">Dawn</option> 
+<option value="D">Day</option> 
+<option value="U">Dusk</option> 
+<option value="N">Night</option> 
+    </select><span class="select2 select2-container select2-container--default" dir="ltr" style="width: 100%;"><span class="selection"><span class="select2-selection select2-selection--multiple" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="-1"><ul class="select2-selection__rendered"><li class="select2-search select2-search--inline"><input class="select2-search__field" type="search" tabindex="0" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" role="textbox" aria-autocomplete="list" placeholder="Day time" style="width: 229px;"></li></ul></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+  </div>
+</div>
+
+  <div class="filter ">
+    <div class="form-group-sm">
+      <label class="title">Instrument</label> <span class="glyphicon glyphicon-question-sign" onclick="DispInstrumList();" style="cursor: pointer;"></span>
+      <a class="pull-right label label-default" style="padding: 1px 3px 3px 3px; margin-top: 5px;font-size: 90%;" href="https://ecotaxa.obs-vlfr.fr/explore/#" onclick="ClearInstrum();return false;">Clear</a>
+      <input class="form-control" type="text" id="filt_instrum" name="filt_instrum" value="" placeholder="Instrument">
+    </div>
+  </div>
+
+
+<script>
+    function OpenMap(projid) {
+        $("#mappanel").remove();
+        
+        $("#PopupDetails .modal-content").html("Loading...");
+        $('#PopupDetails .modal-lg').css('width', $(window).width() - 40);
+        $('#PopupDetails').modal({});
+        var url = "/search/mappopup/?a=b";
+        if (typeof (projid) != "undefined")
+            url += "&projid=" + projid;
+        jqProjid = $("#projid");
+        if ((typeof (jqProjid.val()) != "undefined") && (jqProjid.val() != null))
+            url += "&projid=" + String(jqProjid.val());
+        jqTaxo = $("#taxolb");
+        
+        if ((typeof (jqTaxo.val()) != "undefined") && (jqTaxo.val() != null))
+            url += "&taxoid=" + String(jqTaxo.val());
+        jqTaxo = $("#taxofilter");
+        
+        if ((typeof (jqTaxo.val()) != "undefined") && (jqTaxo.val() != null))
+            url += "&taxoid=" + String(jqTaxo.val());
+
+        if ($("#taxochild").prop("checked"))
+            url += "&taxochild=1";
+        if ($("#taxofilterchild").val() == "Y")
+            url += "&taxochild=1";
+        $("#PopupDetails .modal-content").load(url);
+    }
+
+    function ClearCoord() {
+        $("#filt_MapOutN,#filt_MapOutW,#filt_MapOutE,#filt_MapOutS").val("");
+    }
+
+    function ClearDates() {
+        $("#filt_fromdate,#filt_todate").val("");
+        $("#month").val(null).trigger("change");
+    }
+
+    function ClearDepths() {
+        $("#filt_depthmin,#filt_depthmax").val("");
+    }
+
+    function ClearTimes() {
+        $("#filt_fromtime,#filt_totime").val("");
+        $("#filt_inverttime").prop("checked", false);
+        $("#daytime").val(null).trigger("change");
+    }
+    
+        function ClearInstrum() {
+            $("#filt_instrum").val("");
+        }
+        function DispInstrumList(projid) {
+            $("#PopupDetails .modal-content").html("Loading...");
+            $('#PopupDetails .modal-lg').css('width', $(window).width() / 2);
+            $('#PopupDetails').modal({});
+            var url = "/search/instrumlist"
+            if (typeof (projid) != "undefined")
+                url += "?projid=" + projid
+            $("#PopupDetails .modal-content").load(url);
+        }
+    
+    function ClearSamples() {
+        $("#sampleid").val(null).trigger("change");
+    }
+
+    function AdvancedSamples() {
+        if ($('#projid').val() == null) return;
+        $("#PopupDetails .modal-content").html("Loading...");
+        $('#PopupDetails .modal-lg').css('width', 800);
+        $('#PopupDetails').modal({});
+
+        var url = "/search/samples?format=P&q=&projid=" + $('#projid').val();
+        $("#PopupDetails .modal-content").load(url, function () {
+            var lst = "";
+            var sampleid = $('#sampleid');
+            lst = $.map(sampleid.find('option:selected'), function (element) {
+                return $(element).text()
+            }).join(', ');
+            $('#txtlstsample').val(lst);
+            SampleTxtToCB();
+
+        });
+
+    }
+
+    function UpdateTimeSliderColor() {
+        if ($("#filt_inverttime").prop("checked")) {
+            $("#time-slider-range .ui-slider-range").css('background-color', '#fff')
+            $("#time-slider-range").css('background-color', '#555')
+        } else {
+            $("#time-slider-range .ui-slider-range").css('background-color', '#555')
+            $("#time-slider-range").css('background-color', '#fff')
+        }
+    }
+
+    $(document).ready(function () {
+        $("#sampleid").select2({
+            ajax: {
+                url: "/search/samples",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {q: params.term, projid: $('#projid').val()};
+                },
+                processResults: function (data, page) {
+                    return {results: data};
+                },
+                cache: true
+            },
+            dropdownCssClass: "width400"
+            , placeholder: "Sample"
+        }); // Select2 Ajax
+        $('#month').select2({placeholder: "Month"});
+        $('#daytime').select2({placeholder: "Day time"});
+        $("#filt_fromdate,#filt_todate").datepicker({
+            showButtonPanel: true, changeMonth: true, changeYear: true, dateFormat: "yy-mm-dd",
+        });
+        $("#time-slider-range").slider({
+            range: true,
+            min: 0,
+            max: 1439,
+            values: [0, 1439],
+            slide: function (event, ui) {
+                v = ui.values[0];
+                v = Math.floor(v / 60) + ":" + (("00" + (v % 60)).substr(-2));
+                $("#filt_fromtime").val(v);
+                v = ui.values[1];
+                v = Math.floor(v / 60) + ":" + (("00" + (v % 60)).substr(-2));
+                $("#filt_totime").val(v);
+            }
+        });
+        $("#filt_inverttime").change(function () {
+            UpdateTimeSliderColor();
+        });
+        UpdateTimeSliderColor();
+        $("#filt_freetxt").select2({
+            ajax: {
+                url: "/prj/GetFieldList//t",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {q: params.term, page: params.page};
+                },
+                processResults: function (data, page) {
+                    return {results: data};
+                },
+                cache: true
+            }, placeholder: "Text field", dropdownCssClass: "width240"
+        });
+        $('#filt_validfromdate,#filt_validtodate').datetimepicker({format: 'Y-m-d H:i'});
+        $("#filt_annot").select2({
+        ajax: {
+            url: "/api/users/search",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return { by_name: '%'+params.term+'%', page: params.page };
+            },
+            processResults: function (data, page) {
+                return { results: data.map(function(rec) {
+                    return {'id':rec.id, 'text':rec.name};
+                    })
+                };
+            },
+            cache: true,
+        },
+        placeholder: 'search user...',
+        allowClear: true,
+        minimumInputLength: 2
+    }); // Select2 Ajax
+        $("#filt_freenum").select2({
+            ajax: { // TODO: Why this is dynamic? Values change not very often...
+                url: "/prj/GetFieldList//n",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {q: params.term, page: params.page};
+                },
+                processResults: function (data, page) {
+                    return {results: data};
+                },
+                cache: true
+            }, placeholder: "Num. field", dropdownCssClass: "width240"
+        });
+
+
+    });
+
+    function ClearAnnotFree() {
+        $("#filt_freenumst,#filt_freenumend,#filt_freetxtval").val("");
+        $("#filt_annot,#filt_freenum,#filt_freetxt").val(null).trigger("change");
+    }
+
+
+    function ClearAllFilterCriteria() {
+        ClearCoord();
+        ClearDates();
+        ClearTimes();
+        ClearSamples();
+        ClearInstrum();
+        ClearDepths();
+        ClearAnnotFree();
+    }
+
+    function GetAllSelected(jq_elem) {
+        return $.map(jq_elem.find('option:selected'),
+            function (elem) {
+                return $(elem).text()
+            }).join(', ')
+    }
+
+    function GetFiltersFromTab(req, labels, clearers) {
+        // Look in DOM for filt_ fields and complete the request
+        req['MapN'] = $("#filt_MapOutN").val();
+        req['MapW'] = $("#filt_MapOutW").val();
+        req['MapE'] = $("#filt_MapOutE").val();
+        req['MapS'] = $("#filt_MapOutS").val();
+        if ((req['MapN'] != "") && (req['MapW'] != "") && (req['MapE'] != "") && (req['MapS'] != "")) {
+            // OK it's consistent
+        } else {
+            delete req['MapN'];
+            delete req['MapW'];
+            delete req['MapE'];
+            delete req['MapS'];
+        }
+
+        req['depthmin'] = $("#filt_depthmin").val();
+        req['depthmax'] = $("#filt_depthmax").val();
+        if ((req['depthmin'] != "") && (req['depthmax'] != "")) {
+            // OK it's consistent
+        } else {
+            delete req['depthmin'];
+            delete req['depthmax'];
+        }
+
+        var jqfreenum = $("#filt_freenum");
+        req['freenum'] = jqfreenum.val();
+        req['freenumst'] = $("#filt_freenumst").val();
+        req['freenumend'] = $("#filt_freenumend").val();
+        if ((req['freenum'] !== "") && ((req['freenumst'] !== "") || (req['freenumend'] !== ""))) {
+            labels['freenum'] = jqfreenum.find("option:selected").text() +
+                " in(" + req['freenumst'] + "-" + req['freenumend'] + ")";
+            clearers['freenum'] = "$(\"#filt_freenum,#filt_freenumst,#filt_freenumend\").val(null).trigger(\"change\")";
+        } else {
+            delete req['freenum'];
+            delete req['freenumst'];
+            delete req['freenumend'];
+        }
+
+        var jqfreetxt = $("#filt_freetxt");
+        req['freetxt'] = jqfreetxt.val();
+        req['freetxtval'] = $("#filt_freetxtval").val();
+        if ((req['freetxt'] != "") && (req['freetxtval'] != "")) {
+            labels['freetxt'] = jqfreetxt.find("option:selected").text() + " contains " + req['freetxtval'];
+            clearers['freetxt'] = "$(\"#filt_freetxt,#filt_freetxtval\").val(null).trigger(\"change\")";
+        } else {
+            delete req['freetxt'];
+            delete req['freetxtval'];
+        }
+
+        var sampleid = $('#sampleid');
+        if (sampleid.val() != null) {
+            req['samples'] = String(sampleid.val());
+            labels['samples'] = GetAllSelected(sampleid);
+        }
+
+        
+            var instrum = $("#filt_instrum");
+            if (instrum.val() !== "") {
+                req['instrum'] = instrum.val();
+            }
+        
+
+        var jqmonth = $('#month');
+        if (jqmonth.val() != null) {
+            req['month'] = String(jqmonth.val());
+            labels['month'] = GetAllSelected(jqmonth);
+        }
+
+        var jqannot = $('#filt_annot');
+        if (jqannot.val() != null) {
+            req['filt_annot'] = String(jqannot.val());
+            labels['filt_annot'] = GetAllSelected(jqannot);
+            clearers['filt_annot'] = "$(\"#filt_annot\").val(null).trigger(\"change\")";
+        }
+
+        req['fromdate'] = $("#filt_fromdate").val();
+        if (req['fromdate'] !== "") {
+        } else delete req['fromdate'];
+
+        req['todate'] = $("#filt_todate").val();
+        if (req['todate'] !== "") {
+        } else delete req['todate'];
+
+        req['fromtime'] = $("#filt_fromtime").val();
+        req['totime'] = $("#filt_totime").val();
+        if ((req['fromtime'] !== "") && (req['totime'] !== "")) {
+        } else {
+            if (req['fromtime'] !== "") {
+            } else delete req['fromtime'];
+            if (req['totime'] !== "") {
+            } else delete req['totime'];
+        }
+
+        req['inverttime'] = $("#filt_inverttime").prop("checked") ? "1" : "";
+        if (req['inverttime'] === "1") {
+            clearers['inverttime'] = "$(\"#filt_inverttime\").prop(\"checked\",false)";
+        } else delete req['inverttime'];
+
+        var jqdaytime = $('#daytime');
+        if (jqdaytime.val() != null) {
+            req['daytime'] = String(jqdaytime.val());
+            labels['daytime'] = GetAllSelected(jqdaytime);
+        }
+
+        req['validfromdate'] = $("#filt_validfromdate").val();
+        if (req['validfromdate'] !== "") {
+            clearers['validfromdate'] = '$(\"#filt_validfromdate\").val(\"\")';
+        } else delete req['validfromdate'];
+
+        req['validtodate'] = $("#filt_validtodate").val();
+        if (req['validtodate'] !== "") {
+            clearers['validtodate'] = '$(\"#filt_validtodate\").val(\"\")';
+        } else delete req['validtodate'];
+
+    }
+
+    function AdvancedAnnot() {
+        if ($('#projid').val() == null) return;
+        $("#PopupDetails .modal-content").html("Loading...");
+        $('#PopupDetails .modal-lg').css('width', 800);
+        $('#PopupDetails').modal({});
+
+        var url = "/search/annotators/" + $('#projid').val();
+        $("#PopupDetails .modal-content").load(url, function () {
+            var lst = "";
+            var sampleid = $('#filt_annot');
+            lst = $.map(sampleid.find('option:selected'), function (element) {
+                return $(element).val()
+            }).join(', ');
+            $('#txtlstsample').val(lst);
+            SampleTxtToCB();
+
+        });
+
+    }
+
+</script>
+
+        <div>
+          <div class="form-group-sm">
+            <label class="title">Validated Plankton filter &nbsp;<span data-toggle="popover" data-placement="top" data-container="body" data-html="true" data-title="Taxonomy filter help" data-content="
+        &lt;p style=&#39;text-align: left&#39;&gt;&lt;ul style=&#39;text-align: left&#39;&gt;
+        &lt;li&gt;Each lineage can have different length and the usual levels of taxonomic hierarchy are not considered.
+&lt;li&gt;The species is the lower level. However subspecies details can be mentioned. Only the species name encompasses two words: “Genus species”. The “sp.” is used whenever the species name is not available.
+&lt;li&gt;If a taxon is not yet named, we then merge the suffix &#39;X&#39; with the parent Id:  &#39;Parent_X&#39;. Whenever several children are unknown, the suffix become “_X1”, “_X2” …
+&lt;li&gt;Some morphological categories (detritus, artefact, larvae, sex…) are also integrated.
+&lt;/ul&gt;
+Tips for searching a category in the classification hierarchy:
+&lt;ul&gt;
+&lt;li&gt;Text entry “abc”  returns categories whose name starts with the string ‘abc’.
+&lt;li&gt;‘%’ can be used to search category names containing a given string. The text entry “%abc” returns categories whose name contains ‘abc’; and typing  “abc%ijk” returns categories whose name starts with ‘abc’ AND contains ‘ijk’.
+&lt;li&gt;‘*’ can be used for identifying a category having a specific parent in the classification hierarchy. The text entry “xyz*abc” returns categories whose name starts with ‘abc’ AND having a parent whose name starts with ‘xyz’. Several parents can be required in the same request without priority order (e.g. ‘parent1*parent2*abc’ = ‘parent2*parent1*abc’).
+&lt;li&gt;‘%’ and ‘*’ can be used simultaneously (e.g. ‘ijk*abc%xyz’ for searching a category whose name starts with ‘abc’ AND contains ‘xyz’ AND having a parent whose name start with ‘ijk’; or ‘%xyz*abc’ for searching a category whose name starts with ‘abc’ AND having a parent whose name contains ‘xyz’).
+&lt;/ul&gt;
+&lt;/p&gt;" class="glyphicon glyphicon-question-sign" data-original-title="" title=""></span>
+            </label>
+            <a class="pull-right clear" href="javascript:ClearTaxo();"></a>
+            <select id="taxolb" multiple="" style="width: 100%" autocomplete="off" tabindex="-1" class="select2-hidden-accessible" aria-hidden="true">  </select><span class="select2 select2-container select2-container--default" dir="ltr" style="width: 100%;"><span class="selection"><span class="select2-selection select2-selection--multiple" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="-1"><ul class="select2-selection__rendered"><li class="select2-search select2-search--inline"><input class="select2-search__field" type="search" tabindex="0" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" role="textbox" aria-autocomplete="list" placeholder="" style="width: 0.75em;"></li></ul></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+          </div>
+        </div>
+        <div>
+          <input type="checkbox" name="taxochild" id="taxochild" value="1" checked="" style="margin:0px;"> Also display children
+        </div>
+
+        <div class="FilterToggle" style="display:none;cursor:pointer;">
+          <span onclick="$(&#39;.FilterToggle&#39;).toggle();"><span class="glyphicon glyphicon-triangle-right"></span>Show filters</span>
+        </div>
+
+
+        <link rel="stylesheet" href="./ecotaxa.obs-vlfr.fr_explore__files/style.min.css">
+        <script src="./ecotaxa.obs-vlfr.fr_explore__files/jstree.min.js.download"></script>
+
+        <style>
+            .tree li a {
+                padding-right: 20px !important;
+                background: url(icons/Star-icon.png) top right no-repeat;
+            }
+
+            .tree li.clicked a {
+                padding-right: 20px !important;
+                background: url(icons/Star-icon.png) top right no-repeat #BEEBFF;
+            }
+
+            .tree li a.hover,
+            .tree li a:hover {
+                padding-right: 20px !important;
+                background: url(icons/Star-icon.png) top right no-repeat #D8F0FA;
+            }
+
+            .taxo_tree_selected .v {
+                background-color: #777777;
+            }
+        </style>
+
+
+        <div id="jstreeexp" class="jstree jstree-1 jstree-default" role="tree" aria-multiselectable="true" tabindex="0" aria-activedescendant="1" aria-busy="false"><ul class="jstree-container-ul jstree-children jstree-no-icons" role="group"><li role="treeitem" aria-selected="true" aria-level="1" aria-labelledby="1_anchor" aria-expanded="false" id="1" class="jstree-node  jstree-closed"><i class="jstree-icon jstree-ocl" role="presentation"></i><a class="jstree-anchor jstree-clicked" href="https://ecotaxa.obs-vlfr.fr/explore/#" tabindex="-1" id="1_anchor"><i class="jstree-icon jstree-themeicon" role="presentation"></i><span class="v">living</span> (47623290) <span class="TaxoSel label label-default"><span class="glyphicon glyphicon-ok"></span></span></a></li><li role="treeitem" aria-selected="false" aria-level="1" aria-labelledby="84960_anchor" aria-expanded="false" id="84960" class="jstree-node  jstree-closed"><i class="jstree-icon jstree-ocl" role="presentation"></i><a class="jstree-anchor" href="https://ecotaxa.obs-vlfr.fr/explore/#" tabindex="-1" id="84960_anchor"><i class="jstree-icon jstree-themeicon" role="presentation"></i><span class="v">not-living</span> (93671505) <span class="TaxoSel label label-default"><span class="glyphicon glyphicon-ok"></span></span></a></li><li role="treeitem" aria-selected="false" aria-level="1" aria-labelledby="84959_anchor" aria-expanded="false" id="84959" class="jstree-node  jstree-closed jstree-last"><i class="jstree-icon jstree-ocl" role="presentation"></i><a class="jstree-anchor" href="https://ecotaxa.obs-vlfr.fr/explore/#" tabindex="-1" id="84959_anchor"><i class="jstree-icon jstree-themeicon" role="presentation"></i><span class="v">temporary</span> (3266613) <span class="TaxoSel label label-default"><span class="glyphicon glyphicon-ok"></span></span></a></li></ul></div>
+
+        <script>
+            $(function () {
+                $('#jstreeexp').jstree({
+                    'core': {
+                        "animation": 0,
+                        "themes": {"stripes": false, "icons": false},
+                        'data': {
+                            'dataType': 'JSON',
+                            'url': '/search/taxotreejson',
+                            'data': function (node) {
+                                return {'id': node.id};
+                            }
+                        }
+                    }
+                });
+
+                $("#jstreeexp").delegate(".TaxoSel", 'click',
+                    function (o) {
+                        o.preventDefault();
+                        var id = $(o.target).closest("li").attr("id");
+                        var valeur = $(o.target).prev().html();
+                        if ($(o.target).hasClass("glyphicon"))
+                            valeur = $(o.target).parent().prev().html();
+                        $('#SelectedID').html(id);
+                        $('#SelectedName').html(valeur);
+                        $('#taxolb').append($('<option>', {value: id, text: valeur}));
+                        var sel = $("#taxolb").val();
+                        if (sel == null) sel = [];
+                        sel.push(id);
+                        $('#taxolb').val(sel);
+                        $('#taxolb').change();
+                    });
+
+                $("#jstree").bind("select_node.jstree", function (e, data) {
+                    $("#jstree").jstree('open_node', data.node);
+                });
+                
+                $("#jstreeexp").on('after_open.jstree', function () {
+                    $('#taxolb').change();
+                });
+
+                $('#taxolb').change(function () { 
+                    $(".taxo_tree_selected").removeClass("taxo_tree_selected");
+                    var taxofilterarray = [];
+                    $('#taxolb :selected').each(function (i, selected) {
+                        taxofilterarray[i] = "#" + $(selected).val();
+                    });
+                    $(taxofilterarray.join(",")).addClass("taxo_tree_selected");
+                });
+
+            });
+        </script>
+
+
+      </div>
+    </div>
+    
+    <style>
+        .lazy {
+            margin: 15px 5px 0px 5px;
+        }
+
+        .ddet {
+            text-align: left;
+            font-size: 10px;
+            margin-top: -3px;
+            margin-bottom: -1px;
+            text-decoration: underline;
+            color: #00c;
+        }
+
+        .ddets {
+            cursor: pointer;
+        }
+
+        #dispfieldlist li a {
+            padding-top: 0px;
+        }
+
+        .tooltip-inner {
+            max-width: 500px;
+        }
+
+
+        #column-right {
+            margin-left: 265px;
+        }
+
+        #divheadinfo {
+            position: fixed;
+            top: 0px;
+            left: 1px;
+            width: 100%;
+            height: 80px;
+            z-index: 12;
+            background-color: #fff;
+        }
+
+        #topbar {
+            position: fixed;
+            top: 80px;
+            left: 1px;
+            width: 100%;
+            height: 40px;
+            z-index: 10;
+            background-color: #fff;
+        }
+
+        body {
+            margin-top: 125px;
+        }
+
+        
+        .width240 {
+            width: 240px !important;
+        }
+
+        
+        .width400 {
+            width: 400px !important;
+        }
+
+        
+        #select2-taxolbanno-results li {
+            font-size: 12px;
+            padding: 3px;
+        }
+
+        .popover {
+            max-width: 500px;
+        }
+
+    </style>
+    <script>
+        var PrevTxtFilter = "INITIAL"
+
+        function LoadRightPane(NoAjax) {
+            var TxtFilter = ""
+            req = {taxo: $("#taxolb").val(), resultwidth: $("#column-right").width(), windowheight: $(window).height()};
+            var taxofilterarray = [];
+            $('#taxolb :selected').each(function (i, selected) {
+                taxofilterarray[i] = $(selected).text();
+            });
+            req['taxochild'] = $("#taxochild").prop("checked") ? "1" : "0";
+            if (taxofilterarray.length > 0) {
+                TxtFilter += " Taxo=" + (taxofilterarray.join(","));
+                if (req['taxochild'] == "1") TxtFilter += "(with childs)";
+            }
+            req['ipp'] = $("#ipp").val();
+            req['zoom'] = $("#zoom").val();
+            req['magenabled'] = $("#magenabled").prop("checked") ? "1" : "0";
+
+            req['MapN'] = $("#filt_MapOutN").val();
+            req['MapW'] = $("#filt_MapOutW").val();
+            req['MapE'] = $("#filt_MapOutE").val();
+            req['MapS'] = $("#filt_MapOutS").val();
+            if ((req['MapN'] != "") && (req['MapW'] != "") && (req['MapE'] != "") && (req['MapS'] != ""))
+                TxtFilter += " Position=(" + req['MapN'] + "," + req['MapW'] + "," + req['MapE'] + "," + req['MapS'] + ")"
+            else {
+                delete req['MapN'];
+                delete req['MapW'];
+                delete req['MapE'];
+                delete req['MapS'];
+            }
+
+            req['depthmin'] = $("#filt_depthmin").val();
+            req['depthmax'] = $("#filt_depthmax").val();
+            if ((req['depthmin'] != "") && (req['depthmax'] != ""))
+                TxtFilter += " Depth in(" + req['depthmin'] + "-" + req['depthmax'] + ")";
+            else {
+                delete req['depthmin'];
+                delete req['depthmax'];
+            }
+
+            if ($('#sampleid').val() != null)
+                req['samples'] = String($('#sampleid').val())
+            else req['samples'] = "";
+            if (req['samples'] != "")
+                TxtFilter += " Samples=" + $.map($('#sampleid  option:selected'), function (element) {
+                    return $(element).text()
+                }).join(', ');
+            req['instrum'] = $("#filt_instrum").val();
+            if (req['instrum'] != "")
+                TxtFilter += " Instrument =" + req['instrum'];
+            var jqmonth = $('#month');
+            if (jqmonth.val() != null) {
+                req['month'] = String(jqmonth.val());
+                TxtFilter += " Month=" + $.map(jqmonth.find('option:selected'), function (element) {
+                    return $(element).text()
+                }).join(', ');
+            }
+
+            if ($('#projid').val() != null)
+                req['projid'] = String($('#projid').val())
+            else req['projid'] = "";
+            if (req['projid'] != "")
+                TxtFilter += " Project=" + $.map($('#projid  option:selected'), function (element) {
+                    return "<a href='/prj/" + $(element).val() + "'>" + $(element).text() + "</a>"
+                }).join(', ');
+
+            req['fromdate'] = $("#filt_fromdate").val();
+            if (req['fromdate'] != "")
+                TxtFilter += " Date >= " + req['fromdate'];
+            else delete req['fromdate'];
+
+            req['todate'] = $("#filt_todate").val();
+            if (req['todate'] != "")
+                TxtFilter += " Date <= " + req['todate'];
+            else delete req['todate'];
+
+            req['fromtime'] = $("#filt_fromtime").val();
+            if (req['fromtime'] != "")
+                TxtFilter += " Time >= " + req['fromtime'];
+            else delete req['fromtime'];
+
+            req['totime'] = $("#filt_totime").val();
+            if (req['totime'] != "")
+                TxtFilter += " Time <= " + req['totime'];
+            else delete req['totime'];
+
+            req['inverttime'] = $("#filt_inverttime").prop("checked") ? "1" : "";
+            if (req['inverttime'] == "1")
+                TxtFilter += " Time Invert ";
+            else delete req['inverttime'];
+            var jqdaytime = $('#daytime');
+            if (jqdaytime.val() != null) {
+                req['daytime'] = String(jqdaytime.val());
+                TxtFilter += " DayTime=" + $.map(jqdaytime.find('option:selected'), function (element) {
+                    return $(element).text()
+                }).join(', ');
+            }
+
+
+            $(".zoomtracker,.zoomstatus,.magnifyarea,.cursorshade").remove();
+            if (TxtFilter != "")
+                TxtFilter = "Filter: " + TxtFilter
+            if (NoAjax == true) {
+                delete req["resultwidth"];
+                delete req["windowheight"];
+                var urlparam = {};
+                for (var k in req)
+                    
+                    urlparam[k] = req[k];
+                
+                var url = window.location.protocol + "//" + window.location.host + "/explore/?" + $.param(urlparam);
+                window.location = "mailto:?subject=Ecotaxa%20page%20share&body=" + encodeURIComponent("Hello,\n\nAn Ecotaxa user want share this page with you \n" + url);
+                return;
+            }
+            $("#column-right").html("<img src='/static/spinningred.gif'> Loading");
+            $("#column-right").load("/explore/LoadRightPane", req);
+            $('#headersubtitle').html(TxtFilter);
+        }
+
+
+        $(document).ready(function () {
+            if ("" == "desc")
+                SortToggle();
+            $('#statuslabelspan').popover({html: true, trigger: 'hover', placement: "left", container: 'body'});
+            $('#statusfilter').data('content', $('#statuslabelspan').data('content'))
+            $('#statusfilter').popover({html: true, trigger: 'hover', placement: "left", container: 'body'});
+            $("#taxofilter").val("");
+
+
+            $("#projid").select2({
+                ajax: {
+                    url: "/search/exploreproject",
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {q: params.term};
+                    },
+                    processResults: function (data, page) {
+                        return {results: data};
+                    },
+                    cache: true
+                },
+                dropdownCssClass: "width400"
+            }); // Select2 Ajax
+
+        });
+
+        function ClearProjects() {
+            $("#projid").val(null).trigger("change");
+        }
+
+        function ClearTaxo() {
+            $("#taxolb").val(null).trigger("change");
+        }
+
+        function PostAddImages() {
+            $(document).scrollTop(0);
+            // Required to  have Select2 component working on Bootstrap Popup
+            $.fn.modal.Constructor.prototype.enforceFocus = function () {
+            };
+            // Add Zoom
+            jQuery('div#column-right img.lazy').Lazy({
+                bind: 'event', afterLoad: function (element) {
+                    if ($('#magenabled').prop("checked") == false)
+                        return; // Si il y a une checkbox magenabled et qu'elle est decochée on ne met pas le zoom
+                    AddZoom(element);
+                }
+            });
+            // Enable the popover
+            var option = {'trigger': 'hover', 'html': true};
+            $('div.subimg').popover(option);
+            $('.ddets').click(function (e) {
+                e.stopPropagation();
+                var url = "/objectdetails/" + $(e.target).closest('td').find('img').prop('id').substr(1) + "?w=" + ($(window).width() - 400) + "&h=" + ($(window).height() - 40) + "&ajax=1";
+                var options = {}
+                $("#PopupDetails .modal-content").html("Loading...");
+
+                $('#PopupDetails .modal-lg').css('width', $(window).width() - 40);
+                $('#PopupDetails').modal(options);
+                $("#PopupDetails .modal-content").load(url);
+            });
+            $('#PopupDetails').on('hidden.bs.modal', function (e) {
+                $("#PopupDetails .modal-content").html("CLEAN");
+                $(".zoomContainer").remove();
+            })
+
+        }  //PostAddImages
+
+        function ClearAllFilterCriteria() {
+            ClearCoord();
+            ClearDates();
+            ClearTimes();
+            ClearSamples();
+            ClearInstrum();
+            ClearDepths();
+            LoadRightPane();
+        }
+    </script>
+    <div id="column-right"><p class="bg-info" style="font-size: larger;font-weight: bold;">You can explore this project in more details on its <a href="https://ecotaxa.obs-vlfr.fr/prj/169">dedicated page</a></p><a name="toppage"></a>
+<table class="imgtab"><tbody><tr id="tr1">
+<td width="94"><img class="lazy" id="I25626442" data-zoom-image="2561/8544.jpg" width="72" height="55" pos="right" src="./ecotaxa.obs-vlfr.fr_explore__files/8544.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">Chaetoceros</span><span class="cat_ancestor"> &lt;&nbsp;Mediophyceae</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="165"><img class="lazy" id="I25626440" data-zoom-image="2561/8542.jpg" width="143" height="104" pos="right" src="./ecotaxa.obs-vlfr.fr_explore__files/8542.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">Chaetoceros</span><span class="cat_ancestor"> &lt;&nbsp;Mediophyceae</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25626448" data-zoom-image="2561/8550.jpg" width="51" height="135" pos="right" src="./ecotaxa.obs-vlfr.fr_explore__files/8550.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">Chaetoceros</span><span class="cat_ancestor"> &lt;&nbsp;Mediophyceae</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25626446" data-zoom-image="2561/8548.jpg" width="48" height="58" pos="right" src="./ecotaxa.obs-vlfr.fr_explore__files/8548.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">detritus</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="84"><img class="lazy" id="I25626444" data-zoom-image="2561/8546.jpg" width="62" height="91" pos="right" src="./ecotaxa.obs-vlfr.fr_explore__files/8546.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">Phaeocystis antarctica</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25626504" data-zoom-image="2561/8606.jpg" width="48" height="61" pos="right" src="./ecotaxa.obs-vlfr.fr_explore__files/8606.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">detritus</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25626503" data-zoom-image="2561/8605.jpg" width="48" height="78" pos="right" src="./ecotaxa.obs-vlfr.fr_explore__files/8605.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">t010</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25626516" data-zoom-image="2561/8618.jpg" width="48" height="58" pos="right" src="./ecotaxa.obs-vlfr.fr_explore__files/8618.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">detritus</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25626523" data-zoom-image="2561/8625.jpg" width="48" height="66" pos="left" src="./ecotaxa.obs-vlfr.fr_explore__files/8625.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">badfocus</span><span class="cat_ancestor"> &lt;&nbsp;artefact</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25626514" data-zoom-image="2561/8616.jpg" width="48" height="64" pos="left" src="./ecotaxa.obs-vlfr.fr_explore__files/8616.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">detritus</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25626506" data-zoom-image="2561/8608.jpg" width="48" height="68" pos="left" src="./ecotaxa.obs-vlfr.fr_explore__files/8608.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">detritus</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25626512" data-zoom-image="2561/8614.jpg" width="48" height="77" pos="left" src="./ecotaxa.obs-vlfr.fr_explore__files/8614.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">detritus</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25626527" data-zoom-image="2561/8629.jpg" width="48" height="68" pos="left" src="./ecotaxa.obs-vlfr.fr_explore__files/8629.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">detritus</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25626436" data-zoom-image="2561/8538.jpg" width="48" height="75" pos="left" src="./ecotaxa.obs-vlfr.fr_explore__files/8538.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">Ba­cil­la­rio­phy­ta</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25626510" data-zoom-image="2561/8611.jpg" width="48" height="67" pos="left" src="./ecotaxa.obs-vlfr.fr_explore__files/8611.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">other­to­che­ck</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25626507" data-zoom-image="2561/8609.jpg" width="48" height="74" pos="left" src="./ecotaxa.obs-vlfr.fr_explore__files/8609.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">detritus</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25626520" data-zoom-image="2561/8622.jpg" width="48" height="70" pos="left" src="./ecotaxa.obs-vlfr.fr_explore__files/8622.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">detritus</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25626529" data-zoom-image="2561/8631.jpg" width="48" height="66" pos="left" src="./ecotaxa.obs-vlfr.fr_explore__files/8631.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">detritus</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+</tr></tbody></table><table class="imgtab"><tbody><tr id="tr2">
+<td width="159"><img class="lazy" id="I25626518" data-zoom-image="2561/8620.jpg" width="137" height="70" pos="right" src="./ecotaxa.obs-vlfr.fr_explore__files/8620.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">Chaetoceros</span><span class="cat_ancestor"> &lt;&nbsp;Mediophyceae</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25626500" data-zoom-image="2561/8602.jpg" width="48" height="202" pos="right" src="./ecotaxa.obs-vlfr.fr_explore__files/8602.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">Chaetoceros</span><span class="cat_ancestor"> &lt;&nbsp;Mediophyceae</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="113"><img class="lazy" id="I25626438" data-zoom-image="2561/8540.jpg" width="91" height="89" pos="right" src="./ecotaxa.obs-vlfr.fr_explore__files/8540.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">Dinophyceae</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="172"><img class="lazy" id="I25626532" data-zoom-image="2561/8634.jpg" width="150" height="191" pos="right" src="./ecotaxa.obs-vlfr.fr_explore__files/8634.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">Tintinnida</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25626525" data-zoom-image="2561/8627.jpg" width="48" height="76" pos="right" src="./ecotaxa.obs-vlfr.fr_explore__files/8627.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">detritus</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25626534" data-zoom-image="2561/8636.jpg" width="48" height="117" pos="right" src="./ecotaxa.obs-vlfr.fr_explore__files/8636.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">Ba­cil­la­rio­phy­ta</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="135"><img class="lazy" id="I25626497" data-zoom-image="2561/8599.jpg" width="113" height="59" pos="left" src="./ecotaxa.obs-vlfr.fr_explore__files/8599.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">Chaetoceros</span><span class="cat_ancestor"> &lt;&nbsp;Mediophyceae</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25626495" data-zoom-image="2561/8597.jpg" width="48" height="76" pos="left" src="./ecotaxa.obs-vlfr.fr_explore__files/8597.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">Unknown marine</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25626494" data-zoom-image="2561/8596.jpg" width="48" height="64" pos="left" src="./ecotaxa.obs-vlfr.fr_explore__files/8596.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">detritus</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="334"><img class="lazy" id="I25626492" data-zoom-image="2561/8594.jpg" width="312" height="101" pos="left" src="./ecotaxa.obs-vlfr.fr_explore__files/8594.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">Guinardia</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="93"><img class="lazy" id="I25626490" data-zoom-image="2561/8592.jpg" width="71" height="75" pos="left" src="./ecotaxa.obs-vlfr.fr_explore__files/8592.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">Guinardia</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="83"><img class="lazy" id="I25626488" data-zoom-image="2561/8590.jpg" width="61" height="86" pos="left" src="./ecotaxa.obs-vlfr.fr_explore__files/8590.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">Guinardia</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="91"><img class="lazy" id="I25626486" data-zoom-image="2561/8588.jpg" width="69" height="87" pos="left" src="./ecotaxa.obs-vlfr.fr_explore__files/8588.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">Guinardia</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+</tr></tbody></table><table class="imgtab"><tbody><tr id="tr3">
+<td width="80"><img class="lazy" id="I25626484" data-zoom-image="2561/8586.jpg" width="48" height="68" pos="right" src="./ecotaxa.obs-vlfr.fr_explore__files/8586.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">Guinardia</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25626483" data-zoom-image="2561/8585.jpg" width="48" height="64" pos="right" src="./ecotaxa.obs-vlfr.fr_explore__files/8585.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">detritus</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25626481" data-zoom-image="2561/8583.jpg" width="48" height="72" pos="right" src="./ecotaxa.obs-vlfr.fr_explore__files/8583.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">badfocus</span><span class="cat_ancestor"> &lt;&nbsp;artefact</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25626479" data-zoom-image="2561/8581.jpg" width="48" height="62" pos="right" src="./ecotaxa.obs-vlfr.fr_explore__files/8581.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">detritus</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25626477" data-zoom-image="2561/8579.jpg" width="48" height="58" pos="right" src="./ecotaxa.obs-vlfr.fr_explore__files/8579.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">detritus</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="101"><img class="lazy" id="I25626475" data-zoom-image="2561/8577.jpg" width="79" height="352" pos="right" src="./ecotaxa.obs-vlfr.fr_explore__files/8577.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">Guinardia</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25626473" data-zoom-image="2561/8575.jpg" width="48" height="89" pos="right" src="./ecotaxa.obs-vlfr.fr_explore__files/8575.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">Chaetoceros</span><span class="cat_ancestor"> &lt;&nbsp;Mediophyceae</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="102"><img class="lazy" id="I25626471" data-zoom-image="2561/8573.jpg" width="80" height="60" pos="right" src="./ecotaxa.obs-vlfr.fr_explore__files/8573.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">Pseu­do–nitzschia delicatissima</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25626469" data-zoom-image="2561/8571.jpg" width="48" height="81" pos="right" src="./ecotaxa.obs-vlfr.fr_explore__files/8571.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">living</span><span class="cat_ancestor"> &lt;&nbsp;</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25626450" data-zoom-image="2561/8552.jpg" width="48" height="76" pos="left" src="./ecotaxa.obs-vlfr.fr_explore__files/8552.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">detritus</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25626451" data-zoom-image="2561/8553.jpg" width="48" height="68" pos="left" src="./ecotaxa.obs-vlfr.fr_explore__files/8553.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">Dinophyceae</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25626453" data-zoom-image="2561/8555.jpg" width="48" height="75" pos="left" src="./ecotaxa.obs-vlfr.fr_explore__files/8555.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">detritus</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="105"><img class="lazy" id="I25626455" data-zoom-image="2561/8557.jpg" width="83" height="75" pos="left" src="./ecotaxa.obs-vlfr.fr_explore__files/8557.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">Proboscia sp.</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="127"><img class="lazy" id="I25626457" data-zoom-image="2561/8559.jpg" width="105" height="75" pos="left" src="./ecotaxa.obs-vlfr.fr_explore__files/8559.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">Proboscia sp.</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="88"><img class="lazy" id="I25626536" data-zoom-image="2561/8638.jpg" width="66" height="235" pos="left" src="./ecotaxa.obs-vlfr.fr_explore__files/8638.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">Guinardia</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25626459" data-zoom-image="2561/8561.jpg" width="58" height="66" pos="left" src="./ecotaxa.obs-vlfr.fr_explore__files/8561.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">Proboscia sp.</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25626461" data-zoom-image="2561/8563.jpg" width="50" height="71" pos="left" src="./ecotaxa.obs-vlfr.fr_explore__files/8563.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">Chaetoceros</span><span class="cat_ancestor"> &lt;&nbsp;Mediophyceae</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25626463" data-zoom-image="2561/8565.jpg" width="48" height="76" pos="left" src="./ecotaxa.obs-vlfr.fr_explore__files/8565.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">Fra­gi­la­riop­sis</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+</tr></tbody></table><table class="imgtab"><tbody><tr id="tr4">
+<td width="80"><img class="lazy" id="I25626465" data-zoom-image="2561/8567.jpg" width="48" height="77" pos="right" src="./ecotaxa.obs-vlfr.fr_explore__files/8567.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">Dinophyceae</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25626467" data-zoom-image="2561/8569.jpg" width="48" height="76" pos="right" src="./ecotaxa.obs-vlfr.fr_explore__files/8569.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">detritus</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25611081" data-zoom-image="2560/3183.jpg" width="48" height="67" pos="right" src="./ecotaxa.obs-vlfr.fr_explore__files/3183.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">detritus</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25610933" data-zoom-image="2560/3035.jpg" width="48" height="75" pos="right" src="./ecotaxa.obs-vlfr.fr_explore__files/3035.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">badfocus</span><span class="cat_ancestor"> &lt;&nbsp;artefact</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25610935" data-zoom-image="2560/3037.jpg" width="48" height="79" pos="right" src="./ecotaxa.obs-vlfr.fr_explore__files/3037.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">badfocus</span><span class="cat_ancestor"> &lt;&nbsp;artefact</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25610937" data-zoom-image="2560/3039.jpg" width="48" height="63" pos="right" src="./ecotaxa.obs-vlfr.fr_explore__files/3039.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">badfocus</span><span class="cat_ancestor"> &lt;&nbsp;artefact</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25610939" data-zoom-image="2560/3041.jpg" width="48" height="69" pos="right" src="./ecotaxa.obs-vlfr.fr_explore__files/3041.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">detritus</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25610941" data-zoom-image="2560/3043.jpg" width="48" height="75" pos="right" src="./ecotaxa.obs-vlfr.fr_explore__files/3043.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">detritus</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25611020" data-zoom-image="2560/3122.jpg" width="48" height="66" pos="right" src="./ecotaxa.obs-vlfr.fr_explore__files/3122.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">detritus</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="91"><img class="lazy" id="I25611023" data-zoom-image="2560/3125.jpg" width="69" height="121" pos="left" src="./ecotaxa.obs-vlfr.fr_explore__files/3125.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">Ba­cil­la­rio­phy­ta</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="98"><img class="lazy" id="I25611024" data-zoom-image="2560/3126.jpg" width="76" height="151" pos="left" src="./ecotaxa.obs-vlfr.fr_explore__files/3126.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">Ba­cil­la­rio­phy­ta</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25611025" data-zoom-image="2560/3127.jpg" width="48" height="68" pos="left" src="./ecotaxa.obs-vlfr.fr_explore__files/3127.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">detritus</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25611223" data-zoom-image="2560/3325.jpg" width="48" height="79" pos="left" src="./ecotaxa.obs-vlfr.fr_explore__files/3325.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">detritus</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25611225" data-zoom-image="2560/3327.jpg" width="48" height="68" pos="left" src="./ecotaxa.obs-vlfr.fr_explore__files/3327.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">detritus</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25611227" data-zoom-image="2560/3329.jpg" width="48" height="65" pos="left" src="./ecotaxa.obs-vlfr.fr_explore__files/3329.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">detritus</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25611229" data-zoom-image="2560/3331.jpg" width="48" height="68" pos="left" src="./ecotaxa.obs-vlfr.fr_explore__files/3331.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">detritus</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="89"><img class="lazy" id="I25611230" data-zoom-image="2560/3332.jpg" width="67" height="82" pos="left" src="./ecotaxa.obs-vlfr.fr_explore__files/3332.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">detritus</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25611307" data-zoom-image="2560/3409.jpg" width="48" height="62" pos="left" src="./ecotaxa.obs-vlfr.fr_explore__files/3409.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">detritus</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25611309" data-zoom-image="2560/3411.jpg" width="48" height="69" pos="left" src="./ecotaxa.obs-vlfr.fr_explore__files/3411.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">detritus</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+</tr></tbody></table><table class="imgtab"><tbody><tr id="tr5">
+<td width="80"><img class="lazy" id="I25611311" data-zoom-image="2560/3413.jpg" width="48" height="62" pos="right" src="./ecotaxa.obs-vlfr.fr_explore__files/3413.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">badfocus</span><span class="cat_ancestor"> &lt;&nbsp;artefact</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25611313" data-zoom-image="2560/3415.jpg" width="48" height="72" pos="right" src="./ecotaxa.obs-vlfr.fr_explore__files/3415.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">detritus</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25611315" data-zoom-image="2560/3417.jpg" width="48" height="85" pos="right" src="./ecotaxa.obs-vlfr.fr_explore__files/3417.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">detritus</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25610925" data-zoom-image="2560/3027.jpg" width="48" height="64" pos="right" src="./ecotaxa.obs-vlfr.fr_explore__files/3027.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">Ba­cil­la­rio­phy­ta</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25610927" data-zoom-image="2560/3029.jpg" width="48" height="80" pos="right" src="./ecotaxa.obs-vlfr.fr_explore__files/3029.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">badfocus</span><span class="cat_ancestor"> &lt;&nbsp;artefact</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25610929" data-zoom-image="2560/3031.jpg" width="56" height="157" pos="right" src="./ecotaxa.obs-vlfr.fr_explore__files/3031.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">detritus</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25611080" data-zoom-image="2560/3182.jpg" width="48" height="93" pos="right" src="./ecotaxa.obs-vlfr.fr_explore__files/3182.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">Chaetoceros</span><span class="cat_ancestor"> &lt;&nbsp;Mediophyceae</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25611032" data-zoom-image="2560/3134.jpg" width="48" height="66" pos="right" src="./ecotaxa.obs-vlfr.fr_explore__files/3134.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">badfocus</span><span class="cat_ancestor"> &lt;&nbsp;artefact</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25611180" data-zoom-image="2560/3282.jpg" width="48" height="99" pos="right" src="./ecotaxa.obs-vlfr.fr_explore__files/3282.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">Guinardia</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25611179" data-zoom-image="2560/3281.jpg" width="48" height="93" pos="left" src="./ecotaxa.obs-vlfr.fr_explore__files/3281.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">Guinardia</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25611177" data-zoom-image="2560/3279.jpg" width="48" height="62" pos="left" src="./ecotaxa.obs-vlfr.fr_explore__files/3279.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">detritus</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25611175" data-zoom-image="2560/3277.jpg" width="58" height="88" pos="left" src="./ecotaxa.obs-vlfr.fr_explore__files/3277.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">detritus</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25611171" data-zoom-image="2560/3273.jpg" width="54" height="123" pos="left" src="./ecotaxa.obs-vlfr.fr_explore__files/3273.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">detritus</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25611184" data-zoom-image="2560/3286.jpg" width="48" height="82" pos="left" src="./ecotaxa.obs-vlfr.fr_explore__files/3286.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">Guinardia</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25611169" data-zoom-image="2560/3271.jpg" width="48" height="72" pos="left" src="./ecotaxa.obs-vlfr.fr_explore__files/3271.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">detritus</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25611167" data-zoom-image="2560/3269.jpg" width="48" height="70" pos="left" src="./ecotaxa.obs-vlfr.fr_explore__files/3269.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">detritus</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="106"><img class="lazy" id="I25611165" data-zoom-image="2560/3267.jpg" width="84" height="133" pos="left" src="./ecotaxa.obs-vlfr.fr_explore__files/3267.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">fiber</span><span class="cat_ancestor"> &lt;&nbsp;detritus</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25611163" data-zoom-image="2560/3265.jpg" width="48" height="61" pos="left" src="./ecotaxa.obs-vlfr.fr_explore__files/3265.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">detritus</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25611161" data-zoom-image="2560/3263.jpg" width="57" height="108" pos="left" src="./ecotaxa.obs-vlfr.fr_explore__files/3263.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">Chaetoceros</span><span class="cat_ancestor"> &lt;&nbsp;Mediophyceae</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+</tr></tbody></table><table class="imgtab"><tbody><tr id="tr6">
+<td width="80"><img class="lazy" id="I25611159" data-zoom-image="2560/3261.jpg" width="48" height="68" pos="right" src="./ecotaxa.obs-vlfr.fr_explore__files/3261.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">Dinophyceae</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25611157" data-zoom-image="2560/3259.jpg" width="48" height="68" pos="right" src="./ecotaxa.obs-vlfr.fr_explore__files/3259.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">Dinophyceae</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25611155" data-zoom-image="2560/3257.jpg" width="48" height="69" pos="right" src="./ecotaxa.obs-vlfr.fr_explore__files/3257.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">badfocus</span><span class="cat_ancestor"> &lt;&nbsp;artefact</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25611154" data-zoom-image="2560/3256.jpg" width="48" height="79" pos="right" src="./ecotaxa.obs-vlfr.fr_explore__files/3256.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">badfocus</span><span class="cat_ancestor"> &lt;&nbsp;artefact</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25611152" data-zoom-image="2560/3254.jpg" width="48" height="78" pos="right" src="./ecotaxa.obs-vlfr.fr_explore__files/3254.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">badfocus</span><span class="cat_ancestor"> &lt;&nbsp;artefact</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25611150" data-zoom-image="2560/3252.jpg" width="48" height="69" pos="right" src="./ecotaxa.obs-vlfr.fr_explore__files/3252.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">badfocus</span><span class="cat_ancestor"> &lt;&nbsp;artefact</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25611185" data-zoom-image="2560/3287.jpg" width="48" height="64" pos="right" src="./ecotaxa.obs-vlfr.fr_explore__files/3287.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">detritus</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25611148" data-zoom-image="2560/3250.jpg" width="48" height="73" pos="right" src="./ecotaxa.obs-vlfr.fr_explore__files/3250.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">detritus</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25611146" data-zoom-image="2560/3248.jpg" width="48" height="194" pos="right" src="./ecotaxa.obs-vlfr.fr_explore__files/3248.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">Ba­cil­la­rio­phy­ta</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25611143" data-zoom-image="2560/3245.jpg" width="48" height="57" pos="left" src="./ecotaxa.obs-vlfr.fr_explore__files/3245.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">badfocus</span><span class="cat_ancestor"> &lt;&nbsp;artefact</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25611141" data-zoom-image="2560/3243.jpg" width="52" height="102" pos="left" src="./ecotaxa.obs-vlfr.fr_explore__files/3243.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">detritus</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25611139" data-zoom-image="2560/3241.jpg" width="48" height="71" pos="left" src="./ecotaxa.obs-vlfr.fr_explore__files/3241.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">detritus</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+<td width="80"><img class="lazy" id="I25611137" data-zoom-image="2560/3239.jpg" width="48" height="66" pos="left" src="./ecotaxa.obs-vlfr.fr_explore__files/3239.jpg" style="display: inline-block;"><div class="subimg status-validated" data-original-title="" title="">
+<div class="taxo"><span class="cat_name">Dinophyceae</span></div>
+<div class="displayedFields"></div></div>
+<div class="ddet"><span class="ddets"><span class="glyphicon glyphicon-eye-open"></span>  </span></div></td>
+</tr></tbody></table>
+
+
+
+<script>
+    PostAddImages();
+</script>
+
+        <script>
+            $.ajax({
+              type: "POST",
+              url: "/api/object_set/169/summary?only_total=False",
+              data: JSON.stringify({"MapN": "", "MapW": "", "MapE": "", "MapS": "", "depthmin": "", "depthmax": "", "samples": "", "fromdate": "", "todate": "", "inverttime": "", "fromtime": "", "totime": "", "instrum": "", "month": "", "daytime": "", "validfromdate": "", "validtodate": "", "freetxt": "", "freetxtval": "", "filt_annot": "", "freenum": "", "freenumst": "", "freenumend": "", "statusfilter": "V", "taxo": "", "taxochild": "1"}),  
+              contentType: "application/json; charset=utf-8",
+              dataType: "json",
+              success: function(rsp) {
+                nbr = rsp['total_objects'];
+                if (nbr == 0) {
+                  txt_valid = "-";
+                  pct_valid = 0;
+                  pct_predict = 0;
+                  pct_dubious = 0;
+                } else {
+                  nbr_v = rsp['validated_objects'];
+                  nbr_d = rsp['dubious_objects'];
+                  nbr_p = rsp['predicted_objects'];
+                  nbr_o = nbr - nbr_v - nbr_d - nbr_p;
+                  txt_valid = '<span style="color:#0A0">'+nbr_v+' </span>,'+ 
+                              '<span style="color:#5bc0de"> '+nbr_p+' </span>,'+ 
+                              '<span style="color:#F0AD4E"> '+nbr_d+' </span>,'+
+                              '<span style="color:#888"> '+nbr_o+' </span> / '+nbr;
+                  pct_valid = Math.round(100 * nbr_v / nbr);
+                  pct_predict = Math.round(100 * nbr_p / nbr);
+                  pct_dubious = Math.round(100 * nbr_d / nbr);
+                }
+                $('#objcount').html(txt_valid);
+                $('#progress-bar-validated').css('width',pct_valid+'%');
+                $('#progress-bar-predicted').css('width',pct_predict+'%');
+                $('#progress-bar-dubious').css('width',pct_dubious+'%');
+              },
+              error: function(jqXHR, textStatus, errorThrown) {
+                $('#objcount').html('<span>'+textStatus+errorThrown+'</span>');
+              }
+            });
+        </script></div>
+  </div> 
+
+  <div id="PopupDetails" class="modal " tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        ...
+      </div>
+    </div>
+  </div>
+
+
+  
+</div>
+
+  <script>
+      (function (i, s, o, g, r, a, m) {
+          i['GoogleAnalyticsObject'] = r;
+          i[r] = i[r] || function () {
+              (i[r].q = i[r].q || []).push(arguments)
+          }, i[r].l = 1 * new Date();
+          a = s.createElement(o),
+              m = s.getElementsByTagName(o)[0];
+          a.async = 1;
+          a.src = g;
+          m.parentNode.insertBefore(a, m)
+      })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+      ga('create', 'UA-100751107-1', 'auto');
+      ga('set', 'anonymizeIp', true);
+      ga('send', 'pageview');
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+<div id="ui-datepicker-div" class="ui-datepicker ui-widget ui-widget-content ui-helper-clearfix ui-corner-all"></div></body><grammarly-desktop-integration data-grammarly-shadow-root="true"><template shadowrootmode="open"><style>
+  div.grammarly-desktop-integration {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select:none;
+    user-select:none;
+  }
+
+  div.grammarly-desktop-integration:before {
+    content: attr(data-content);
+  }
+</style><div aria-label="grammarly-integration" role="group" tabindex="-1" class="grammarly-desktop-integration" data-content="{&quot;mode&quot;:&quot;full&quot;,&quot;isActive&quot;:true,&quot;isUserDisabled&quot;:false}"></div></template></grammarly-desktop-integration></html>
