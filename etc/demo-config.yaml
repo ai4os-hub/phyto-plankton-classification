@@ -25,7 +25,7 @@ general:
           If path is relative it will be appended to the package path.
 
   images_directory:
-    value: "data/images"
+    value: "/srv/phyto-plankton-classification/data/demo-images"
     type: "str"
     help: >
           Base directory for images. If the path is relative, it will be appended to the package path.
@@ -48,7 +48,7 @@ model:
             "NASNetLarge" has been disabled as a choice as it gave compilation errors.
 
   image_size:
-    value: 224
+    value: 100
     type: "int"
     range: [32, 1000]
     help: >
@@ -75,7 +75,7 @@ model:
 
 dataset:
   mean_RGB:
-    value:
+    value: [158.33844060679408, 158.33844060679408, 158.33844060679408]
     type: "list"
     help: >
           Mean RGB value of the image dataset. If not provided it will be automatically computed before the training
@@ -83,13 +83,18 @@ dataset:
           different training configurations with the same dataset.
           Example: [122.4, 142.6, 113.8]
 
-  std_RGB:
-    value:
+  std_RGB: 
+    value: [48.89589490647217, 48.89589490647217, 48.89589490647217]
     type: "list"
     help: >
           Standard deviation of the RGB value of the image dataset. It is actually not needed for training.
           Example: [22.4, 13.9, 17.2]
 
+  split_ratios: 
+    value: [0.8, 0.1, 0.1]
+    type: "list"
+    help: >
+          Split the dataset in [training, validation, test]
 
 #####################################################
 #  Options about your training routine
@@ -183,6 +188,14 @@ training:
     help: >
           Whether to use or not early stopping. If True you have to provide a `val.txt` file in the `splits` directory.
 
+  use_multiprocessing:
+    value: False
+    type: "bool"
+    help: >
+          Whether to use or not multiple workers to do preprocess data (ie. do data augmentation)
+          faster during training. Disable it if your computing resources are scarce. Sometimes
+          multiprocessing can give errors even with enough resources.
+
 #####################################################
 #  Options about monitoring your training
 #####################################################
@@ -207,6 +220,12 @@ monitor:
 #####################################################
 
 augmentation:
+
+  use_augmentation: 
+    value: False
+    type: "bool"
+    help: >
+          Use image augmentation during the training process.
 
   train_mode:
     value:
@@ -243,6 +262,8 @@ augmentation:
             - pixel_sat ([0,1] float):  probability of randomly using HueSaturationValue in the image.
             - cutout ([0,1] float):  probability of using cutout in the image.
 
+          Use an empty dict {} in case you want to disable data augmentation.
+
   val_mode:
     value:
       h_flip: 0.5
@@ -260,12 +281,21 @@ augmentation:
           Augmentation parameters to use during the validation/testing phase. The augmentation is smaller than in the
           case of training parameters. The meaning of the parameters is the same as in the train_mode option.
 
+          Use an empty dict {} in case you want to disable data augmentation.
+
+
 
 #####################################################
 #  Options to test your model
 #####################################################
 
 testing:
+
+  use_test:
+    value: True
+    type: "bool"
+    help: >
+          Whether to use or not test. If True you have to provide a `test.txt` file in the `splits` directory.
 
   timestamp:
     value:

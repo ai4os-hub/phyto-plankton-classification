@@ -25,63 +25,71 @@ from albumentations.augmentations import transforms
 from albumentations.imgaug import transforms as imgaug_transforms
 import random
 
-# Function to create the text files
-def create_data_splits(splits_dir, im_dir, split_ratios= [0.8,0.1,0.1]):
-
-    train_txt_file=os.path.join(splits_dir,'train.txt')
-    test_txt_file =os.path.join(splits_dir,'test.txt')
-    val_txt_file=os.path.join(splits_dir,'val.txt')
-    class_txt_file=os.path.join(splits_dir,'classes.txt')
+def create_data_splits(splits_dir, im_dir, split_ratios=[0.7, 0.15, 0.15]):
+    train_txt_file = os.path.join(splits_dir, 'train.txt')
+    test_txt_file = os.path.join(splits_dir, 'test.txt')
+    val_txt_file = os.path.join(splits_dir, 'val.txt')
+    class_txt_file = os.path.join(splits_dir, 'classes.txt')
     file_paths = []
+
     for root, _, files in tqdm(os.walk(im_dir), desc="Searching files"):
         for file in tqdm(files, desc=f"Processing {root}"):
             file_path = os.path.join(root, file)
             relative_path = os.path.relpath(file_path, im_dir)
             file_paths.append(relative_path)
 
-    # Get a list of folder names within the "absence_boats" directory
+    # Get a list of folder names within the "im_dir" directory
     folder_names = next(os.walk(im_dir))[1]
 
     # Assign numbers based on the location of each folder in the list
-    folder_numbers = {}
-    index_counter = 0
+    folder_numbers = {folder_name: index for index, folder_name in enumerate(folder_names)}
 
-    for i in range(len(folder_names)):
-        if folder_names[i] != ".ipynb_checkpoints":
-            folder_numbers[folder_names[i]] = index_counter
-            index_counter += 1
+    # Count the number of files in each subfolder
+    folder_counts = {folder_name: 0 for folder_name in folder_names}
+    for file_path in file_paths:
+        folder_name = file_path.split("/")[0]  # Assuming UNIX-like path separator
+        if folder_name in folder_counts:
+            folder_counts[folder_name] += 1
 
-    # Split the boat files into training, testing, and validation sets
-    random.shuffle(file_paths)
-    num_samples = len(file_paths)
-    train_cutoff = int(num_samples * split_ratios[0])
-    test_cutoff = train_cutoff + int(num_samples * split_ratios[1])
+    # Initialize lists to keep track of files added to each split for each folder
+    train_files_by_folder = {folder_name: [] for folder_name in folder_names}
+    test_files_by_folder = {folder_name: [] for folder_name in folder_names}
+    val_files_by_folder = {folder_name: [] for folder_name in folder_names}
 
-    train_files = file_paths[:train_cutoff]
-    test_files = file_paths[train_cutoff:test_cutoff]
-    val_files = file_paths[test_cutoff:]
-#     return train_files, folder_numbers
-    # Create the training text file
-    with open(train_txt_file, 'w') as f_train:
-        for file in tqdm(train_files, desc="Writing training file"):
-            file = file.replace('\\', '/')
-            f_train.write(file + ' ' + str(folder_numbers[file.split("/")[0]]) + '\n')
+    # Split the files into training, testing, and validation sets
+    for folder_name in folder_names:
+        folder_files = [file_path for file_path in file_paths if file_path.startswith(folder_name + "/")]
+        random.shuffle(folder_files)
+        num_files = len(folder_files)
+        train_cutoff = int(num_files * split_ratios[0])
+        test_cutoff = train_cutoff + int(num_files * split_ratios[1])
 
-    # Create the testing text file
-    with open(test_txt_file, 'w') as f_test:
-        for file in tqdm(test_files, desc="Writing testing file"):
-            file = file.replace('\\', '/')
-            f_test.write(file + ' ' + str(folder_numbers[file.split("/")[0]]) + '\n')
+        train_files_by_folder[folder_name] = folder_files[:train_cutoff]
+        test_files_by_folder[folder_name] = folder_files[train_cutoff:test_cutoff]
+        val_files_by_folder[folder_name] = folder_files[test_cutoff:]
 
-    # Create the validation text file
-    with open(val_txt_file, 'w') as f_val:
-        for file in tqdm(val_files, desc="Writing validation file"):
-            file = file.replace('\\', '/')
-            f_val.write(file + ' ' + str(folder_numbers[file.split("/")[0]]) + '\n')
-    # Create the validation text file
+    # Combine files from each folder into overall train, test, and validation sets
+    train_files = [file for folder_files in train_files_by_folder.values() for file in folder_files]
+    test_files = [file for folder_files in test_files_by_folder.values() for file in folder_files]
+    val_files = [file for folder_files in val_files_by_folder.values() for file in folder_files]
+
+    # Write the file paths to text files for training, testing, and validation
+    write_text_file(train_files, train_txt_file, folder_numbers)
+    write_text_file(test_files, test_txt_file, folder_numbers)
+    write_text_file(val_files, val_txt_file, folder_numbers)
+
+    # Write the class names to a text file
     with open(class_txt_file, 'w') as f_class:
         for label in tqdm(folder_numbers, desc="Writing classes file"):
             f_class.write(str(label) + '\n')
+
+def write_text_file(file_list, file_path, folder_numbers):
+    with open(file_path, 'w') as f:
+        for file in tqdm(file_list, desc=f"Writing {file_path}"):
+            file = file.replace('\\', '/')  # Assuming UNIX-like path separator
+            f.write(file + ' ' + str(folder_numbers[file.split("/")[0]]) + '\n')
+
+
 
 def load_data_splits(splits_dir, im_dir, split_name="train"):
     """
