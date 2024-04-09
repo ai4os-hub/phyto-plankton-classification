@@ -292,12 +292,16 @@ def predict(**args):
             folder_files = os.listdir(temp_dir)
 
             # Assign the list of files to args["files"]
-            args["files"] = [os.path.join(temp_dir, file) for file in folder_files]
+            try:
+                args["files"] = [os.path.join(temp_dir, file) for file in folder_files]
+            except:
+                print("not wowrking cuzo f files")
 
             # Call predict_data function (assuming it handles a list of files)
             return predict_data(args)
     elif args["files"]:
         args["files"] = [args["files"]]  # patch until list is available
+        print(args["files"])
         return predict_data(args)
     elif args["urls"]:
         args["urls"] = [args["urls"]]  # patch until list is available
