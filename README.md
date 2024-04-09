@@ -19,14 +19,24 @@ You can find more information about it in the [iMagine Marketplace](https://dash
 1. [Installing this module](#installing-this-module)
     1. [Local installation](#local-installation)
     2. [Docker installation](#docker-installation)
-2. [Train a new image classifier](#train-an-image-classifier)
+        1. [Install docker](#11-install-docker)
+        2. [Run docker](#12-run-docker)
+        3. [Clone the directory](#13-clone-the-directory)
+        4. [Run the docker container inside the local folder](#14-run-the-docker-container-inside-the-local-folder)
+2. [Activating the module](#activating-the-module)
+    1. [Activation of the API](#activation-of-the-api)
+    2. [Activation of Jupyter notebook](#activation-of-jupyter-notebook)
+3. [Train the phyto-plankton-classifier](#train-the-phyto-plankton-classifier)
     1. [Data preprocessing](#1-data-preprocessing)
         1. [Prepare the images](#11-prepare-the-images)
         2. [Prepare the data splits](#12-prepare-the-data-splits)
-    2. [Train the classifier](#train-an-image-classifier)
-3. [Test an image classifier](#test-an-image-classifier)
-4. [More info](#more-info)
-5. [Acknowledgements](#acknowledgments)
+    2. [Train the classifier](#2-train-the-classifier)
+4. [Test an image classifier](#test-an-image-classifier)
+    1. [Option 1: Test through API](#option-1-test-through-api)
+    2. [Option 2: Follow the notebooks](#option-2-follow-the-notebooks)
+5. [More info](#more-info)
+6. [Acknowledgements](#acknowledgements)
+
 
 ## Installing this module
 
@@ -52,11 +62,7 @@ pip install -e .
 curl -o ./models/default_imagenet.tar.xz https://api.cloud.ifca.es:8080/swift/v1/imagenet-tf/default_imagenet.tar.xz #create share link from nextcloud
 cd models && tar -xf default_imagenet.tar.xz && rm default_imagenet.tar.xz
 ```
-now run DEEPaaS:
-```
-deepaas-run --listen-ip 0.0.0.0
-```
-and open http://0.0.0.0:5000/ui and look for the methods belonging to the `planktonclas` module.
+
 
 ### Install through Docker
 
@@ -123,7 +129,6 @@ Copy the location to the rclone.config location and apply the line of code
 docker run -ti -p 8888:8888 -p 5000:5000 -v "LOCATION/rclone.conf:/root/.config/rclone/rclone.conf" -v "$(pwd):/srv/phyto-plankton-classification" deephdc/uc-lifewatch-deep-oc-phyto-plankton-classification:latest /bin/bash
 ```
 
-Now open http://0.0.0.0:5000/ui and look for the methods belonging to the `planktonclas` module.
 
 ##### option 2
 Run container and only have local access
@@ -131,9 +136,32 @@ All files can be locally saved but rclone needs to be configured after activatio
 ```bash
 docker run -ti -p 8888:8888 -p 5000:5000 -v "$(pwd):/srv/phyto-plankton-classification" deephdc/uc-lifewatch-deep-oc-phyto-plankton-classification:latest /bin/bash
 ```
-Now open http://0.0.0.0:5000/ui and look for the methods belonging to the `planktonclas` module.
+
+
 
 > **Tip**: Rclone can also be configured after activation to acces nextcloud server, follow [Tutorial](https://docs.ai4eosc.eu/en/latest/user/howto/rclone.html#configuring-rclone).
+
+## Activiting the module
+### activation of the API
+now run DEEPaaS:
+```
+deepaas-run --listen-ip 0.0.0.0
+```
+and open http://0.0.0.0:5000/ui and look for the methods belonging to the `planktonclas` module.
+### activation of jupyter notebook
+```
+deep-start -j
+```
+This will automatically start the notebook. You get the following output
+
+you get the following output:
+```bash
+[I 12:34:56.789 NotebookApp]  To access the notebook, open this file in a browser:
+     file:///root/.local/share/jupyter/runtime/nbserver-1234-open.html
+[I 12:34:56.789 NotebookApp]  Or copy and paste one of these URLs:
+     http://127.0.0.1:8888/?token=your_token_here
+```
+You can this go to think link in your brower or copy this final link and use it as a kernel on your local vsc
 
 
 
