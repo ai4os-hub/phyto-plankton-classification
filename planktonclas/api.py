@@ -301,6 +301,7 @@ def predict(**args):
 
                 # Assign the list of files to args["files"]
                 args["files"] = uploaded_files
+                print(args["files"])
 
             except:
                 print("not wowrking cuzo f files")
@@ -367,10 +368,12 @@ def predict_data(args):
     Function to predict an image in binary format
     """
     # Check user configuration
+    print("updating query")
     update_with_query_conf(args)
     conf = config.conf_dict
 
     merge = True
+    print("local error")
     catch_localfile_error(args["files"])
     # print("args: ", args)
     # print("args: ", args['files'])
@@ -488,6 +491,7 @@ def populate_parser(parser, default_conf):
     """
     Returns a arg-parse like parser.
     """
+    print("popu parser")
     for group, val in default_conf.items():
         for g_key, g_val in val.items():
             gg_keys = g_val.keys()
