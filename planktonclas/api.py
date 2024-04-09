@@ -545,10 +545,17 @@ def get_predict_args():
         description="Select the image you want to classify.",
     )
 
-    parser["folder_path"] = fields.String(
+    parser["folder"] = fields.List(
+        fields.Field(
+            required=False,
+            missing=None,
+            type="file",
+            data_key="data",
+            location="form",
+            description="Select the images you want to classify.",
+        ),
         required=False,
-        missing=None,
-        description="Select the folder containing the images you want to classify.",
+        description="Select the images you want to classify.",
     )
 
     # Use field.String instead of field.Url because I also want to allow uploading of base 64 encoded data strings
