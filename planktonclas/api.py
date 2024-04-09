@@ -414,6 +414,7 @@ def predict_data(args):
 def format_prediction(labels, probabilities, original_filenames):
     if aphia_ids is not None:
         pred_aphia_ids = [aphia_ids[i] for i in labels]
+        pred_aphia_ids =[aphia_id.tolist() for aphia_id in pred_aphia_ids ]
     else:
         pred_aphia_ids= aphia_ids
     class_index_map = {index:class_name for index, class_name in enumerate(class_names)}
@@ -426,6 +427,7 @@ def format_prediction(labels, probabilities, original_filenames):
     print("pred_prob", pred_prob.tolist())
     print("aphia_ids", pred_aphia_ids)
 
+# data['aphia_ids'] = [aphia_id.tolist() for aphia_id in data['aphia_ids']]
     pred_dict = {
         "filenames": list(original_filenames),
         "pred_lab": pred_lab_names,  # Use converted list
