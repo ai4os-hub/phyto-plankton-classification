@@ -255,7 +255,6 @@ You can have more info on how to interact directly with the module (not through 
 
 
 
-Finally you can [launch a simple webpage](./planktonclas/webpage/README.md) to use the trained classifier to predict images (both local and urls) on your favorite browser.
 
 
 ## Acknowledgements
