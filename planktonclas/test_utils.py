@@ -79,8 +79,7 @@ def predict(model, X, conf, top_K=None, crop_num=10, filemode='local', merge=Fal
         lab = np.argsort(output, axis=1)[:, ::-1]  # sort labels in descending prob
         lab = lab[:, :top_K]  # keep only top_K labels
         prob = output[np.repeat(np.arange(len(lab)), lab.shape[1]),
-                      lab.flatten()].reshape(lab.shape)  # retrieve corresponding probabilities
-
+        lab.flatten()].reshape(lab.shape)  # retrieve corresponding probabilities
     return lab, prob
 
 

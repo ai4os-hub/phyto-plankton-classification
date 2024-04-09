@@ -388,7 +388,7 @@ def predict_data(args):
 
     # Create a list with the path to the images
     filenames = [f.filename for f in args["files"]]
-    original_filename = [f.original_filename for f in args["files"]]
+    original_filenames = [f.original_filename for f in args["files"]]
 
     # Make the predictions
     try:
@@ -408,21 +408,24 @@ def predict_data(args):
     if merge:
         pred_lab, pred_prob = np.squeeze(pred_lab), np.squeeze(pred_prob)
 
-    return format_prediction(pred_lab, pred_prob, original_filename)
+    return format_prediction(pred_lab, pred_prob, original_filenames)
 
 
-def format_prediction(labels, probabilities, original_filename):
+def format_prediction(labels, probabilities, original_filenames):
     if aphia_ids is not None:
         pred_aphia_ids = [aphia_ids[i] for i in labels]
     else:
         pred_aphia_ids= aphia_ids
-    pred_labels=[class_names[i] for i in labels]
+
+    class_index_map = {index:class_name for index, class_name in enumerate(class_names)}
+    pred_lab_names = [[class_index_map[label] for label in labels] for labels in labels]
+    # pred_labels=[class_names[i] for i in labels]
     pred_prob = [float(p) for p in probabilities]
 
     pred_dict = {
-        "filenames": original_filename,
-        "pred_lab": pred_labels,  # Use converted list
-        "pred_prob": pred_prob,
+        "filenames": original_filenames,
+        "pred_lab": pred_lab_names,  # Use converted list
+        "pred_prob": pred_prob.tolist(),
         "aphia_ids": pred_aphia_ids,
     }
 
