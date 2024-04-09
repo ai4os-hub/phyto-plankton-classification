@@ -266,6 +266,9 @@ def warm():
     except Exception as e:
         print(e)
 
+import zipfile
+import os
+import tempfile
 
 @catch_error
 def predict(**args):
@@ -278,16 +281,28 @@ def predict(**args):
     elif args["urls"]:
         args["urls"] = [args["urls"]]  # patch until list is available
         return predict_url(args)
-    if args["folder_path"]:
-        folder_files = []
-        for file_name in os.listdir(args["folder_path"]):
-            if os.path.isfile(os.path.join(args["folder_path"], file_name)):
-                folder_files.append(os.path.join(args["folder_path"], file_name))
-        
-        # Assign the list of files to args["files"]
-        args["files"] = folder_files
+    if args["zip"]:
+        # Check if zip file is provided
+        zip_file = args["zip"]
 
-        return predict_data(args)
+        # Create a temporary directory to extract the files
+        with tempfile.TemporaryDirectory() as temp_dir:
+            # Extract the zip file
+            with zipfile.ZipFile(zip_file, 'r') as zip_ref:
+                zip_ref.extractall(temp_dir)
+
+            # Get the list of files extracted from the zip
+            folder_files = os.listdir(temp_dir)
+
+            # Assign the list of files to args["files"]
+            args["files"] = [os.path.join(temp_dir, file) for file in folder_files]
+
+            # Call predict_data function (assuming it handles a list of files)
+            return predict_data(args)
+
+        # args["files"] = folder_files
+
+        # return predict_data(args)
 
 
 def predict_url(args):
