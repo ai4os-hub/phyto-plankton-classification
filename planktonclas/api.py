@@ -278,6 +278,16 @@ def predict(**args):
     elif args["urls"]:
         args["urls"] = [args["urls"]]  # patch until list is available
         return predict_url(args)
+    if args["folder_path"]:
+        folder_files = []
+        for file_name in os.listdir(args["folder_path"]):
+            if os.path.isfile(os.path.join(args["folder_path"], file_name)):
+                folder_files.append(os.path.join(args["folder_path"], file_name))
+        
+        # Assign the list of files to args["files"]
+        args["files"] = folder_files
+
+        return predict_data(args)
 
 
 def predict_url(args):
@@ -512,28 +522,34 @@ def get_predict_args():
         timestamp["value"] = timestamp_list[-1]
         timestamp["choices"] = timestamp_list
 
-    parser["files"] = fields.List(
-        fields.Field(
-            required=False,
-            missing=None,
-            type="file",
-            data_key="data",
-            location="form",
-            description="Select the images you want to classify.",
-        ),
-        required=False,
-        missing=None,
-        description="Select the images you want to classify.",
-    )
-    # # Add data and url fields
-    # parser["files"] = fields.Field(
+    # parser["files"] = fields.List(
+    #     fields.Field(
+    #         required=False,
+    #         missing=None,
+    #         type="file",
+    #         data_key="data",
+    #         location="form",
+    #         description="Select the images you want to classify.",
+    #     ),
     #     required=False,
     #     missing=None,
-    #     type="file",
-    #     data_key="data",
-    #     location="form",
-    #     description="Select the image you want to classify.",
+    #     description="Select the images you want to classify.",
     # )
+    # Add data and url fields
+    parser["files"] = fields.Field(
+        required=False,
+        missing=None,
+        type="file",
+        data_key="data",
+        location="form",
+        description="Select the image you want to classify.",
+    )
+
+    parser["folder_path"] = fields.String(
+        required=False,
+        missing=None,
+        description="Select the folder containing the images you want to classify.",
+    )
 
     # Use field.String instead of field.Url because I also want to allow uploading of base 64 encoded data strings
     parser["urls"] = fields.String(
