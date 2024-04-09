@@ -416,10 +416,14 @@ def format_prediction(labels, probabilities, original_filenames):
         pred_aphia_ids = [aphia_ids[i] for i in labels]
     else:
         pred_aphia_ids= aphia_ids
-    print("before")
+    print("before ")
+    print("class names ", class_names)
+    print("labels ", labels)
     class_index_map = {index:class_name for index, class_name in enumerate(class_names)}
+    print(" class map: ",class_index_map )
     pred_lab_names = [[class_index_map[label] for label in labels] for labels in labels]
     # pred_labels=[class_names[i] for i in labels]
+    print("now float")
     pred_prob = [float(p) for p in probabilities]
     print("after")
     pred_dict = {
