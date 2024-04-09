@@ -545,32 +545,33 @@ def get_predict_args():
         timestamp["value"] = timestamp_list[-1]
         timestamp["choices"] = timestamp_list
 
+    parser["files"] = fields.Field(
+        required=False,
+        missing=None,
+        type="file",
+        data_key="data",
+        location="form",
+        description="Select the image you want to classify.",
+    )
+
+    # Use field.String instead of field.Url because I also want to allow uploading of base 64 encoded data strings
+    parser["urls"] = fields.String(
+        required=False,
+        missing=None,
+        description="Select an URL of the image you want to classify.",
+    )
     # parser["files"] = fields.List(
     #     fields.Field(
     #         required=False,
     #         missing=None,
     #         type="file",
-    #         data_key="data",
+    #         data_key="files_data",  # Unique data key for files
     #         location="form",
     #         description="Select the images you want to classify.",
     #     ),
     #     required=False,
-    #     missing=None,
     #     description="Select the images you want to classify.",
     # )
-    # Add data and url fields
-    parser["files"] = fields.List(
-        fields.Field(
-            required=False,
-            missing=None,
-            type="file",
-            data_key="files_data",  # Unique data key for files
-            location="form",
-            description="Select the images you want to classify.",
-        ),
-        required=False,
-        description="Select the images you want to classify.",
-    )
 
     parser["zip"] = fields.Field(
         required=False,
@@ -581,11 +582,11 @@ def get_predict_args():
         description="Select the ZIP file containing images you want to classify.",
     )
 
-    parser["urls"] = fields.String(
-        required=False,
-        missing=None,
-        description="Select an URL of the image you want to classify.",
-    )
+    # parser["urls"] = fields.String(
+    #     required=False,
+    #     missing=None,
+    #     description="Select an URL of the image you want to classify.",
+    # )
 
     # missing action="append" --> append more than one url
 
