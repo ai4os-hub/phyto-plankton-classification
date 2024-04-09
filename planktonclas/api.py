@@ -416,23 +416,23 @@ def format_prediction(labels, probabilities, original_filenames):
         pred_aphia_ids = [aphia_ids[i] for i in labels]
     else:
         pred_aphia_ids= aphia_ids
-    print("before ")
-    print("class names ", class_names)
-    print("labels ", labels)
     class_index_map = {index:class_name for index, class_name in enumerate(class_names)}
-    print(" class map: ",class_index_map )
     pred_lab_names = [[class_index_map[label] for label in labels] for labels in labels]
     # pred_labels=[class_names[i] for i in labels]
-    print("now float",probabilities)
     pred_prob = probabilities
-    print("after")
+
+    print("filenames",list(original_filenames) )
+    print("pred_lab",pred_lab_names )
+    print("pred_prob", pred_prob.tolist())
+    print("aphia_ids", pred_aphia_ids)
+
     pred_dict = {
-        "filenames": original_filenames,
+        "filenames": list(original_filenames),
         "pred_lab": pred_lab_names,  # Use converted list
         "pred_prob": pred_prob.tolist(),
         "aphia_ids": pred_aphia_ids,
     }
-
+    print(pred_dict)
     conf = config.conf_dict
     ckpt_name = conf["testing"]["ckpt_name"]
     split_name = "test"
