@@ -366,12 +366,11 @@ def predict_data(args):
     Function to predict an image in binary format
     """
     # Check user configuration
-    print("updating query")
     update_with_query_conf(args)
     conf = config.conf_dict
 
     merge = False
-    print("local error")
+
     catch_localfile_error(args["files"])
     # print("args: ", args)
     # print("args: ", args['files'])
@@ -393,6 +392,7 @@ def predict_data(args):
     # Make the predictions
     try:
         with graph.as_default():
+            print("predicting")
             pred_lab, pred_prob = test_utils.predict(model=model,
                                                     X=filenames,
                                                     conf=conf,
@@ -416,12 +416,12 @@ def format_prediction(labels, probabilities, original_filenames):
         pred_aphia_ids = [aphia_ids[i] for i in labels]
     else:
         pred_aphia_ids= aphia_ids
-
+    print("before")
     class_index_map = {index:class_name for index, class_name in enumerate(class_names)}
     pred_lab_names = [[class_index_map[label] for label in labels] for labels in labels]
     # pred_labels=[class_names[i] for i in labels]
     pred_prob = [float(p) for p in probabilities]
-
+    print("after")
     pred_dict = {
         "filenames": original_filenames,
         "pred_lab": pred_lab_names,  # Use converted list
@@ -436,7 +436,7 @@ def format_prediction(labels, probabilities, original_filenames):
         paths.get_predictions_dir(),
         "{}+{}+top{}.json".format(ckpt_name, split_name, top_K),
     )
-
+    print("json")
     with open(pred_path, "w") as outfile:
         json.dump(pred_dict, outfile, sort_keys=True)
 
