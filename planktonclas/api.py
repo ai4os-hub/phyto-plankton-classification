@@ -392,7 +392,6 @@ def predict_data(args):
     # Make the predictions
     try:
         with graph.as_default():
-            print("predicting")
             pred_lab, pred_prob = test_utils.predict(model=model,
                                                     X=filenames,
                                                     conf=conf,
@@ -422,19 +421,12 @@ def format_prediction(labels, probabilities, original_filenames):
     # pred_labels=[class_names[i] for i in labels]
     pred_prob = probabilities
 
-    print("filenames",list(original_filenames) )
-    print("pred_lab",pred_lab_names )
-    print("pred_prob", pred_prob.tolist())
-    print("aphia_ids", pred_aphia_ids)
-
-# data['aphia_ids'] = [aphia_id.tolist() for aphia_id in data['aphia_ids']]
     pred_dict = {
         "filenames": list(original_filenames),
         "pred_lab": pred_lab_names,  # Use converted list
         "pred_prob": pred_prob.tolist(),
         "aphia_ids": pred_aphia_ids,
     }
-    print(pred_dict)
     conf = config.conf_dict
     ckpt_name = conf["testing"]["ckpt_name"]
     split_name = "test"
@@ -442,7 +434,6 @@ def format_prediction(labels, probabilities, original_filenames):
         paths.get_predictions_dir(),
         "{}+{}+top{}.json".format(ckpt_name, split_name, top_K),
     )
-    print("json")
     with open(pred_path, "w") as outfile:
         json.dump(pred_dict, outfile, sort_keys=True)
 

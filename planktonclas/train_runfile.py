@@ -235,6 +235,7 @@ def train_fn(TIMESTAMP, CONF):
 
         if aphia_ids is not None:
             pred_aphia_ids = [aphia_ids[i] for i in pred_lab]
+            pred_aphia_ids =[aphia_id.tolist() for aphia_id in pred_aphia_ids ]
         else:
             pred_aphia_ids= aphia_ids
 
