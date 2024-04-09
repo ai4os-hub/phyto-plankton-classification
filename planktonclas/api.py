@@ -287,7 +287,9 @@ def predict(**args):
         with tempfile.TemporaryDirectory() as temp_dir:
             # Extract the zip file
             print("extractinz ip")
-            with zipfile.ZipFile(zip_file, 'r') as zip_ref:
+            print(zip_ref)
+            print(zip_ref.filename)
+            with zipfile.ZipFile(zip_file.filename, 'r') as zip_ref:
                 zip_ref.extractall(temp_dir)
 
             # Get the list of files extracted from the zip
