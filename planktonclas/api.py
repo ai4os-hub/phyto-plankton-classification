@@ -280,15 +280,11 @@ def predict(**args):
 
     if args["zip"]:
         # Check if zip file is provided
-        print("zip starter")
         zip_file = args["zip"]
 
         # Create a temporary directory to extract the files
         with tempfile.TemporaryDirectory() as temp_dir:
             # Extract the zip file
-            print("extractinz ip")
-            print(zip_file)
-            print(zip_file.filename)
             with zipfile.ZipFile(zip_file.filename, 'r') as zip_ref:
                 zip_ref.extractall(temp_dir)
 
@@ -296,19 +292,17 @@ def predict(**args):
             folder_files = os.listdir(temp_dir)
 
             # Assign the list of files to args["files"]
-            try:
-                
-                uploaded_files = []
-                for file in folder_files:
-                    file_path = os.path.join(temp_dir, file)
-                    uploaded_files.append(UploadedFile(name='data', filename=file_path, content_type='image/jpeg', original_filename=file))
 
-                # Assign the list of files to args["files"]
-                args["files"] = uploaded_files
-                print(args["files"])
+            uploaded_files = []
+            for file in folder_files:
+                file_path = os.path.join(temp_dir, file)
+                uploaded_files.append(UploadedFile(name='data', filename=file_path, content_type='image/jpeg', original_filename=file))
 
-            except:
-                print("not wowrking cuzo f files")
+            # Assign the list of files to args["files"]
+            args["files"] = uploaded_files
+
+
+
 
             # Call predict_data function (assuming it handles a list of files)
             return predict_data(args)
@@ -376,7 +370,7 @@ def predict_data(args):
     update_with_query_conf(args)
     conf = config.conf_dict
 
-    merge = True
+    merge = False
     print("local error")
     catch_localfile_error(args["files"])
     # print("args: ", args)
@@ -576,18 +570,7 @@ def get_predict_args():
         missing=None,
         description="Select an URL of the image you want to classify.",
     )
-    # parser["files"] = fields.List(
-    #     fields.Field(
-    #         required=False,
-    #         missing=None,
-    #         type="file",
-    #         data_key="files_data",  # Unique data key for files
-    #         location="form",
-    #         description="Select the images you want to classify.",
-    #     ),
-    #     required=False,
-    #     description="Select the images you want to classify.",
-    # )
+
 
     parser["zip"] = fields.Field(
         required=False,
@@ -598,13 +581,6 @@ def get_predict_args():
         description="Select the ZIP file containing images you want to classify.",
     )
 
-    # parser["urls"] = fields.String(
-    #     required=False,
-    #     missing=None,
-    #     description="Select an URL of the image you want to classify.",
-    # )
-
-    # missing action="append" --> append more than one url
 
     return populate_parser(parser, default_conf)
 
