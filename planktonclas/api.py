@@ -423,7 +423,7 @@ def format_prediction(labels, probabilities, original_filenames):
     print(" class map: ",class_index_map )
     pred_lab_names = [[class_index_map[label] for label in labels] for labels in labels]
     # pred_labels=[class_names[i] for i in labels]
-    print("now float": probabilities)
+    print("now float",probabilities)
     pred_prob = probabilities
     print("after")
     pred_dict = {
