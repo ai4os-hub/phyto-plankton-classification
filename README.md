@@ -82,7 +82,7 @@ run this module. To run it:
 ##### option 1
 Run container and activate acess to nextcloud server through rclone.
 
-If you rclone credentials (see [Tutorial](https://docs.ai4eosc.eu/en/latest/user/howto/rclone.html#configuring-rclone)) from the [NEXTCLOUD](https://data-deep.a.incd.pt/) server, you can also create a direct link to these credentials through one line of code. 
+If you rclone the credentials (see [Tutorial](https://docs.ai4eosc.eu/en/latest/user/howto/rclone.html#configuring-rclone)) from the [NEXTCLOUD](https://share.services.ai4os.eu/index.php/apps/dashboard/) server, you can also create a direct link to these credentials through one line of code. 
 
 First, install it directly on your machine:
 ```bash
@@ -151,14 +151,14 @@ The model needs to be able to access the images. So you have to place your image
 Please use a standard image format (like `.png` or `.jpg`). 
 
 You can copy the images to 'phyto-plankton-classification/data/images' folder on your pc. 
-If the images are on nextcloud, you can one of the next steps depending if you have Rclone or not. 
+If the images are on nextcloud, you can one of the next steps depending if you have rclone or not. 
 
-##### option 1: follow-up
+##### option 1: follow-up (you haver rclone)
 
 If you followed [option 1](#option-1), you can rclone your data from nextcloud. This will be the fastest way.
 
 ```bash
-rclone copy rshare:/some/remote/path /some/local/path
+rclone copy /storage/some/remote/path /storage/local/path
 rclone copy /storage/Imagine_UC5/data/images /srv/phyto-plankton-classification/data/images
 ```
 
@@ -166,7 +166,7 @@ rclone copy /storage/Imagine_UC5/data/images /srv/phyto-plankton-classification/
 
 If you followed [option 2](#option-2) and don't have rclone credentials, you can change the images_directory in the config file. You can for example change so so it points to the nextcloud directory. By doing so, you don't need to copy the files but it will take a bit longer to compute.
 
-You can change the config file directly as shown below, or you can change it when running the 
+You can change the config file directly as shown below, or you can change it when running the api.
 
 ```bash
   images_directory:
@@ -177,7 +177,7 @@ You can change the config file directly as shown below, or you can change it whe
 ```
 
 
-#### 1.2 Prepare the data splits
+#### 1.2 Prepare the data splits (optional)
 
 Next, you need add to the `./data/dataset_files` directory the following files:
 
@@ -193,20 +193,29 @@ Finally the `info.txt` allows you to provide information (like number of images 
 
 You can find examples of these files at  `./data/demo-dataset_files`.
 
+If you don't want to create your own datasplit, this will be done automatically for you with a 80% train, 10% validation, and 10% test split.
+
 ### 2. Train the classifier
 
 > **Tip**: Training is usually depend on the training args you use. Although the default ones work reasonable well,
 > you can explore how to modify them with the [dataset exploration notebook](./notebooks/1.0-Dataset_exploration.ipynb).
 
+There are two options two train:
+#### option 1: train through api
 Go to http://0.0.0.0:5000/ui and look for the ``TRAIN`` POST method. Click on 'Try it out', change whatever training args
 you want and click 'Execute'. The training will be launched and you will be able to follow its status by executing the 
 ``TRAIN`` GET method which will also give a history of all trainings previously executed.
 
 You can follow the training monitoring (Tensorboard) on http://0.0.0.0:6006.
-
-
+#### option 2: Follow the notebooks 
+Follow the notebook for [Model training](./notebooks/2.0-Model_training) and train the [train_runfile.py](./plankton/train_runfile.py)  based on [yaml file](/etc/config.yaml) file.
+```bash
+python phyto-plankton-classification/planktonclas/train_runfile.py 
+```
 ## Test an image classifier
+There are again two options to predict a plankton species:
 
+#### option 1: train through api
 Go to http://0.0.0.0:5000/ui and look for the `PREDICT` POST method. Click on 'Try it out', change whatever test args
 you want and click 'Execute'. You can **either** supply a:
 
@@ -215,6 +224,10 @@ you want and click 'Execute'. You can **either** supply a:
 OR
 * a `url` argument with an URL pointing to an image.
   Here is an [example](https://forum.mikroscopia.com/uploads/monthly_07_2017/post-2056-0-71322100-1501364951_thumb.jpg) of such an url that you can use for testing purposes.
+
+#### option 2: Follow the notebooks 
+Follow the notebook for [computing the predictions](./notebooks/3.0-Computing_predictions.ipynb)
+Make sure to select DEMO or not if you want to predict your own data of the demo data as an example.
 
 
 ## More info

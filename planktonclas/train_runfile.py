@@ -30,7 +30,7 @@ from datetime import datetime
 import numpy as np
 import tensorflow as tf
 import tensorflow.keras.backend as K
-from planktonclas.data_utils import create_data_splits, load_data_splits, compute_meanRGB, compute_classweights, load_class_names, data_sequence, \
+from planktonclas.data_utils import create_data_splits, load_data_splits, compute_meanRGB, compute_classweights, load_class_names, data_sequence, load_aphia_ids, \
     json_friendly, k_crop_data_sequence
 from planktonclas import paths, config, model_utils, utils
 from planktonclas.optimizers import customAdam
@@ -89,7 +89,7 @@ def train_fn(TIMESTAMP, CONF):
 
     # Load the class names
     class_names = load_class_names(splits_dir=paths.get_ts_splits_dir())
-
+    aphia_ids = load_aphia_ids(splits_dir=paths.get_ts_splits_dir())
     # Update the configuration
     CONF['model']['preprocess_mode'] = model_utils.model_modes[CONF['model']['modelname']]
     CONF['training']['batch_size'] = min(CONF['training']['batch_size'], len(X_train))
@@ -159,13 +159,9 @@ def train_fn(TIMESTAMP, CONF):
                                         lr_mult=0.1,
                                         excluded_vars=top_vars
                                         ),
-                  loss='categorical_crossentropy',
-                  metrics=[Accuracy(name='accuracy'),
-                           Precision(name='precision'),
-                           Recall(name='recall'),
-                           AUC(name='auc'),
-                           model_utils.f1_metric   # Custom F1 Score Metric
-                       ])
+                    loss='categorical_crossentropy',
+                    metrics=['accuracy'])
+
 
     history = model.fit_generator(generator=train_gen,
                                   steps_per_epoch=train_steps,
@@ -236,12 +232,27 @@ def train_fn(TIMESTAMP, CONF):
         lab.flatten()].reshape(lab.shape)  # retrieve corresponding probabilities
 
         pred_lab, pred_prob = lab, prob
+
+        if aphia_ids is not None:
+            pred_aphia_ids = [aphia_ids[i] for i in pred_lab]
+        else:
+            pred_aphia_ids= aphia_ids
+
+        class_index_map = {index:class_name for index, class_name in enumerate(class_names)}
+
+        # Convert arrays of strings to lists of integers
+        pred_lab_names = [[class_index_map[label] for label in labels] for labels in pred_lab]
+        y_test_names=[class_index_map.get(index) for index in y_test]
+
+
         # Save the predictions
         pred_dict = {'filenames': list(X_test),
                      'pred_lab': pred_lab.tolist(),
-                     'pred_prob': pred_prob.tolist()}
+                     'pred_prob': pred_prob.tolist(),
+                    'pred_lab_names': pred_lab_names}
         if y_test is not None:
             pred_dict['true_lab'] = y_test.tolist()
+            pred_dict['true_lab_names'] = y_test_names
 
         pred_path = os.path.join(paths.get_predictions_dir(), '{}+{}+top{}.json'.format('final_model.h5', 'DS_split', top_K))
         with open(pred_path, 'w') as outfile:
