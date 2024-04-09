@@ -269,7 +269,7 @@ def warm():
 import zipfile
 import os
 import tempfile
-
+from deepaas.model.v2.wrapper import UploadedFile
 @catch_error
 def predict(**args):
     if not any([args["urls"], args["files"], args["zip"]]):
@@ -293,7 +293,15 @@ def predict(**args):
 
             # Assign the list of files to args["files"]
             try:
-                args["files"] = [os.path.join(temp_dir, file) for file in folder_files]
+                
+                uploaded_files = []
+                for file in folder_files:
+                    file_path = os.path.join(temp_dir, file)
+                    uploaded_files.append(UploadedFile(name='data', filename=file_path, content_type='image/jpeg', original_filename=file))
+
+                # Assign the list of files to args["files"]
+                args["files"] = uploaded_files
+
             except:
                 print("not wowrking cuzo f files")
 
