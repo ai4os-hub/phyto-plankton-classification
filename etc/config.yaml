@@ -75,20 +75,20 @@ model:
 
 dataset:
   mean_RGB:
-    value: [158.33844060679408, 158.33844060679408, 158.33844060679408]
+    value: 
     type: "list"
     help: >
           Mean RGB value of the image dataset. If not provided it will be automatically computed before the training
           starts. Computing it can be quite time consuming, so it is useful to provide it if one if wishing to try
           different training configurations with the same dataset.
-          Example: [122.4, 142.6, 113.8]
+          Example: [158.33844060679408, 158.33844060679408, 158.33844060679408]
 
   std_RGB: 
-    value: [48.89589490647217, 48.89589490647217, 48.89589490647217]
+    value: 
     type: "list"
     help: >
           Standard deviation of the RGB value of the image dataset. It is actually not needed for training.
-          Example: [22.4, 13.9, 17.2]
+          Example: [48.89589490647217, 48.89589490647217, 48.89589490647217]
 
   split_ratios: 
     value: [0.8, 0.1, 0.1]
