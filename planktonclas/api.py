@@ -43,7 +43,10 @@ from planktonclas.data_utils import (
     mount_nextcloud,
 )
 from planktonclas.train_runfile import train_fn
-
+import zipfile
+import os
+import tempfile
+from deepaas.model.v2.wrapper import UploadedFile
 
 # TODO: Move to proper marshalling for arguments
 # The point is that some fields need additional information than the one that is contained in the config.yaml
@@ -266,10 +269,7 @@ def warm():
     except Exception as e:
         print(e)
 
-import zipfile
-import os
-import tempfile
-from deepaas.model.v2.wrapper import UploadedFile
+
 @catch_error
 def predict(**args):
     if not any([args["urls"], args["files"], args["zip"]]):
