@@ -96,6 +96,7 @@ dataset:
     help: >
           Split the dataset in [training, validation, test]
 
+
 #####################################################
 #  Options about your training routine
 #####################################################
@@ -181,6 +182,13 @@ training:
     type: "bool"
     help: >
           Whether to use or not validation. If True you have to provide a `val.txt` file in the `splits` directory.
+
+
+  use_test:
+    value: True
+    type: "bool"
+    help: >
+          Whether to use or not test. If True you have to provide a `test.txt` file in the `splits` directory.
 
   use_early_stopping:
     value: False
@@ -290,21 +298,45 @@ augmentation:
 #####################################################
 
 testing:
-
-  use_test:
-    value: True
-    type: "bool"
+  file_location:
+    value: 
+    type: "str"
     help: >
-          Whether to use or not test. If True you have to provide a `test.txt` file in the `splits` directory.
+      Select the folder of the images you want to classify. For example: /storage/.../images_to_be_predicted
 
   timestamp:
-    value:
+    value: 
     type: "str"
     help: >
       Model timestamp to use for prediction.
-
+      
   ckpt_name:
     value: "final_model.h5"
     type: "str"
     help: >
       Checkpoint inside the timestamp to use for prediction.
+
+  output_directory:
+    value: "/srv/somewhere"
+    type: "str"
+    help: >
+      Location where to save the predictions. If empty, will save in mother folder of file_location folder.
+
+  image:
+    value: 
+    type: "file"
+    help: >
+      Select the image you want to classify.
+
+  zip:
+    value: 
+    type: "file"
+    help: >
+      Select the ZIP file containing images you want to classify.
+
+  urls:
+    value: 
+    type: "str"
+    help: >
+      Select a URL of the image you want to classify.
+

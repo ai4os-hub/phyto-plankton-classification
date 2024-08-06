@@ -36,9 +36,9 @@ def create_pred_path(save_path, dir="", weighted=False,**kwargs):
     """
     value = next(iter(kwargs.values()))
     if weighted:
-        pred_path = save_path or os.path.join(paths.get_timestamped_dir(), "results",dir, "confusion_weighted")
+        pred_path = save_path or os.path.join(paths.get_results_dir(),dir, "confusion_weighted")
     else:
-        pred_path = save_path or os.path.join(paths.get_timestamped_dir(), "results",dir,  value)
+        pred_path = save_path or os.path.join(paths.get_results_dir(),dir,  value)
     
     os.makedirs(pred_path, exist_ok=True)
     return pred_path

@@ -48,14 +48,9 @@ import os
 import tempfile
 from deepaas.model.v2.wrapper import UploadedFile
 
-# TODO: Move to proper marshalling for arguments
-# The point is that some fields need additional information than the one that is contained in the config.yaml
-# --> define an example for each arg in the config.yaml --> create the schema for that arg
-# type_map = {'int': fields.Int, 'str': fields.Str, 'float': fields.Float, 'dict': fields.Dict,
-#             'bool': fields.Bool, 'list': fields.List}
-# field_type = type_map.get(g_val['type'], fields.Field)
-# parser[g_key] = field_type(**opt_args)
-# --> another option is to add a marshmallow schema to each config args
+
+import glob
+
 NOW = str("{:%Y_%m_%d_%H_%M_%S}".format(datetime.now()))
 # print(NOW, ": Starting the process")
 # Mount NextCloud folders (if NextCloud is available)
@@ -269,14 +264,36 @@ def warm():
     except Exception as e:
         print(e)
 
+def prepare_files(directory):
+    """
+    Prepare a list of dictionaries with attributes mimicking UploadedFile from image files in the directory.
+
+    :param directory: The directory to search for image files.
+    :return: A list of dictionaries with attributes similar to UploadedFile.
+    """
+    # Get all image files from the directory with given extensions
+    extensions = ['*.jpg', '*.png', '*.jpeg']
+    files = []
+    for ext in extensions:
+        files.extend(glob.glob(os.path.join(directory, ext)))
+
+    # Create a list of dictionaries with attributes similar to UploadedFile
+    uploaded_files = []
+    for file_path in files:
+        file_name = os.path.basename(file_path)  # Extract the filename from the path
+        uploaded_files.append(UploadedFile(
+            name='data',
+            filename=file_path,
+            content_type='image/jpeg',  # Adjust if necessary based on file type
+            original_filename=file_name
+        ))
+    return uploaded_files
+
 
 @catch_error
 def predict(**args):
-    if not any([args["urls"], args["files"], args["zip"]]):
-        raise Exception("You must provide either 'urls', 'files', or 'zip' in the payload")
-
-    # if not any([args["urls"], args["files"]]) or all([args["urls"], args["files"]]):
-    #     raise Exception("You must provide either 'url' or 'data' in the payload")
+    if not any([args["image"], args["zip"],args["file_location"]]):
+        raise Exception("You must provide either 'urls', 'image','file_location' or 'zip' in the payload")
 
     if args["zip"]:
         # Check if zip file is provided
@@ -301,64 +318,19 @@ def predict(**args):
             # Assign the list of files to args["files"]
             args["files"] = uploaded_files
 
-
+            raise RuntimeError("zipped ",uploaded_files)
 
 
             # Call predict_data function (assuming it handles a list of files)
             return predict_data(args)
-    elif args["files"]:
-        args["files"] = [args["files"]]  # patch until list is available
+    elif args["image"]:
+        args["files"] = [args["image"]]  # patch until list is available
         print(args["files"])
         return predict_data(args)
-    elif args["urls"]:
-        args["urls"] = [args["urls"]]  # patch until list is available
-        return predict_url(args)
+    else:
+        args["files"]=prepare_files(args["file_location"])
+        return predict_data(args)
 
-
-        # args["files"] = folder_files
-
-        # return predict_data(args)
-
-
-def predict_url(args):
-    """
-    Function to predict an url
-    """
-    # Check user configuration
-    update_with_query_conf(args)
-    conf = config.conf_dict
-
-    merge = True
-    catch_url_error(args["urls"])
-
-    # Load model if needed
-    if (
-        loaded_ts != conf["testing"]["timestamp"]
-        or loaded_ckpt != conf["testing"]["ckpt_name"]
-    ):
-        load_inference_model(
-            timestamp=conf["testing"]["timestamp"],
-            ckpt_name=conf["testing"]["ckpt_name"],
-        )
-        conf = config.conf_dict
-
-    # Make the predictions
-    with graph.as_default():
-
-        pred_lab, pred_prob = test_utils.predict(
-            model=model,
-            X=args["urls"],
-            conf=conf,
-            top_K=top_K,
-            filemode="url",
-            merge=merge,
-            use_multiprocessing=False,
-        )  # safer to avoid memory fragmentation in failed queries
-
-    if merge:
-        pred_lab, pred_prob = np.squeeze(pred_lab), np.squeeze(pred_prob)
-
-    return format_prediction(pred_lab, pred_prob)
 
 
 def predict_data(args):
@@ -370,11 +342,8 @@ def predict_data(args):
     conf = config.conf_dict
 
     merge = False
-
     catch_localfile_error(args["files"])
-    # print("args: ", args)
-    # print("args: ", args['files'])
-    # Load model if needed
+
     if (
         loaded_ts != conf["testing"]["timestamp"]
         or loaded_ckpt != conf["testing"]["ckpt_name"]
@@ -384,11 +353,9 @@ def predict_data(args):
             ckpt_name=conf["testing"]["ckpt_name"],
         )
         conf = config.conf_dict
-
     # Create a list with the path to the images
     filenames = [f.filename for f in args["files"]]
     original_filenames = [f.original_filename for f in args["files"]]
-
     # Make the predictions
     try:
         with graph.as_default():
@@ -437,32 +404,11 @@ def format_prediction(labels, probabilities, original_filenames):
     with open(pred_path, "w") as outfile:
         json.dump(pred_dict, outfile, sort_keys=True)
 
-    # try:
-    #     mount_nextcloud(pred_path, "rshare:Imagine_UC5/predictions")
-    #     print("Mount predictions from local to nextcloud successful!")
-    # except Exception as e:
-    #     print("Final loading not successful: ", e)
 
     return pred_dict
 
 
-def image_link(pred_lab):
-    """
-    Return link to Google images
-    """
-    base_url = "https://www.google.es/search?"
-    params = {"tbm": "isch", "q": pred_lab}
-    link = base_url + requests.compat.urlencode(params)
-    return link
 
-
-def wikipedia_link(pred_lab):
-    """
-    Return link to wikipedia webpage
-    """
-    base_url = "https://en.wikipedia.org/wiki/"
-    link = base_url + pred_lab.replace(" ", "_")
-    return link
 
 
 def train(**args):
@@ -476,11 +422,6 @@ def train(**args):
     K.clear_session()  # remove the model loaded for prediction
     train_fn(TIMESTAMP=timestamp, CONF=CONF)
 
-    # Sync with NextCloud folders (if NextCloud is available)
-    try:
-        mount_nextcloud(paths.get_models_dir(), "rshare:/models")
-    except Exception as e:
-        print(e)
 
     return {"modelname": timestamp}
 
@@ -555,20 +496,13 @@ def get_predict_args():
         timestamp["value"] = timestamp_list[-1]
         timestamp["choices"] = timestamp_list
 
-    parser["files"] = fields.Field(
+    parser["image"] = fields.Field(
         required=False,
         missing=None,
         type="file",
-        data_key="data",
+        data_key="image",
         location="form",
         description="Select the image you want to classify.",
-    )
-
-    # Use field.String instead of field.Url because I also want to allow uploading of base 64 encoded data strings
-    parser["urls"] = fields.String(
-        required=False,
-        missing=None,
-        description="Select an URL of the image you want to classify.",
     )
 
 
@@ -580,8 +514,24 @@ def get_predict_args():
         location="form",
         description="Select the ZIP file containing images you want to classify.",
     )
+    
+    
+    parser["file_location"] = fields.Field(
+        required=False,
+        missing=None,
+        data_key="file_location",
+        location="form",
+        description="Select the folder of the images you want to classify. For example: /srv/phyto-plankton-classification/data/demo-images/Actinoptychus",
+    )
+        
 
-
+    # Use field.String instead of field.Url because I also want to allow uploading of base 64 encoded data strings
+    parser["urls"] = fields.String(
+        required=False,
+        missing=None,
+        description="Select an URL of the image you want to classify.",
+    )
+    
     return populate_parser(parser, default_conf)
 
 

@@ -68,7 +68,19 @@ def get_ts_splits_dir():
 
 
 def get_predictions_dir():
-    return os.path.join(get_timestamped_dir(), "predictions")
+    file_location = CONF['testing']['file_location']
+    output_directory = CONF['testing']['output_directory']
+    if output_directory=="/srv/somewhere":
+        output_directory= None
+    if file_location is None:
+        if output_directory is None:
+            # Define your get_timestamped_dir() function accordingly
+            return os.path.join(get_timestamped_dir(), "predictions")
+        else:
+            return os.path.join(output_directory)
+    else:
+        return os.path.join(os.path.dirname(file_location), "predictions")
+
 
 def get_results_dir():
     return os.path.join(get_timestamped_dir(), "results")
