@@ -59,9 +59,10 @@ apt-get update && apt-get install -y libgl1
 git clone https://github.com/lifewatch/phyto-plankton-classification
 cd phyto-plankton-classification
 pip install -e .
-curl -o ./models/default_imagenet.tar.xz https://api.cloud.ifca.es:8080/swift/v1/imagenet-tf/default_imagenet.tar.xz #create share link from nextcloud
-cd models && tar -xf default_imagenet.tar.xz && rm default_imagenet.tar.xz
+curl -o ./models/phytoplankton_vliz.tar.xz https://share.services.ai4os.eu/index.php/s/rJQPQtBReqHAPf3/download #create share link from nextcloud
+cd models && tar -xf phytoplankton_vliz.tar.xz && rm phytoplankton_vliz.tar.xz
 ```
+
 
 
 ### Install through Docker

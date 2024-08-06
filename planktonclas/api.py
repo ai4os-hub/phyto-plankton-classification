@@ -525,13 +525,6 @@ def get_predict_args():
     )
         
 
-    # Use field.String instead of field.Url because I also want to allow uploading of base 64 encoded data strings
-    parser["urls"] = fields.String(
-        required=False,
-        missing=None,
-        description="Select an URL of the image you want to classify.",
-    )
-    
     return populate_parser(parser, default_conf)
 
 
