@@ -17,15 +17,28 @@ FROM tensorflow/tensorflow:${tag}
 
 LABEL maintainer='Ignacio Heredia (CSIC), Wout Decrop (VLIZ)'
 LABEL version='0.1.0'
+# Add container's metadata to appear along the models metadata
+ENV CONTAINER_MAINTAINER "Wout Decrop <wout.decrop@vliz.be>"
+ENV CONTAINER_VERSION "0.1"
+ENV CONTAINER_DESCRIPTION "AI4OS/DEEP as a Service Container: Phyto-Plankton Classification"
 # Identify the species level of Plankton for 95 classes. Working on OSCAR
 
 # What user branch to clone [!]
 ARG branch=main
 
+ARG DEBIAN_FRONTEND=noninteractive
+
+# 2024: need to re-add GPG keys for Nvidia repos but only in the case of GPU images
+# Note for GPU build: see https://askubuntu.com/questions/1444943/nvidia-gpg-error-the-following-signatures-couldnt-be-verified-because-the-publi
+RUN if [[ "$tag" =~ "-gpu" ]]; then \
+    apt-key del 7fa2af80 ; \
+    curl https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/3bf863cc.pub | apt-key add - ; \
+    curl https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64/7fa2af80.pub | apt-key add - ; fi
+
+
 # Install Ubuntu packages
 # - gcc is needed in Pytorch images because deepaas installation might break otherwise (see docs) (it is already installed in tensorflow images)
-RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
-    apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get install -y --no-install-recommends \
         gcc \
         git \
         curl \

@@ -535,13 +535,13 @@ def get_metadata(distribution_name="planktonclas"):
 
     pkg = pkg_resources.get_distribution(distribution_name)
     meta = {
-        "Name": None,
-        "Version": None,
-        "Summary": None,
-        "Home-page": None,
-        "Author": None,
-        "Author-email": None,
-        "License": None,
+        "name": None,
+        "version": None,
+        "summary": None,
+        "home-page": None,
+        "author": None,
+        "author-email": None,
+        "license": None,
     }
 
     for line in pkg.get_metadata_lines("PKG-INFO"):
