@@ -36,7 +36,7 @@ jobs:
           # YOU SHOULD UPDATE THIS LINE
           #########################################################
 
-          UPSTREAM_REPO=https://github.com/lifewatch/phyto-plankton-classification.git
+          UPSTREAM_REPO=https://github.com/ai4os-hub/phyto-plankton-classification.git
 
           #########################################################
 

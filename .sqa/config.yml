@@ -1,0 +1,31 @@
+# .sqa/config.yml - jenkins-pipeline-library configuration file
+sqa_criteria:
+  qc_style:
+    repos:
+      phyto-plankton-classification:
+        container: thisrepo-testing
+        tox:
+          tox_file: tox.ini
+          testenv:
+            - qc.sty
+  qc_coverage:
+    repos:
+      phyto-plankton-classification:
+        container: thisrepo-testing
+        tox:
+          tox_file: tox.ini
+          testenv:
+            - qc.cov
+  qc_security:
+    repos:
+      phyto-plankton-classification:
+        container: thisrepo-testing
+        tox:
+          tox_file: tox.ini
+          testenv:
+            - qc.sec
+
+environment:
+  LANG: C.UTF-8
+
+timeout: 600

@@ -1,7 +1,6 @@
-DEEP Open Catalogue: Image classification
+AI4OS/DEEP Open Catalogue: Image classification
 =========================================
-
-[![Build Status](https://jenkins.indigo-datacloud.eu/buildStatus/icon?job=Pipeline-as-code%2FDEEP-OC-org%2FUC-lifewatch-phyto-plankton-classification%2Fmaster)](https://jenkins.indigo-datacloud.eu/job/Pipeline-as-code/job/DEEP-OC-org/job/UC-lifewatch-phyto-plankton-classification/job/master/)
+[![Build Status](https://jenkins.services.ai4os.eu/buildStatus/icon?job=AI4OS-hub/phyto-plankton-classification/main)](https://jenkins.services.ai4os.eu/job/AI4OS-hub/job/phyto-plankton-classification/job/main/)
 
 
 **Author:** [Ignacio Heredia & Wout Decrop](https://github.com/IgnacioHeredia) (CSIC & VLIZ)
@@ -13,7 +12,7 @@ received funding from the European Union’s Horizon 2020 research and innovatio
 
 This is a plug-and-play tool to train and evaluate an phytoplankton classifier on a custom dataset using deep neural networks.
 
-You can find more information about it in the [iMagine Marketplace](https://dashboard.cloud.imagine-ai.eu/marketplace/modules/uc-lifewatch-deep-oc-phyto-plankton-classification).
+You can find more information about it in the [iMagine Marketplace](https://dashboard.cloud.imagine-ai.eu/marketplace/).
 
 **Table of contents**
 1. [Installing this module](#installing-this-module)
@@ -84,17 +83,17 @@ So open docker, if correct, you should see a small ship (docker desktop) symbol 
 ### 1.3 Clone the directory
 The directory is cloned so that the remote and the local directory are the same. This makes it easier to copy files inside the remote directory
 ```bash
-git clone https://github.com/lifewatch/phyto-plankton-classification
+git clone https://github.com/ai4os-hub/phyto-plankton-classification
 cd phyto-plankton-classification
 ```
 
 ### 1.4 Run the Docker Container Inside the Local Folder
 
-After Docker is installed and running, you can run the ready-to-use [Docker container](https://hub.docker.com/r/deephdc/uc-lifewatch-deep-oc-phyto-plankton-classification) to run this module. There are two options for handling images based on their storage location:
+After Docker is installed and running, you can run the ready-to-use [Docker container](https://hub.docker.com/r/ai4oshub/phyto-plankton-classification) to run this module. There are two options for handling images based on their storage location:
 
 Run container and only have local access
 ```bash
-docker run -ti -p 8888:8888 -p 5000:5000 -v "$(pwd):/srv/phyto-plankton-classification" deephdc/uc-lifewatch-deep-oc-phyto-plankton-classification:latest /bin/bash
+docker run -ti -p 8888:8888 -p 5000:5000 -v "$(pwd):/srv/phyto-plankton-classification" ai4os-hub/phyto-plankton-classification:latest /bin/bash
 ```
 
 > **Tip**: Rclone can also be configured to acces nextcloud server, follow [Tutorial](https://docs.ai4eosc.eu/en/latest/user/howto/rclone.html#configuring-rclone).
