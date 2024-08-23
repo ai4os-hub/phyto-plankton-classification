@@ -545,8 +545,9 @@ def get_metadata(distribution_name="planktonclas"):
     }
 
     for line in pkg.get_metadata_lines("PKG-INFO"):
+        line_low = line.lower() # to avoid inconsistency due to letter cases
         for par in meta:
-            if line.startswith(par):
+            if line_low.startswith(par.lower() + ":"):
                 _, value = line.split(": ", 1)
                 meta[par] = value
 
