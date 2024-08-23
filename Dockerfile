@@ -25,6 +25,7 @@ ENV CONTAINER_DESCRIPTION "AI4OS/DEEP as a Service Container: Phyto-Plankton Cla
 
 # What user branch to clone [!]
 ARG branch=main
+ARG tag   # need to correctly parse $tag variable
 
 ARG DEBIAN_FRONTEND=noninteractive
 
