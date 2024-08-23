@@ -17,7 +17,7 @@ description: |-
     2) Users can upload their own data (i.e., images and datasplit files) on Nextcloud and train their new CNN to predict new classes.
     3) Users can transform and augment their images to explore new type of models.
 
-    <img class='fit', src='https://raw.githubusercontent.com/ai4os-hub/phyto-plankton-classification/main/images/plankton_img.png'/>
+    <img class='fit', src='https://raw.githubusercontent.com/ai4os-hub/phyto-plankton-classification/main/data/plankton_img.png'/>
    
    **References**\n",
    [1]: Yann LeCun, Yoshua Bengio, and Geofrey Hinton. [Deep learning](https://www.cs.toronto.edu/~hinton/absps/NatureDeepReview.pdf). Nature, 521(7553):436-444, May 2015.

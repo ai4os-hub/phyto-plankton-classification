@@ -17,12 +17,12 @@
         "2) Users can upload their own data (i.e., images and datasplit files) on Nextcloud and train their new CNN to predict new classes.\n",
         "3) Users can transform and augment their images to explore new type of models.\n",
 
-        "<img class='fit', src='https://raw.githubusercontent.com/deephdc/UC-lifewatch-DEEP-OC-phyto-plankton-classification/master/images/plankton_img.png'/>\n",
+        "<img class='fit', src='https://raw.githubusercontent.com/ai4os-hub/phyto-plankton-classification/main/data/plankton_img.png'/>\n",
 
         "**References**\n",
         "[1]: Yann LeCun, Yoshua Bengio, and Geofrey Hinton. [Deep learning](https://www.cs.toronto.edu/~hinton/absps/NatureDeepReview.pdf). Nature, 521(7553):436-444, May 2015.\n",
 
-        "This module is largely based on the [existing image classifcation module](https://github.com/deephdc/image-classification-tf) made by [Ingacio Heredia](https://github.com/IgnacioHeredia)"
+        "This module is largely based on the [existing image classifcation module](https://github.com/ai4os-hub/ai4os-image-classification-tf) made by [Ingacio Heredia](https://github.com/IgnacioHeredia)"
     ],
     "keywords": [
         "docker",
@@ -38,13 +38,13 @@
     "date_creation": "2023-08-10",
     "dataset_url": "https://zenodo.org/records/10554845",
     "sources": {
-	"dockerfile_repo": "https://github.com/lifewatch/phyto-plankton-classification",
-	"docker_registry_repo": "deephdc/uc-lifewatch-deep-oc-phyto-plankton-classification",
-	"code": "https://github.com/lifewatch/phyto-plankton-classification"
+	"dockerfile_repo": "https://github.com/ai4os-hub/phyto-plankton-classification",
+	"docker_registry_repo": "ai4oshub/phyto-plankton-classification",
+	"code": "https://github.com/ai4os-hub/phyto-plankton-classification"
     },
     "continuous_integration": {
-        "build_status_badge": "https://jenkins.indigo-datacloud.eu/buildStatus/icon?job=Pipeline-as-code/DEEP-OC-org/UC-lifewatch-DEEP-OC-phyto-plankton-classification/master",
-        "build_status_url": "https://jenkins.indigo-datacloud.eu/job/Pipeline-as-code/job/DEEP-OC-org/job/UC-lifewatch-DEEP-OC-phyto-plankton-classification/job/master"
+        "build_status_badge": "https://jenkins.services.ai4os.eu/buildStatus/icon?job=AI4OS-hub/phyto-plankton-classification/main",
+        "build_status_url": "https://jenkins.services.ai4os.eu/job/AI4OS-hub/job/phyto-plankton-classification/job/main/"
     },
     "tosca": [
         {
