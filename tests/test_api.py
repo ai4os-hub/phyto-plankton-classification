@@ -23,7 +23,7 @@ class TestModelMethods(unittest.TestCase):
         """
         Test that get_metadata() returns dict
         """
-        self.assertTrue(type(self.meta) is dict)
+        self.assertTrue(isinstance(self.meta, dict))
 
     def test_model_metadata_values(self):
         """

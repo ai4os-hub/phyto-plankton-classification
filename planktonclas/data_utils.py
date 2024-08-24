@@ -7,29 +7,30 @@ Email: iheredia@ifca.unican.es
 Github: ignacioheredia
 """
 
-import os
-import threading
-from multiprocessing import Pool
-import queue
-import subprocess
-import warnings
 import base64
+import os
+import queue
+import random
+import subprocess
+import threading
+import warnings
+from multiprocessing import Pool
 
+import albumentations
+import cv2
 import numpy as np
 import requests
-from tqdm import tqdm
-from tensorflow.keras.utils import to_categorical, Sequence
-import cv2
-import albumentations
 from albumentations.augmentations import transforms
 from albumentations.imgaug import transforms as imgaug_transforms
-import random
+from tensorflow.keras.utils import Sequence, to_categorical
+from tqdm import tqdm
+
 
 def create_data_splits(splits_dir, im_dir, split_ratios=[0.7, 0.15, 0.15]):
-    train_txt_file = os.path.join(splits_dir, 'train.txt')
-    test_txt_file = os.path.join(splits_dir, 'test.txt')
-    val_txt_file = os.path.join(splits_dir, 'val.txt')
-    class_txt_file = os.path.join(splits_dir, 'classes.txt')
+    train_txt_file = os.path.join(splits_dir, "train.txt")
+    test_txt_file = os.path.join(splits_dir, "test.txt")
+    val_txt_file = os.path.join(splits_dir, "val.txt")
+    class_txt_file = os.path.join(splits_dir, "classes.txt")
     file_paths = []
 
     for root, _, files in tqdm(os.walk(im_dir), desc="Searching files"):
@@ -42,23 +43,31 @@ def create_data_splits(splits_dir, im_dir, split_ratios=[0.7, 0.15, 0.15]):
     folder_names = next(os.walk(im_dir))[1]
 
     # Assign numbers based on the location of each folder in the list
-    folder_numbers = {folder_name: index for index, folder_name in enumerate(folder_names)}
+    folder_numbers = {
+        folder_name: index for index, folder_name in enumerate(folder_names)
+    }
 
     # Count the number of files in each subfolder
     folder_counts = {folder_name: 0 for folder_name in folder_names}
     for file_path in file_paths:
-        folder_name = file_path.split("/")[0]  # Assuming UNIX-like path separator
+        # Assuming UNIX-like path separator
+        folder_name = file_path.split("/")[0]
         if folder_name in folder_counts:
             folder_counts[folder_name] += 1
 
-    # Initialize lists to keep track of files added to each split for each folder
+    # Initialize lists to keep track of files added to each split for each
+    # folder
     train_files_by_folder = {folder_name: [] for folder_name in folder_names}
     test_files_by_folder = {folder_name: [] for folder_name in folder_names}
     val_files_by_folder = {folder_name: [] for folder_name in folder_names}
 
     # Split the files into training, testing, and validation sets
     for folder_name in folder_names:
-        folder_files = [file_path for file_path in file_paths if file_path.startswith(folder_name + "/")]
+        folder_files = [
+            file_path
+            for file_path in file_paths
+            if file_path.startswith(folder_name + "/")
+        ]
         random.shuffle(folder_files)
         num_files = len(folder_files)
         train_cutoff = int(num_files * split_ratios[0])
@@ -68,10 +77,17 @@ def create_data_splits(splits_dir, im_dir, split_ratios=[0.7, 0.15, 0.15]):
         test_files_by_folder[folder_name] = folder_files[train_cutoff:test_cutoff]
         val_files_by_folder[folder_name] = folder_files[test_cutoff:]
 
-    # Combine files from each folder into overall train, test, and validation sets
-    train_files = [file for folder_files in train_files_by_folder.values() for file in folder_files]
-    test_files = [file for folder_files in test_files_by_folder.values() for file in folder_files]
-    val_files = [file for folder_files in val_files_by_folder.values() for file in folder_files]
+    # Combine files from each folder into overall train, test, and validation
+    # sets
+    train_files = [
+        file for folder_files in train_files_by_folder.values() for file in folder_files
+    ]
+    test_files = [
+        file for folder_files in test_files_by_folder.values() for file in folder_files
+    ]
+    val_files = [
+        file for folder_files in val_files_by_folder.values() for file in folder_files
+    ]
 
     # Write the file paths to text files for training, testing, and validation
     write_text_file(train_files, train_txt_file, folder_numbers)
@@ -79,16 +95,16 @@ def create_data_splits(splits_dir, im_dir, split_ratios=[0.7, 0.15, 0.15]):
     write_text_file(val_files, val_txt_file, folder_numbers)
 
     # Write the class names to a text file
-    with open(class_txt_file, 'w') as f_class:
+    with open(class_txt_file, "w") as f_class:
         for label in tqdm(folder_numbers, desc="Writing classes file"):
-            f_class.write(str(label) + '\n')
+            f_class.write(str(label) + "\n")
+
 
 def write_text_file(file_list, file_path, folder_numbers):
-    with open(file_path, 'w') as f:
+    with open(file_path, "w") as f:
         for file in tqdm(file_list, desc=f"Writing {file_path}"):
-            file = file.replace('\\', '/')  # Assuming UNIX-like path separator
-            f.write(file + ' ' + str(folder_numbers[file.split("/")[0]]) + '\n')
-
+            file = file.replace("\\", "/")  # Assuming UNIX-like path separator
+            f.write(file + " " + str(folder_numbers[file.split("/")[0]]) + "\n")
 
 
 def load_data_splits(splits_dir, im_dir, split_name="train"):
@@ -171,12 +187,13 @@ def load_aphia_ids(splits_dir):
     Numpy array of shape (N) containing strs with class names
     """
     print("Loading aphia_ids...")
-    try: 
+    try:
         aphia_ids = np.genfromtxt(
-        os.path.join(splits_dir, "aphia_ids.txt"), dtype="str", delimiter="/n")
-    except:
-        aphia_ids=None
-        
+            os.path.join(splits_dir, "aphia_ids.txt"), dtype="str", delimiter="/n"
+        )
+    except BaseException:
+        aphia_ids = None
+
     return aphia_ids
 
 
@@ -230,7 +247,7 @@ def load_image(filename, filemode="local"):
             image = cv2.imdecode(data, cv2.IMREAD_COLOR)
             if image is None:
                 raise Exception
-        except:
+        except BaseException:
             raise ValueError("Incorrect url path: \n {}".format(filename))
 
     else:
@@ -308,7 +325,7 @@ def augment(im, params=None):
     Numpy array
     """
 
-    ## 1) Crop the image
+    # 1) Crop the image
     effective_zoom = np.random.rand() * params["zoom"]
     crop = params["crop"] - effective_zoom
 
@@ -323,7 +340,7 @@ def augment(im, params=None):
 
     im = crop(image=im)["image"]
 
-    ## 2) Now add the transformations for augmenting the image pixels
+    # 2) Now add the transformations for augmenting the image pixels
     transform_list = []
 
     # Add random stretching
@@ -442,7 +459,6 @@ def data_generator(
     Generator of inputs and labels
     """
 
-
     # Create list of indices
     idxs = np.arange(len(inputs))
     if shuffle:
@@ -488,7 +504,8 @@ def buffered_generator(source_gen, buffer_size=10):
 
     buffer = queue.Queue(maxsize=buffer_size - 1)
     # the effective buffer size is one less, because the generation process
-    # will generate one extra element and block until there is room in the buffer.
+    # will generate one extra element and block until there is room in the
+    # buffer.
 
     def _buffered_generation_thread(source_gen, buffer):
         for data in source_gen:
@@ -529,7 +546,6 @@ class data_sequence(Sequence):
         """
         Parameters are the same as in the data_generator function
         """
-
 
         self.inputs = inputs
         self.targets = targets
@@ -594,7 +610,8 @@ def standard_tencrop_batch(im, crop_prop=0.9):
     batch = []
 
     min_side = np.amin(im.shape[:2])
-    im = resize_im(im, height=min_side, width=min_side)  # resize to shorter border
+    # resize to shorter border
+    im = resize_im(im, height=min_side, width=min_side)
     h, w = min_side, min_side  # height, width (square)
     crop_size = int(crop_prop * min_side)
 
@@ -777,7 +794,7 @@ def compute_classweights(labels, max_dim=None, mode="balanced"):
         weights = np.bincount(labels)
     except TypeError:
         _, weights = np.unique(labels, return_counts=True)
-        
+
     weights = np.sum(weights) / weights
 
     # Fill the count if some high number labels are not present in the sample
@@ -792,7 +809,8 @@ def compute_classweights(labels, max_dim=None, mode="balanced"):
     if mode == "balanced":
         pass
     elif mode == "log":
-        # do not use --> produces numerical instabilities at inference when transferring weights trained on GPU to CPU
+        # do not use --> produces numerical instabilities at inference when
+        # transferring weights trained on GPU to CPU
         weights = np.log(weights)  # + 1
     else:
         raise ValueError('{} is not a valid option for parameter "mode"'.format(mode))

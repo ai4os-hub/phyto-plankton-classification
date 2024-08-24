@@ -202,14 +202,14 @@ You can have more info on how to interact directly with the module (not through 
 ### activation of the API
 now run DEEPaaS:
 ```
-deepaas-run --listen-ip 0.0.0.0
+deepaas-run --listen-ip 127.0.0.1
 ```
-and open http://0.0.0.0:5000/ui (or http://127.0.0.1:5000/api#/) and look for the methods belonging to the `planktonclas` module.
+and open http://127.0.0.1:5000/ui (or http://127.0.0.1:5000/api#/) and look for the methods belonging to the `planktonclas` module.
 Look for the ``TRAIN`` POST method. Click on 'Try it out', change whatever training args
 you want and click 'Execute'. The training will be launched and you will be able to follow its status by executing the 
 ``TRAIN`` GET method which will also give a history of all trainings previously executed.
 
-You can follow the training monitoring (Tensorboard) on http://0.0.0.0:6006.
+You can follow the training monitoring (Tensorboard) on http://127.0.0.1:6006.
 
 
 
@@ -246,9 +246,9 @@ You can have more info on how to interact directly with the module (not through 
 ### activation of the API
 now run DEEPaaS:
 ```
-deepaas-run --listen-ip 0.0.0.0
+deepaas-run --listen-ip 127.0.0.1
 ```
-Go to http://0.0.0.0:5000/ui (or http://127.0.0.1:5000/api#/) and look for the `PREDICT` POST method. Click on 'Try it out', change whatever test args
+Go to http://127.0.0.1:5000/ui (or http://127.0.0.1:5000/api#/) and look for the `PREDICT` POST method. Click on 'Try it out', change whatever test args
 you want and click 'Execute'. You can **either** supply a:
 
 * a `image` argument with a path pointing to an image.

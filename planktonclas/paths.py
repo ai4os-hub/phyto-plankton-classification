@@ -12,15 +12,14 @@ from datetime import datetime
 
 from planktonclas import config
 
-
 homedir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 CONF = config.get_conf_dict()
-timestamp = datetime.now().strftime('%Y-%m-%d_%H%M%S')
+timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
 
 
 def get_base_dir():
-    base_dir = CONF['general']['base_directory']
+    base_dir = CONF["general"]["base_directory"]
     if os.path.isabs(base_dir):
         return base_dir
     else:
@@ -28,7 +27,7 @@ def get_base_dir():
 
 
 def get_images_dir():
-    img_dir = CONF['general']['images_directory']
+    img_dir = CONF["general"]["images_directory"]
     if os.path.isabs(img_dir):
         return img_dir
     else:
@@ -68,10 +67,10 @@ def get_ts_splits_dir():
 
 
 def get_predictions_dir():
-    file_location = CONF['testing']['file_location']
-    output_directory = CONF['testing']['output_directory']
-    if output_directory=="/srv/somewhere":
-        output_directory= None
+    file_location = CONF["testing"]["file_location"]
+    output_directory = CONF["testing"]["output_directory"]
+    if output_directory == "/srv/somewhere":
+        output_directory = None
     if file_location is None:
         if output_directory is None:
             # Define your get_timestamped_dir() function accordingly
@@ -85,27 +84,29 @@ def get_predictions_dir():
 def get_results_dir():
     return os.path.join(get_timestamped_dir(), "results")
 
+
 def get_dirs():
-    return {'base dir': get_base_dir(),
-            'images dir': get_images_dir(),
-            'data splits dir': get_splits_dir(),
-            'models_dir': get_models_dir(),
-            'timestamped dir': get_timestamped_dir(),
-            'logs dir': get_logs_dir(),
-            'checkpoints dir': get_checkpoints_dir(),
-            'configuration dir': get_conf_dir(),
-            'statistics dir': get_stats_dir(),
-            'timestamped data splits dir': get_ts_splits_dir(),
-            'predictions dir': get_predictions_dir(),
-            'results dir': get_results_dir(),
-            }
+    return {
+        "base dir": get_base_dir(),
+        "images dir": get_images_dir(),
+        "data splits dir": get_splits_dir(),
+        "models_dir": get_models_dir(),
+        "timestamped dir": get_timestamped_dir(),
+        "logs dir": get_logs_dir(),
+        "checkpoints dir": get_checkpoints_dir(),
+        "configuration dir": get_conf_dir(),
+        "statistics dir": get_stats_dir(),
+        "timestamped data splits dir": get_ts_splits_dir(),
+        "predictions dir": get_predictions_dir(),
+        "results dir": get_results_dir(),
+    }
 
 
 def print_dirs():
     dirs = get_dirs()
     max_len = max([len(v) for v in dirs.keys()])
-    for k,v in dirs.items():
-        print('{k:{l:d}s} {v:3s}'.format(l=max_len + 5, v=v, k=k))
+    for k, v in dirs.items():
+        print("{k:{l:d}s} {v:3s}".format(l=max_len + 5, v=v, k=k))
 
 
 def main():

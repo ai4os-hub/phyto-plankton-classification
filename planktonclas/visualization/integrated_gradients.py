@@ -27,7 +27,7 @@ class IntegratedGradients(GradientSaliency):
 
     def GetMask(self, input_image, input_baseline=None, nsamples=100):
         """Returns a integrated gradients mask."""
-        if input_baseline == None:
+        if input_baseline is None:
             input_baseline = np.zeros_like(input_image)
 
         input_diff = input_image - input_baseline

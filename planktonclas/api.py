@@ -19,44 +19,38 @@ gevent, uwsgi.
 """
 
 import builtins
+import glob
+import json
+import os
+import re
+import tempfile
+import warnings
+import zipfile
 from collections import OrderedDict
 from datetime import datetime
 from functools import wraps
-import json
-import os
-import pkg_resources
-import re
-import warnings
 
 import numpy as np
+import pkg_resources
 import requests
 import tensorflow as tf
-from tensorflow.keras.models import load_model
+from deepaas.model.v2.wrapper import UploadedFile
 from tensorflow.keras import backend as K
+from tensorflow.keras.models import load_model
 from webargs import fields
 
-from planktonclas import paths, utils, config, test_utils
-from planktonclas.data_utils import (
-    load_class_names,
-    load_aphia_ids,
-    load_class_info,
-    mount_nextcloud,
-)
+from planktonclas import config, paths, test_utils, utils
+from planktonclas.data_utils import (load_aphia_ids, load_class_info,
+                                     load_class_names)
 from planktonclas.train_runfile import train_fn
-import zipfile
-import os
-import tempfile
-from deepaas.model.v2.wrapper import UploadedFile
-
-
-import glob
 
 NOW = str("{:%Y_%m_%d_%H_%M_%S}".format(datetime.now()))
 # print(NOW, ": Starting the process")
 # Mount NextCloud folders (if NextCloud is available)
 
 
-# Empty model variables for inference (will be loaded the first time we perform inference)
+# Empty model variables for inference (will be loaded the first time we
+# perform inference)
 loaded_ts, loaded_ckpt = None, None
 graph, model, conf, class_names, class_info, aphia_ids = (
     None,
@@ -154,8 +148,10 @@ def load_inference_model(timestamp=None, ckpt_name=None):
         update_with_saved_conf(conf)
 
     # Load the model
-    model = load_model(os.path.join(paths.get_checkpoints_dir(), ckpt_name),
-                       custom_objects=utils.get_custom_objects())
+    model = load_model(
+        os.path.join(paths.get_checkpoints_dir(), ckpt_name),
+        custom_objects=utils.get_custom_objects(),
+    )
     graph = tf.get_default_graph()
 
     # model = load_model(
@@ -264,6 +260,7 @@ def warm():
     except Exception as e:
         print(e)
 
+
 def prepare_files(directory):
     """
     Prepare a list of dictionaries with attributes mimicking UploadedFile from image files in the directory.
@@ -272,7 +269,7 @@ def prepare_files(directory):
     :return: A list of dictionaries with attributes similar to UploadedFile.
     """
     # Get all image files from the directory with given extensions
-    extensions = ['*.jpg', '*.png', '*.jpeg']
+    extensions = ["*.jpg", "*.png", "*.jpeg"]
     files = []
     for ext in extensions:
         files.extend(glob.glob(os.path.join(directory, ext)))
@@ -280,20 +277,25 @@ def prepare_files(directory):
     # Create a list of dictionaries with attributes similar to UploadedFile
     uploaded_files = []
     for file_path in files:
-        file_name = os.path.basename(file_path)  # Extract the filename from the path
-        uploaded_files.append(UploadedFile(
-            name='data',
-            filename=file_path,
-            content_type='image/jpeg',  # Adjust if necessary based on file type
-            original_filename=file_name
-        ))
+        # Extract the filename from the path
+        file_name = os.path.basename(file_path)
+        uploaded_files.append(
+            UploadedFile(
+                name="data",
+                filename=file_path,
+                content_type="image/jpeg",  # Adjust if necessary based on file type
+                original_filename=file_name,
+            )
+        )
     return uploaded_files
 
 
 @catch_error
 def predict(**args):
-    if not any([args["image"], args["zip"],args["file_location"]]):
-        raise Exception("You must provide either 'urls', 'image','file_location' or 'zip' in the payload")
+    if not any([args["image"], args["zip"], args["file_location"]]):
+        raise Exception(
+            "You must provide either 'urls', 'image','file_location' or 'zip' in the payload"
+        )
 
     if args["zip"]:
         # Check if zip file is provided
@@ -302,7 +304,7 @@ def predict(**args):
         # Create a temporary directory to extract the files
         with tempfile.TemporaryDirectory() as temp_dir:
             # Extract the zip file
-            with zipfile.ZipFile(zip_file.filename, 'r') as zip_ref:
+            with zipfile.ZipFile(zip_file.filename, "r") as zip_ref:
                 zip_ref.extractall(temp_dir)
 
             # Get the list of files extracted from the zip
@@ -313,13 +315,19 @@ def predict(**args):
             uploaded_files = []
             for file in folder_files:
                 file_path = os.path.join(temp_dir, file)
-                uploaded_files.append(UploadedFile(name='data', filename=file_path, content_type='image/jpeg', original_filename=file))
+                uploaded_files.append(
+                    UploadedFile(
+                        name="data",
+                        filename=file_path,
+                        content_type="image/jpeg",
+                        original_filename=file,
+                    )
+                )
 
             # Assign the list of files to args["files"]
             args["files"] = uploaded_files
 
-            raise RuntimeError("zipped ",uploaded_files)
-
+            raise RuntimeError("zipped ", uploaded_files)
 
             # Call predict_data function (assuming it handles a list of files)
             return predict_data(args)
@@ -328,9 +336,8 @@ def predict(**args):
         print(args["files"])
         return predict_data(args)
     else:
-        args["files"]=prepare_files(args["file_location"])
+        args["files"] = prepare_files(args["file_location"])
         return predict_data(args)
-
 
 
 def predict_data(args):
@@ -359,17 +366,18 @@ def predict_data(args):
     # Make the predictions
     try:
         with graph.as_default():
-            pred_lab, pred_prob = test_utils.predict(model=model,
-                                                    X=filenames,
-                                                    conf=conf,
-                                                    top_K=top_K,
-                                                    filemode='local',
-                                                    merge=merge,
-                                                    use_multiprocessing=False)  # safer to avoid memory fragmentation in failed queries
+            pred_lab, pred_prob = test_utils.predict(
+                model=model,
+                X=filenames,
+                conf=conf,
+                top_K=top_K,
+                filemode="local",
+                merge=merge,
+                use_multiprocessing=False,
+            )  # safer to avoid memory fragmentation in failed queries
     finally:
         for f in filenames:
             os.remove(f)
-
 
     if merge:
         pred_lab, pred_prob = np.squeeze(pred_lab), np.squeeze(pred_prob)
@@ -380,10 +388,12 @@ def predict_data(args):
 def format_prediction(labels, probabilities, original_filenames):
     if aphia_ids is not None:
         pred_aphia_ids = [aphia_ids[i] for i in labels]
-        pred_aphia_ids =[aphia_id.tolist() for aphia_id in pred_aphia_ids ]
+        pred_aphia_ids = [aphia_id.tolist() for aphia_id in pred_aphia_ids]
     else:
-        pred_aphia_ids= aphia_ids
-    class_index_map = {index:class_name for index, class_name in enumerate(class_names)}
+        pred_aphia_ids = aphia_ids
+    class_index_map = {
+        index: class_name for index, class_name in enumerate(class_names)
+    }
     pred_lab_names = [[class_index_map[label] for label in labels] for labels in labels]
     # pred_labels=[class_names[i] for i in labels]
     pred_prob = probabilities
@@ -404,11 +414,7 @@ def format_prediction(labels, probabilities, original_filenames):
     with open(pred_path, "w") as outfile:
         json.dump(pred_dict, outfile, sort_keys=True)
 
-
     return pred_dict
-
-
-
 
 
 def train(**args):
@@ -421,7 +427,6 @@ def train(**args):
     config.print_conf_table(CONF)
     K.clear_session()  # remove the model loaded for prediction
     train_fn(TIMESTAMP=timestamp, CONF=CONF)
-
 
     return {"modelname": timestamp}
 
@@ -505,7 +510,6 @@ def get_predict_args():
         description="Select the image you want to classify.",
     )
 
-
     parser["zip"] = fields.Field(
         required=False,
         missing=None,
@@ -514,8 +518,7 @@ def get_predict_args():
         location="form",
         description="Select the ZIP file containing images you want to classify.",
     )
-    
-    
+
     parser["file_location"] = fields.Field(
         required=False,
         missing=None,
@@ -523,7 +526,6 @@ def get_predict_args():
         location="form",
         description="Select the folder of the images you want to classify. For example: /srv/phyto-plankton-classification/data/demo-images/Actinoptychus",
     )
-        
 
     return populate_parser(parser, default_conf)
 
@@ -545,13 +547,14 @@ def get_metadata(distribution_name="planktonclas"):
     }
 
     for line in pkg.get_metadata_lines("PKG-INFO"):
-        line_low = line.lower() # to avoid inconsistency due to letter cases
+        line_low = line.lower()  # to avoid inconsistency due to letter cases
         for par in meta:
             if line_low.startswith(par.lower() + ":"):
                 _, value = line.split(": ", 1)
                 meta[par] = value
 
-    # Update information with Docker info (provided as 'CONTAINER_*' env variables)
+    # Update information with Docker info (provided as 'CONTAINER_*' env
+    # variables)
     r = re.compile("^CONTAINER_(.*?)$")
     container_vars = list(filter(r.match, list(os.environ)))
     for var in container_vars:
