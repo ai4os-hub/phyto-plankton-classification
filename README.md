@@ -96,6 +96,12 @@ Run container and only have local access
 docker run -ti -p 8888:8888 -p 5000:5000 -v "$(pwd):/srv/phyto-plankton-classification" ai4os-hub/phyto-plankton-classification:latest /bin/bash
 ```
 
+To get the latest version of the phytoplankton module running locally as well, please use the following code:
+```bash
+curl --insecure -L -o "models\phytoplankton_vliz.tar.gz" https://share.services.ai4os.eu/index.php/s/rJQPQtBReqHAPf3/download
+tar -xzf "/models/phytoplankton_vliz.tar.gz" "/models"
+del "/models/phytoplankton_vliz.tar.gz"
+```
 > **Tip**: Rclone can also be configured to acces nextcloud server, follow [Tutorial](https://docs.ai4eosc.eu/en/latest/user/howto/rclone.html#configuring-rclone).
 
 
