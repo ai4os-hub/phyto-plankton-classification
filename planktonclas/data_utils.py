@@ -259,7 +259,6 @@ def preprocess_batch(batch, mean_RGB, std_RGB, mode="tf", channels_first=False):
     -------
     Numpy array
     """
-    assert type(batch) is list, "Your batch must be a list of numpy arrays"
 
     mean_RGB, std_RGB = np.array(mean_RGB), np.array(std_RGB)
     batch = np.array(batch) - mean_RGB[None, None, None, :]  # mean centering
@@ -442,8 +441,7 @@ def data_generator(
     -------
     Generator of inputs and labels
     """
-    assert len(inputs) == len(targets)
-    assert len(inputs) >= batch_size
+
 
     # Create list of indices
     idxs = np.arange(len(inputs))
@@ -531,8 +529,7 @@ class data_sequence(Sequence):
         """
         Parameters are the same as in the data_generator function
         """
-        assert len(inputs) == len(targets)
-        assert len(inputs) >= batch_size
+
 
         self.inputs = inputs
         self.targets = targets

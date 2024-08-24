@@ -11,7 +11,7 @@ import os
 import subprocess
 from distutils.dir_util import copy_tree
 from multiprocessing import Process
-
+import shutil
 import numpy as np
 from tensorflow.keras import callbacks
 from tensorflow.keras import backend as K
@@ -94,12 +94,15 @@ class LRHistory(callbacks.Callback):
         super().on_epoch_end(epoch, logs)
 
 
-def launch_tensorboard(port, logdir):
-    subprocess.call(['tensorboard',
+def launch_tensorboard(port, logdir, host='127.0.0.1'):
+    tensorboard_path = shutil.which('tensorboard')
+    if tensorboard_path is None:
+        raise RuntimeError('TensorBoard executable not found in PATH.')
+
+    subprocess.call([tensorboard_path,
                      '--logdir', '{}'.format(logdir),
                      '--port', '{}'.format(port),
-                     '--host', '0.0.0.0'])
-
+                     '--host', '{}'.format(host)])
 
 def get_callbacks(CONF, use_lr_decay=True):
     """
@@ -140,7 +143,13 @@ def get_callbacks(CONF, use_lr_decay=True):
         # Run Tensorboard on a separate Thread/Process on behalf of the user
         port = os.getenv('monitorPORT', 6006)
         port = int(port) if len(str(port)) >= 4 else 6006
-        subprocess.run(['fuser', '-k', '{}/tcp'.format(port)])  # kill any previous process in that port
+        # Get the full path to the 'fuser' executable
+        fuser_path = shutil.which('fuser')
+        if fuser_path is None:
+            raise RuntimeError('fuser executable not found in PATH.')
+
+        subprocess.run([fuser_path, '-k', '{}/tcp'.format(port)])  # kill any previous process on that port
+
         p = Process(target=launch_tensorboard, args=(port, paths.get_logs_dir()), daemon=True)
         p.start()
 
