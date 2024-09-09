@@ -99,7 +99,7 @@ class LRHistory(callbacks.Callback):
         super().on_epoch_end(epoch, logs)
 
 
-def launch_tensorboard(port, logdir, host="127.0.0.1"):
+def launch_tensorboard(port, logdir, host="0.0.0.0"):
     tensorboard_path = shutil.which("tensorboard")
     if tensorboard_path is None:
         raise RuntimeError("TensorBoard executable not found in PATH.")

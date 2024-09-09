@@ -41,12 +41,12 @@ You can find more information about it in the [iMagine Marketplace](https://dash
             1. [Adapting the yaml file](#221-adapting-the-yaml-file)
             2. [Go to Notebooks](#222-go-to-notebooks)
         3. [Train with Deepaas](#23-train-with-deepaas)
-4. [Test an image classifier](#test-an-image-classifier)
-    1. [Testing methods](#3-testing-methods)
-        1. [Test with Jupyter Notebooks (Recommended)](#31-test-with-jupyter-notebooks-recommended)
+4. [Predict an image classifier](#Predict-an-image-classifier)
+    1. [Predicting methods](#3-Predicting-methods)
+        1. [Predict with Jupyter Notebooks (Recommended)](#31-Predict-with-jupyter-notebooks-recommended)
             1. [Adapting the yaml file](#311-adapting-the-yaml-file)
             2. [Go to Notebooks](#312-go-to-notebooks)
-        2. [Test with Deepaas](#32-test-with-deepaas)
+        2. [Predict with Deepaas](#32-Predict-with-deepaas)
 5. [More info](#more-info)
 6. [Acknowledgements](#acknowledgements)
 
@@ -212,19 +212,19 @@ You can have more info on how to interact directly with the module (not through 
 ### activation of the API
 now run DEEPaaS:
 ```
-deepaas-run --listen-ip 127.0.0.1
+deepaas-run --listen-ip 0.0.0.0
 ```
-and open http://127.0.0.1:5000/ui (or http://127.0.0.1:5000/api#/) and look for the methods belonging to the `planktonclas` module.
+and open http://0.0.0.0:5000/ui (or http://0.0.0.0:5000/api#/) and look for the methods belonging to the `planktonclas` module.
 Look for the ``TRAIN`` POST method. Click on 'Try it out', change whatever training args
 you want and click 'Execute'. The training will be launched and you will be able to follow its status by executing the 
 ``TRAIN`` GET method which will also give a history of all trainings previously executed.
 
-You can follow the training monitoring (Tensorboard) on http://127.0.0.1:6006.
+You can follow the training monitoring (Tensorboard) on http://0.0.0.0:6006.
 
 
 
-# TEST the phyto-plankton-classifier
-## 3. Testing methods
+# Predict the phyto-plankton-classifier
+## 3. Predicting methods
 ### 3.1: Train with Jupyter Notebooks (Recommended)
 #### 3.1.1: Adapting the yaml file
 Similar to [2.1.2: Running the test](#2.1.2:_Running_the_test),clarify the location of the images that need to be predicted inside the [yaml file](/etc/config.yaml) file.  
@@ -252,13 +252,13 @@ You can have more info on how to interact directly with the module (not through 
   the statistics of the predictions like popular metrics (accuracy, recall, precision, f1-score), the confusion matrix, etc.
 
 
-## 3.2: Test with Deepaas
+## 3.2: Predict with Deepaas
 ### activation of the API
 now run DEEPaaS:
 ```
-deepaas-run --listen-ip 127.0.0.1
+deepaas-run --listen-ip 0.0.0.0
 ```
-Go to http://127.0.0.1:5000/ui (or http://127.0.0.1:5000/api#/) and look for the `PREDICT` POST method. Click on 'Try it out', change whatever test args
+Go to http://0.0.0.0:5000/ui (or http://0.0.0.0:5000/api#/) and look for the `PREDICT` POST method. Click on 'Try it out', change whatever test args
 you want and click 'Execute'. You can **either** supply a:
 
 * a `image` argument with a path pointing to an image.
@@ -284,7 +284,7 @@ you get the following output:
 [I 12:34:56.789 NotebookApp]  To access the notebook, open this file in a browser:
      file:///root/.local/share/jupyter/runtime/nbserver-1234-open.html
 [I 12:34:56.789 NotebookApp]  Or copy and paste one of these URLs:
-     http://127.0.0.1:8888/?token=your_token_here
+     http://0.0.0.0:8888/?token=your_token_here
 ```
 You can this go to think link in your brower or copy this final link and use it as a kernel on your local vsc
 
