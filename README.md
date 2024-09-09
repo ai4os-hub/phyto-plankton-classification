@@ -2,7 +2,6 @@ AI4OS/DEEP Open Catalogue: Image classification
 =========================================
 [![Build Status](https://jenkins.services.ai4os.eu/buildStatus/icon?job=AI4OS-hub/phyto-plankton-classification/main)](https://jenkins.services.ai4os.eu/job/AI4OS-hub/job/phyto-plankton-classification/job/main/)
 
-![Flowchart: Phytoplankton Classifier Process](data/Flowchart_github.png)
 
 
 **Author:** [Ignacio Heredia & Wout Decrop](https://github.com/IgnacioHeredia) (CSIC & VLIZ)
@@ -15,6 +14,9 @@ received funding from the European Union’s Horizon 2020 research and innovatio
 This is a plug-and-play tool to train and evaluate an phytoplankton classifier on a custom dataset using deep neural networks.
 
 You can find more information about it in the [iMagine Marketplace](https://dashboard.cloud.imagine-ai.eu/marketplace/).
+
+**Flowchart:** The flow inside github can be found within the orange frame
+![Flowchart: Phytoplankton Classifier Process](data/Flowchart_github.png)
 
 **Table of contents**
 1. [Installing this module](#installing-this-module)
