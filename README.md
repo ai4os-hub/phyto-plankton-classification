@@ -26,6 +26,7 @@ You can find more information about it in the [iMagine Marketplace](https://dash
         2. [Run docker](#12-run-docker)
         3. [Clone the directory](#13-clone-the-directory)
         4. [Run the Docker container inside the local folder](#14-run-the-docker-container-inside-the-local-folder)
+    3. [Open through Deepaas](#open-through-deepaas)
 2. [Activating the module](#activating-the-module)
     1. [Activation of the API](#activation-of-the-api)
     2. [Activation of Jupyter notebook](#activation-of-jupyter-notebook)
@@ -106,11 +107,14 @@ curl --insecure -L -o "models\phytoplankton_vliz.tar.gz" https://share.services.
 tar -xzf "/models/phytoplankton_vliz.tar.gz" "/models"
 del "/models/phytoplankton_vliz.tar.gz"
 ```
-> **Tip**: Rclone can also be configured to acces nextcloud server, follow [Tutorial](https://docs.ai4eosc.eu/en/latest/user/howto/rclone.html#configuring-rclone).
+> **Tip**: Rclone can also be configured to acces nextcloud server, follow [Tutorial](https://docs.ai4os.eu/en/latest/user/howto/train/rclone.html).
 
 
 Now the environment has the right requiremens to be excecuted. 
 
+
+## Open through Deepaas
+Call-in on Imagine Marketplace and follow the [Tutorial](https://docs.ai4os.eu/en/latest/user/howto/train/dashboard.html). 
 
 # 1. Train the phyto-plankton-classifier
 
