@@ -2,6 +2,8 @@ AI4OS/DEEP Open Catalogue: Image classification
 =========================================
 [![Build Status](https://jenkins.services.ai4os.eu/buildStatus/icon?job=AI4OS-hub/phyto-plankton-classification/main)](https://jenkins.services.ai4os.eu/job/AI4OS-hub/job/phyto-plankton-classification/job/main/)
 
+![Flowchart: Phytoplankton Classifier Process](data/Flowchart_github.png)
+
 
 **Author:** [Ignacio Heredia & Wout Decrop](https://github.com/IgnacioHeredia) (CSIC & VLIZ)
 
