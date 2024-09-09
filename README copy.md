@@ -106,11 +106,14 @@ curl --insecure -L -o "models\phytoplankton_vliz.tar.gz" https://share.services.
 tar -xzf "/models/phytoplankton_vliz.tar.gz" "/models"
 del "/models/phytoplankton_vliz.tar.gz"
 ```
-> **Tip**: Rclone can also be configured to acces nextcloud server, follow [Tutorial](https://docs.ai4eosc.eu/en/latest/user/howto/rclone.html#configuring-rclone).
+> **Tip**: Rclone can also be configured to acces nextcloud server, follow [Tutorial](https://docs.ai4os.eu/en/latest/user/howto/train/rclone.html).
 
 
 Now the environment has the right requiremens to be excecuted. 
 
+
+## Open through Deepaas
+Call-in on Imagine Marketplace
 
 # 1. Train the phyto-plankton-classifier
 
@@ -212,14 +215,14 @@ You can have more info on how to interact directly with the module (not through 
 ### activation of the API
 now run DEEPaaS:
 ```
-deepaas-run --listen-ip 127.0.0.1
+deepaas-run --listen-ip 0.0.0.0
 ```
-and open http://127.0.0.1:5000/ui (or http://127.0.0.1:5000/api#/) and look for the methods belonging to the `planktonclas` module.
+and open http://0.0.0.0:5000/ui (or http://0.0.0.0:5000/api#/) and look for the methods belonging to the `planktonclas` module.
 Look for the ``TRAIN`` POST method. Click on 'Try it out', change whatever training args
 you want and click 'Execute'. The training will be launched and you will be able to follow its status by executing the 
 ``TRAIN`` GET method which will also give a history of all trainings previously executed.
 
-You can follow the training monitoring (Tensorboard) on http://127.0.0.1:6006.
+You can follow the training monitoring (Tensorboard) on http://0.0.0.0:6006.
 
 
 
@@ -256,9 +259,9 @@ You can have more info on how to interact directly with the module (not through 
 ### activation of the API
 now run DEEPaaS:
 ```
-deepaas-run --listen-ip 127.0.0.1
+deepaas-run --listen-ip 0.0.0.0
 ```
-Go to http://127.0.0.1:5000/ui (or http://127.0.0.1:5000/api#/) and look for the `PREDICT` POST method. Click on 'Try it out', change whatever test args
+Go to http://0.0.0.0:5000/ui (or http://0.0.0.0:5000/api#/) and look for the `PREDICT` POST method. Click on 'Try it out', change whatever test args
 you want and click 'Execute'. You can **either** supply a:
 
 * a `image` argument with a path pointing to an image.
@@ -284,7 +287,7 @@ you get the following output:
 [I 12:34:56.789 NotebookApp]  To access the notebook, open this file in a browser:
      file:///root/.local/share/jupyter/runtime/nbserver-1234-open.html
 [I 12:34:56.789 NotebookApp]  Or copy and paste one of these URLs:
-     http://127.0.0.1:8888/?token=your_token_here
+     http://0.0.0.0:8888/?token=your_token_here
 ```
 You can this go to think link in your brower or copy this final link and use it as a kernel on your local vsc
 
