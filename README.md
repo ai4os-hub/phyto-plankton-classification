@@ -115,6 +115,22 @@ Now the environment has the right requiremens to be excecuted.
 
 ## Open through Deepaas
 Call-in on Imagine Marketplace and follow the [Tutorial](https://docs.ai4os.eu/en/latest/user/howto/train/dashboard.html). 
+Important to remember here: if you have coding experience through the flowchart, use 'Jupyter', if not, use 'Deepaas' when you fill in the general information.
+
+**Hardware configuration:#**
+number of CPU: 1 for interference or 4/8 for training (max 10)
+Number of GPU: 0 (or 1 for training while combining the dockter GPU tag) – not many available
+GPU model: both options are good
+RAM: 8000 MB default (max 25 MB)
+Disk memory 10000MB default (max 20gb)
+
+**Storage configuration**
+storage: /srv/.rclone/rclone.conf
+Rclone vendor: nextcloud
+storage URL: https://share.services.ai4os.eu/remote.php/webdav/
+RCLONE user and password:
+log in to  https://share.services.ai4os.eu/index.php/login?redirect_url=/index.php/apps/dashboard/ using EGI and use your institutes IDP if possible
+in account go to profile > security > devices and sessions
 
 # 1. Train the phyto-plankton-classifier
 
@@ -276,6 +292,9 @@ Follow the notebook for [computing the predictions](./notebooks/3.0-Computing_pr
 Make sure to select DEMO or not if you want to predict your own data of the demo data as an example.
 
 ## Extra information
+### Predict through OSCAR:
+You can follow the [Oscar Tutorial](https://docs.ai4os.eu/en/latest/user/howto/deploy/oscar.html). 
+
 ### Activation of jupyter notebook
 You can also activate the jupyter notebooks inside the docker container and work from there. 
 ```

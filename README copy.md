@@ -26,6 +26,7 @@ You can find more information about it in the [iMagine Marketplace](https://dash
         2. [Run docker](#12-run-docker)
         3. [Clone the directory](#13-clone-the-directory)
         4. [Run the Docker container inside the local folder](#14-run-the-docker-container-inside-the-local-folder)
+    3. [Open through Deepaas](#open-through-deepaas)
 2. [Activating the module](#activating-the-module)
     1. [Activation of the API](#activation-of-the-api)
     2. [Activation of Jupyter notebook](#activation-of-jupyter-notebook)
@@ -113,7 +114,7 @@ Now the environment has the right requiremens to be excecuted.
 
 
 ## Open through Deepaas
-Call-in on Imagine Marketplace
+Call-in on Imagine Marketplace and follow the [Tutorial](https://docs.ai4os.eu/en/latest/user/howto/train/dashboard.html). 
 
 # 1. Train the phyto-plankton-classifier
 
@@ -215,14 +216,14 @@ You can have more info on how to interact directly with the module (not through 
 ### activation of the API
 now run DEEPaaS:
 ```
-deepaas-run --listen-ip 0.0.0.0
+deepaas-run --listen-ip 127.0.0.1
 ```
-and open http://0.0.0.0:5000/ui (or http://0.0.0.0:5000/api#/) and look for the methods belonging to the `planktonclas` module.
+and open http://127.0.0.1:5000/ui (or http://127.0.0.1:5000/api#/) and look for the methods belonging to the `planktonclas` module.
 Look for the ``TRAIN`` POST method. Click on 'Try it out', change whatever training args
 you want and click 'Execute'. The training will be launched and you will be able to follow its status by executing the 
 ``TRAIN`` GET method which will also give a history of all trainings previously executed.
 
-You can follow the training monitoring (Tensorboard) on http://0.0.0.0:6006.
+You can follow the training monitoring (Tensorboard) on http://127.0.0.1:6006.
 
 
 
@@ -259,9 +260,9 @@ You can have more info on how to interact directly with the module (not through 
 ### activation of the API
 now run DEEPaaS:
 ```
-deepaas-run --listen-ip 0.0.0.0
+deepaas-run --listen-ip 127.0.0.1
 ```
-Go to http://0.0.0.0:5000/ui (or http://0.0.0.0:5000/api#/) and look for the `PREDICT` POST method. Click on 'Try it out', change whatever test args
+Go to http://127.0.0.1:5000/ui (or http://127.0.0.1:5000/api#/) and look for the `PREDICT` POST method. Click on 'Try it out', change whatever test args
 you want and click 'Execute'. You can **either** supply a:
 
 * a `image` argument with a path pointing to an image.
@@ -275,6 +276,11 @@ Follow the notebook for [computing the predictions](./notebooks/3.0-Computing_pr
 Make sure to select DEMO or not if you want to predict your own data of the demo data as an example.
 
 ## Extra information
+### Predict through OSCAR:
+You can follow the [Oscar Tutorial](https://docs.ai4os.eu/en/latest/user/howto/deploy/oscar.html). 
+
+
+
 ### Activation of jupyter notebook
 You can also activate the jupyter notebooks inside the docker container and work from there. 
 ```
@@ -287,7 +293,7 @@ you get the following output:
 [I 12:34:56.789 NotebookApp]  To access the notebook, open this file in a browser:
      file:///root/.local/share/jupyter/runtime/nbserver-1234-open.html
 [I 12:34:56.789 NotebookApp]  Or copy and paste one of these URLs:
-     http://0.0.0.0:8888/?token=your_token_here
+     http://127.0.0.1:8888/?token=your_token_here
 ```
 You can this go to think link in your brower or copy this final link and use it as a kernel on your local vsc
 
