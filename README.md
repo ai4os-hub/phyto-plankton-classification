@@ -115,24 +115,7 @@ Now the environment has the right requiremens to be excecuted.
 
 ## Open through Deepaas
 Call-in on Imagine Marketplace and follow the [Tutorial](https://docs.ai4os.eu/en/latest/user/howto/train/dashboard.html). 
-Important to remember here: if you have coding experience through the flowchart, use 'Jupyter', if not, use 'Deepaas' when you fill in the general information.
-
-**Hardware configuration:**
-
-- Number of CPU: 1 for inference or 4/8 for training (max 10)  
-- Number of GPU: 0 (or 1 for training while combining the docker GPU tag) – not many available  
-- GPU model: both options are good  
-- RAM: 8000 MB default (max 25 GB)  
-- Disk memory: 10000 MB default (max 20 GB)
-
-
-**Storage configuration**
-- storage: /srv/.rclone/rclone.conf
-- Rclone vendor: nextcloud
-- storage URL: https://share.services.ai4os.eu/remote.php/webdav/
-- RCLONE user and password:
-  - log in to  https://share.services.ai4os.eu/index.php/login?redirect_url=/index.php/apps/dashboard/ using EGI and use your institutes IDP if possible
-  - in account go to profile > security > devices and sessions
+For more a detailed tutorial, please follow: [readme_tutorial](README_marketplace.md).
 
 # 1. Train the phyto-plankton-classifier
 
@@ -234,14 +217,14 @@ You can have more info on how to interact directly with the module (not through 
 ### activation of the API
 now run DEEPaaS:
 ```
-deepaas-run --listen-ip 127.0.0.1
+deepaas-run --listen-ip 0.0.0.0
 ```
-and open http://127.0.0.1:5000/ui (or http://127.0.0.1:5000/api#/) and look for the methods belonging to the `planktonclas` module.
+and open http://0.0.0.0:5000/ui (or http://0.0.0.0:5000/api#/) and look for the methods belonging to the `planktonclas` module.
 Look for the ``TRAIN`` POST method. Click on 'Try it out', change whatever training args
 you want and click 'Execute'. The training will be launched and you will be able to follow its status by executing the 
 ``TRAIN`` GET method which will also give a history of all trainings previously executed.
 
-You can follow the training monitoring (Tensorboard) on http://127.0.0.1:6006.
+You can follow the training monitoring (Tensorboard) on http://0.0.0.0:6006.
 
 
 
@@ -278,9 +261,9 @@ You can have more info on how to interact directly with the module (not through 
 ### activation of the API
 now run DEEPaaS:
 ```
-deepaas-run --listen-ip 127.0.0.1
+deepaas-run --listen-ip 0.0.0.0
 ```
-Go to http://127.0.0.1:5000/ui (or http://127.0.0.1:5000/api#/) and look for the `PREDICT` POST method. Click on 'Try it out', change whatever test args
+Go to http://0.0.0.0:5000/ui (or http://0.0.0.0:5000/api#/) and look for the `PREDICT` POST method. Click on 'Try it out', change whatever test args
 you want and click 'Execute'. You can **either** supply a:
 
 * a `image` argument with a path pointing to an image.
@@ -288,10 +271,6 @@ you want and click 'Execute'. You can **either** supply a:
 * a `zip` argument with an URL pointing to zipped folder with images.
 
 * a `file_location` argument with the local location of the folder with images you want predicted
-
-#### option 2: Follow the notebooks 
-Follow the notebook for [computing the predictions](./notebooks/3.0-Computing_predictions.ipynb)
-Make sure to select DEMO or not if you want to predict your own data of the demo data as an example.
 
 ## Extra information
 ### Predict through OSCAR:
@@ -309,7 +288,7 @@ you get the following output:
 [I 12:34:56.789 NotebookApp]  To access the notebook, open this file in a browser:
      file:///root/.local/share/jupyter/runtime/nbserver-1234-open.html
 [I 12:34:56.789 NotebookApp]  Or copy and paste one of these URLs:
-     http://127.0.0.1:8888/?token=your_token_here
+     http://0.0.0.0:8888/?token=your_token_here
 ```
 You can this go to think link in your brower or copy this final link and use it as a kernel on your local vsc
 
