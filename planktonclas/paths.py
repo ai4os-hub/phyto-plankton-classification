@@ -71,6 +71,9 @@ def get_predictions_dir():
     output_directory = CONF["testing"]["output_directory"]
     if output_directory == "/srv/somewhere":
         output_directory = None
+        
+    if file_location =="/srv/phyto-plankton-classification/data/demo-images/Actinoptychus":
+        file_location is None
     if file_location is None:
         if output_directory is None:
             # Define your get_timestamped_dir() function accordingly
