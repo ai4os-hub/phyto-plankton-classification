@@ -296,12 +296,15 @@ augmentation:
 #  Options to test your model
 #####################################################
 
+
+
 testing:
-  file_location:
-    value: "/srv/phyto-plankton-classification/data/demo-images/Actinoptychus"
-    type: "str"
-    help: >
-      Select the folder of the images you want to classify. For example: /storage/.../images_to_be_predicted
+  # predict_this:
+  #   value: "no"
+  #   type: "str"
+  #   choices: ['yes', 'no']
+  #   help: >
+  #         Predict the images in this folder: /srv/phyto-plankton-classification/data/predict_these.
 
   timestamp:
     value: 
@@ -316,14 +319,21 @@ testing:
       Checkpoint inside the timestamp to use for prediction.
 
   output_directory:
-    value: "/srv/somewhere"
+    value: null
     type: "str"
     help: >
       Location where to save the predictions. If empty, will save in mother folder of file_location folder.
+      
+  # file_location-bool:
+  #   value: False
+  #   type: "bool"
+  #   help: >
+  #         Use image augmentation during the training process.
+          
+      
 
-  urls:
-    value: 
-    type: "str"
-    help: >
-      Select a URL of the image you want to classify.
-
+  # file_location:
+  #   value: 
+  #   type: "str"
+  #   help: >
+  #     Select the folder of the images you want to classify. For example: /storage/.../images_to_be_predicted -> "/srv/phyto-plankton-classification/data/demo-images/Actinoptychus"

@@ -67,21 +67,23 @@ def get_ts_splits_dir():
 
 
 def get_predictions_dir():
-    file_location = CONF["testing"]["file_location"]
+    file_location = CONF.get("testing", {}).get("file_location", None)
     output_directory = CONF["testing"]["output_directory"]
-    if output_directory == "/srv/somewhere":
-        output_directory = None
-        
-    if file_location =="/srv/phyto-plankton-classification/data/demo-images/Actinoptychus":
-        file_location is None
-    if file_location is None:
+    # if file_location is None:
+    #     if output_directory is None:
+    #         # Define your get_timestamped_dir() function accordingly
+    #         return os.path.join(get_timestamped_dir(), "predictions")
+    #     else:
+    #         return os.path.join(output_directory)
+    if file_location is not None: 
+        if os.path.exists(file_location):
+            return os.path.join(os.path.dirname(file_location), "predictions")
+    else:
         if output_directory is None:
             # Define your get_timestamped_dir() function accordingly
             return os.path.join(get_timestamped_dir(), "predictions")
         else:
             return os.path.join(output_directory)
-    else:
-        return os.path.join(os.path.dirname(file_location), "predictions")
 
 
 def get_results_dir():

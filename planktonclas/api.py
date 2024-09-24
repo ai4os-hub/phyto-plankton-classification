@@ -47,8 +47,10 @@ from planktonclas.train_runfile import train_fn
 NOW = str("{:%Y_%m_%d_%H_%M_%S}".format(datetime.now()))
 # print(NOW, ": Starting the process")
 # Mount NextCloud folders (if NextCloud is available)
-
-
+import os
+from marshmallow import fields, ValidationError
+from pathlib import Path
+from marshmallow import ValidationError
 # Empty model variables for inference (will be loaded the first time we
 # perform inference)
 loaded_ts, loaded_ckpt = None, None
@@ -289,10 +291,22 @@ def prepare_files(directory):
         )
     return uploaded_files
 
+def validate_directory(path):
+    # Convert the input to a Path object if it's a string
+    if isinstance(path, str):
+        path = Path(path.strip('\'"'))  # Remove any leading/trailing quotes
+
+    # Check if the path is a valid directory
+    if not path.is_dir():
+        raise ValidationError(f"{path} is not a valid directory")
+
+    return path
+from pathlib import Path
+
 
 @catch_error
 def predict(**args):
-    if not any([args["image"], args["zip"], args["file_location"]]):
+    if not any([args["image"], args["zip"]]):
         raise Exception(
             "You must provide either 'urls', 'image','file_location' or 'zip' in the payload"
         )
@@ -327,16 +341,32 @@ def predict(**args):
             # Assign the list of files to args["files"]
             args["files"] = uploaded_files
 
-            raise RuntimeError("zipped ", uploaded_files)
+            # raise RuntimeError("zipped ", uploaded_files)
 
             # Call predict_data function (assuming it handles a list of files)
             return predict_data(args)
-    elif args["image"]:
+    if args["image"]:
         args["files"] = [args["image"]]  # patch until list is available
+        # raise RuntimeError("args files ", args["files"])
         print(args["files"])
         return predict_data(args)
     else:
-        args["files"] = prepare_files(args["file_location"])
+        conf = config.conf_dict
+        if conf["testing"]["predict_this"]=="yes":
+            path='/srv/phyto-plankton-classification/data/predict_these'
+        # path=validate_directory(args["file_location"])
+        path = Path(path)
+        # raise RuntimeError("popu ", args["file_location"])
+        try:
+            # List everything under the directory
+            contents = list(path.glob("**/*"))  # Recursively get all files and directories
+            if not contents:
+                raise RuntimeError(f"Nothing found in {path}")
+        except Exception as e:
+            raise RuntimeError(f"An error occurred while accessing {path}: {str(e)}")
+        # raise RuntimeError(f"An error occurred while accessing {contents}") 
+        args["files"] = prepare_files(path)
+        # raise RuntimeError("args files ", args["files"])
         return predict_data(args)
 
 
@@ -362,29 +392,49 @@ def predict_data(args):
         conf = config.conf_dict
     # Create a list with the path to the images
     filenames = [f.filename for f in args["files"]]
+    print(filenames)
     original_filenames = [f.original_filename for f in args["files"]]
     # Make the predictions
-    try:
-        with graph.as_default():
-            pred_lab, pred_prob = test_utils.predict(
-                model=model,
-                X=filenames,
-                conf=conf,
-                top_K=top_K,
-                filemode="local",
-                merge=merge,
-                use_multiprocessing=False,
-            )  # safer to avoid memory fragmentation in failed queries
-    finally:
-        for f in filenames:
-            os.remove(f)
+    # try:
+    with graph.as_default():
+        pred_lab, pred_prob = test_utils.predict(
+            model=model,
+            X=filenames,
+            conf=conf,
+            top_K=top_K,
+            filemode="local",
+            merge=merge,
+            use_multiprocessing=False,
+        )  # safer to avoid memory fragmentation in failed queries
+    # finally:
+    #     for f in filenames:
+    #         os.remove(f)
 
     if merge:
         pred_lab, pred_prob = np.squeeze(pred_lab), np.squeeze(pred_prob)
 
     return format_prediction(pred_lab, pred_prob, original_filenames)
 
-
+def get_predictions_dir(CONF):
+    file_location = CONF.get("testing", {}).get("file_location", None)
+    output_directory = CONF["testing"]["output_directory"]
+    # if file_location is None:
+    #     if output_directory is None:
+    #         # Define your get_timestamped_dir() function accordingly
+    #         return os.path.join(get_timestamped_dir(), "predictions")
+    #     else:
+    #         return os.path.join(output_directory)
+    if file_location is not None: 
+        if os.path.exists(file_location):
+            os.makedirs(os.path.join(os.path.dirname(file_location), "predictions"), exist_ok=True)
+            return os.path.join(os.path.dirname(file_location), "predictions")
+    else:
+        if output_directory is None:
+            # Define your get_timestamped_dir() function accordingly
+            return os.path.join(paths.get_timestamped_dir(), "predictions")
+        else:
+            return os.path.join(output_directory)
+        
 def format_prediction(labels, probabilities, original_filenames):
     if aphia_ids is not None:
         pred_aphia_ids = [aphia_ids[i] for i in labels]
@@ -408,7 +458,7 @@ def format_prediction(labels, probabilities, original_filenames):
     ckpt_name = conf["testing"]["ckpt_name"]
     split_name = "test"
     pred_path = os.path.join(
-        paths.get_predictions_dir(),
+        get_predictions_dir(conf),
         "{}+{}+top{}.json".format(ckpt_name, split_name, top_K),
     )
     with open(pred_path, "w") as outfile:
@@ -486,6 +536,18 @@ def get_train_args():
     return populate_parser(parser, default_conf)
 
 
+def get_directory_choices(base_path="/srv/data/"):
+    # Get a list of all directories in the base_path
+    try:
+        directories = [d for d in os.listdir(base_path) if os.path.isdir(os.path.join(base_path, d))]
+        return directories
+    except Exception as e:
+        print(f"Error accessing directories: {e}")
+        return []
+
+import os
+from webargs import fields
+
 def get_predict_args():
     parser = OrderedDict()
     default_conf = config.CONF
@@ -501,6 +563,40 @@ def get_predict_args():
         timestamp["value"] = timestamp_list[-1]
         timestamp["choices"] = timestamp_list
 
+#     # Directory choices for file_location
+#     data_dir = "/srv/phyto-plankton-classification/data"
+#     file_location = default_conf["testing"].get("file_location", {})
+    
+#     # Walk through the /srv/data directory and collect subdirectories
+#     subdirectories = [d for d in os.listdir(data_dir) if os.path.isdir(os.path.join(data_dir, d))]
+#     subdirectories = sorted(subdirectories)  # Optional: Sort the directory names
+
+#     if not subdirectories:
+#         file_location["value"] = None
+#         file_location["choices"] = []
+#     else:
+#         file_location["value"] = subdirectories[0]  # Set default to the first directory
+#         file_location["choices"] = subdirectories
+    # parser["file_location"]=file_location["value"]
+    # parser["file_location"] = fields.Field(
+    #     required=False,
+    #     missing=None,
+    #     data_key="file_location",
+    #     description="Select the folder of the images you want to classify. For example: '/srv/phyto-plankton-classification/data/demo-images/Actinoptychus'",
+    #     validate=validate_directory,
+    #     type="string",  # Use string type to indicate a path
+    #     choices=file_location["choices"]  # Provide the list of directory choices
+    # )
+
+    # parser["file_location"] = fields.Field(
+    #     required=False,
+    #     missing='no',  # Default value
+    #     enum=['yes', 'no'],  # Options for yes or no
+    #     description="Indicate whether to use a file location (yes/no).",
+    # )
+
+
+        
     parser["image"] = fields.Field(
         required=False,
         missing=None,
@@ -519,15 +615,62 @@ def get_predict_args():
         description="Select the ZIP file containing images you want to classify.",
     )
 
-    parser["file_location"] = fields.Field(
-        required=False,
-        missing=None,
-        data_key="file_location",
-        location="form",
-        description="Select the folder of the images you want to classify. For example: /srv/phyto-plankton-classification/data/demo-images/Actinoptychus",
-    )
-
     return populate_parser(parser, default_conf)
+
+
+# def get_predict_args():
+#     parser = OrderedDict()
+#     default_conf = config.CONF
+#     default_conf = OrderedDict([("testing", default_conf["testing"])])
+
+#     # Add options for modelname
+#     timestamp = default_conf["testing"]["timestamp"]
+#     timestamp_list = next(os.walk(paths.get_models_dir()))[1]
+#     timestamp_list = sorted(timestamp_list)
+#     if not timestamp_list:
+#         timestamp["value"] = ""
+#     else:
+#         timestamp["value"] = timestamp_list[-1]
+#         timestamp["choices"] = timestamp_list
+
+
+
+#     # parser["zip"] = fields.Field(
+#     #     required=False,
+#     #     missing=None,
+#     #     type="file",
+#     #     data_key="zip_data",  # Unique data key for zip
+#     #     location="form",
+#     #     description="Select the ZIP file containing images you want to classify.",
+#     # )
+
+#     directory_choices = get_directory_choices()
+#     parser["file_location"] = fields.Field(
+#         required=False,
+#         missing=None,
+#         data_key="file_location",
+#         description="Select the folder of the images you want to classify. For example: '/srv/phyto-plankton-classification/data/demo-images/Actinoptychus'",
+#         validate=validate_directory,
+#         choices=directory_choices  # Provide the list of directory choices
+#     )
+
+# #     parser["image"] = fields.Field(
+# #         required=False,
+# #         missing=None,
+# #         type="file",
+# #         data_key="image",
+# #         location="form",
+# #         description="Select the image you want to classify.",
+# #     )
+        
+#     # parser["file_location"] = fields.Field(
+#     #     required=False,
+#     #     missing=None,
+#     #     data_key="file_location",
+#     #     description="Select the folder of the images you want to classify. For example: /srv/phyto-plankton-classification/data/demo-images/Actinoptychus",
+#     # )
+#     # raise RuntimeError("popu ", parser["file_location"])
+#     return populate_parser(parser, default_conf)
 
 
 def get_metadata(distribution_name="planktonclas"):
