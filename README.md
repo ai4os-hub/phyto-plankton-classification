@@ -45,8 +45,6 @@ You can find more information about it in the [iMagine Marketplace](https://dash
 4. [Predict an image classifier](#Predict-an-image-classifier)
     1. [Predicting methods](#3-Predicting-methods)
         1. [Predict with Jupyter Notebooks (Recommended)](#31-Predict-with-jupyter-notebooks-recommended)
-            1. [Adapting the yaml file](#311-adapting-the-yaml-file)
-            2. [Go to Notebooks](#312-go-to-notebooks)
         2. [Predict with Deepaas](#32-Predict-with-deepaas)
 5. [More info](#more-info)
 6. [Acknowledgements](#acknowledgements)
@@ -98,7 +96,7 @@ After Docker is installed and running, you can run the ready-to-use [Docker cont
 
 Run container and only have local access
 ```bash
-docker run -ti -p 8888:8888 -p 5000:5000 -v "$(pwd):/srv/phyto-plankton-classification" ai4os-hub/phyto-plankton-classification:latest /bin/bash
+docker run -ti -p 8888:8888 -p 5000:5000 -v "$(pwd):/srv/phyto-plankton-classification" ai4oshub/phyto-plankton-classification:latest /bin/bash
 ```
 
 To get the latest version of the phytoplankton module running locally as well, please use the following code:
@@ -231,20 +229,7 @@ You can follow the training monitoring (Tensorboard) on http://0.0.0.0:6006.
 # Predict the phyto-plankton-classifier
 ## 3. Predicting methods
 ### 3.1: Train with Jupyter Notebooks (Recommended)
-#### 3.1.1: Adapting the yaml file
-Similar to [2.1.2: Running the test](#2.1.2:_Running_the_test),clarify the location of the images that need to be predicted inside the [yaml file](/etc/config.yaml) file.  
-You can change the config file directly as shown below.
-
-```bash
-testing:
-  file_location:
-    value: "/srv/phyto-plankton-classification/data/demo-images/Actinoptychus"
-    type: "str"
-    help: >
-      Select the folder of the images you want to classify. For example: /storage/.../images_to_be_predicted
-```   
-
-#### 3.1.2: Go to Notebooks
+Select the image or images you wanne predict.
 
 You can have more info on how to interact directly with the module (not through the DEEPaaS API) by examining the 
 ``./notebooks`` folder:
@@ -270,7 +255,6 @@ you want and click 'Execute'. You can **either** supply a:
 
 * a `zip` argument with an URL pointing to zipped folder with images.
 
-* a `file_location` argument with the local location of the folder with images you want predicted
 
 ## Extra information
 ### Predict through OSCAR:

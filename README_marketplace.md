@@ -177,30 +177,18 @@ You can follow the training monitoring (Tensorboard) by going back to the deploy
 # Predict the phyto-plankton-classifier
 ## 3. Predicting methods
 ### 3.1: Train with Jupyter Notebooks (Recommended)
-#### 3.1.1: Adapting the yaml file
-Similar to [2.1.2: Running the test](#2.1.2:_Running_the_test),clarify the location of the images that need to be predicted inside the [yaml file](https://github.com/ai4os-hub/phyto-plankton-classification/tree/main/etc/config.yaml) file.  
-You can change the config file directly as shown below.
-
-```bash
-testing:
-  file_location:
-    value: "/srv/phyto-plankton-classification/data/demo-images/Actinoptychus"
-    type: "str"
-    help: >
-      Select the folder of the images you want to classify. For example: /storage/.../images_to_be_predicted
-```   
-
-#### 3.1.2: Go to Notebooks 
+Select the image or images you wanne predict.
 
 You can have more info on how to interact directly with the module (not through the DEEPaaS API) by examining the 
 ``./notebooks`` folder:
 
-* [computing predictions notebook](https://github.com/ai4os-hub/phyto-plankton-classification/tree/main/notebooks/3.0-Computing_predictions.ipynb):
+* [computing predictions notebook](./notebooks/3.0-Computing_predictions.ipynb):
   Test the classifier on a number of tasks: predict a single local image (or url), predict multiple images (or urls),
   merge the predictions of a multi-image single observation, etc.
-* [predictions statistics notebook](https://github.com/ai4os-hub/phyto-plankton-classification/tree/main/notebooks/3.1-Prediction_statistics.ipynb):
+* [predictions statistics notebook](./notebooks/3.1-Prediction_statistics.ipynb):
   Make and store the predictions of the `test.txt` file (if you provided one). Once you have done that you can visualize
   the statistics of the predictions like popular metrics (accuracy, recall, precision, f1-score), the confusion matrix, etc.
+
 
 
 ## 3.2: Predict with Deepaas
@@ -215,7 +203,6 @@ you want and click 'Execute'. You can **either** supply a:
 
 * a `zip` argument with an URL pointing to zipped folder with images.
 
-* a `file_location` argument with the local location of the folder with images you want predicted
 
 
 ## 3.3: Predict with OSCAR 
