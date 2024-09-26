@@ -345,11 +345,15 @@ def predict(**args):
 
             # Call predict_data function (assuming it handles a list of files)
             return predict_data(args)
-    if args["image"]:
+    elif args["image"]:
         args["files"] = [args["image"]]  # patch until list is available
         # raise RuntimeError("args files ", args["files"])
         print(args["files"])
         return predict_data(args)
+    elif args['urls']:
+        args['urls'] = [args['urls']]  # patch until list is available
+        return predict_url(args)
+
     else:
         conf = config.conf_dict
         if conf["testing"]["predict_this"]=="yes":
@@ -369,6 +373,38 @@ def predict(**args):
         # raise RuntimeError("args files ", args["files"])
         return predict_data(args)
 
+
+def predict_url(args):
+    """
+    Function to predict an url
+    """
+    # Check user configuration
+    update_with_query_conf(args)
+    conf = config.conf_dict
+
+    merge = True
+    catch_url_error(args['urls'])
+
+    # Load model if needed
+    if loaded_ts != conf['testing']['timestamp'] or loaded_ckpt != conf['testing']['ckpt_name']:
+        load_inference_model(timestamp=conf['testing']['timestamp'],
+                             ckpt_name=conf['testing']['ckpt_name'])
+        conf = config.conf_dict
+
+    # Make the predictions
+    with graph.as_default():
+        pred_lab, pred_prob = test_utils.predict(model=model,
+                                                 X=args['urls'],
+                                                 conf=conf,
+                                                 top_K=top_K,
+                                                 filemode='url',
+                                                 merge=merge,
+                                                 use_multiprocessing=False)  # safer to avoid memory fragmentation in failed queries
+
+    if merge:
+        pred_lab, pred_prob = np.squeeze(pred_lab), np.squeeze(pred_prob)
+
+    return format_prediction(pred_lab, pred_prob)
 
 def predict_data(args):
     """
@@ -578,15 +614,13 @@ def get_predict_args():
 #         file_location["value"] = subdirectories[0]  # Set default to the first directory
 #         file_location["choices"] = subdirectories
     # parser["file_location"]=file_location["value"]
-    # parser["file_location"] = fields.Field(
-    #     required=False,
-    #     missing=None,
-    #     data_key="file_location",
-    #     description="Select the folder of the images you want to classify. For example: '/srv/phyto-plankton-classification/data/demo-images/Actinoptychus'",
-    #     validate=validate_directory,
-    #     type="string",  # Use string type to indicate a path
-    #     choices=file_location["choices"]  # Provide the list of directory choices
-    # )
+    parser["file_location"] = fields.Field(
+        required=False,
+        missing=None,
+        data_key="file_location",
+        description="Select the folder of the images you want to classify. For example: '/srv/phyto-plankton-classification/data/demo-images/Actinoptychus'",
+        type="string",  # Use string type to indicate a path
+    )
 
     # parser["file_location"] = fields.Field(
     #     required=False,
@@ -615,6 +649,12 @@ def get_predict_args():
         description="Select the ZIP file containing images you want to classify.",
     )
 
+    # # Use field.String instead of field.Url because I also want to allow uploading of base 64 encoded data strings
+    # parser['urls'] = fields.String(required=False,
+    #                                missing=None,
+    #                                description="Select an URL of the image you want to classify.")
+
+    
     return populate_parser(parser, default_conf)
 
 

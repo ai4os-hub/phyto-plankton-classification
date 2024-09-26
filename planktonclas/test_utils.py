@@ -82,7 +82,6 @@ def predict(
     # reshape to (N, crop_number, num_classes)
     output = output.reshape(len(X), -1, output.shape[-1])
     output = np.mean(output, axis=1)  # take the mean across the crops
-    print("outut ok")
     if merge:
         output = np.mean(output, axis=0)  # take the mean across the images
         lab = np.argsort(output)[::-1]  # sort labels in descending prob
@@ -99,7 +98,6 @@ def predict(
         ].reshape(
             lab.shape
         )  # retrieve corresponding probabilities
-        print("faltted")
     return lab, prob
 
 
