@@ -296,8 +296,6 @@ def prepare_files(directory):
 
 @catch_error
 def predict(**args):
-
-
     if not any([args["image"], args["zip"]]):
         raise Exception(
             "You must provide either 'urls', 'image','file_location' or 'zip' in the payload"
