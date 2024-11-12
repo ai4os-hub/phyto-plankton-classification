@@ -293,7 +293,6 @@ def prepare_files(directory):
 
 
 
-
 @catch_error
 def predict(**args):
     if not any([args["image"], args["zip"]]):
