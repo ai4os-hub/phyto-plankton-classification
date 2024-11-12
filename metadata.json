@@ -1,6 +1,6 @@
 {
     "title": "Phytoplankton species classifier (VLIZ) ",
-    "summary": "Identify the species level of Plankton for 95 classes. Working through API!",
+    "summary": "Identify the species level of Plankton for 95 classes. Working through API now!",
     "description": [
         "Phytoplankton species classifier is an application to classify phytoplankton, features DEEPaaS API.\n",
         "Provided by [VLIZ (Flanders Marine Institute)](https://www.vliz.be/nl)\n",

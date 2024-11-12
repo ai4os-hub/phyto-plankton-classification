@@ -357,7 +357,6 @@ def predict(**args):
 #             raise RuntimeError(f"Nothing found in {path}")
 #     except Exception as e:
 #         raise RuntimeError(f"An error occurred while accessing {path}: {str(e)}")
-#     # raise RuntimeError(f"An error occurred while accessing {contents}") 
 #     # raise RuntimeError("popu ", path)
 #     args["files"] = prepare_files(path)
 #     # raise RuntimeError("args files ", args["files"])
