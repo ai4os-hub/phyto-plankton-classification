@@ -39,7 +39,7 @@ links:
   source_code: https://github.com/ai4os-hub/phyto-plankton-classification
   docker_image: ai4oshub/phyto-plankton-classification
   dataset: https://zenodo.org/records/10554845
-  documentation: https://github.com/ai4os-hub/phyto-plankton-classification/blob/main/README_marketplace.md
+  documentation: https://github.com/ai4os-hub/phyto-plankton-classification/blob/main/.references/README_marketplace.md
   citation: https://www.vliz.be/en
 tags:
   - deep learning

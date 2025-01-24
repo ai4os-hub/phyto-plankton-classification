@@ -16,7 +16,7 @@ This is a plug-and-play tool to train and evaluate an phytoplankton classifier o
 You can find more information about it in the [iMagine Marketplace](https://dashboard.cloud.imagine-ai.eu/marketplace/).
 
 **Flowchart:** The flow inside github can be found within the orange frame
-![Flowchart: Phytoplankton Classifier Process](data/Flowchart_github.png)
+![Flowchart: Phytoplankton Classifier Process](.references/Flowchart_github.png)
 
 **Table of contents**
 1. [Installing this module](#installing-this-module)
