@@ -98,7 +98,7 @@ Run container and only have local access
 ```bash
 docker run -ti -p 8888:8888 -p 5000:5000 -v "$(pwd):/srv/phyto-plankton-classification" ai4oshub/phyto-plankton-classification:latest /bin/bash
 ```
-
+For MacOS:
 To get the latest version of the phytoplankton module running locally as well, please use the following code:
 ```bash
 curl --insecure -L -o "models\phytoplankton_vliz.tar.gz" https://share.services.ai4os.eu/index.php/s/rJQPQtBReqHAPf3/download

@@ -77,9 +77,6 @@ target/
 
 # exclude data from source control by default
 # data/
-# !data/samples/
-# !data/dataset_files/
-# !data/change_images/
 # hytoplankton_species_classifier/
 # phytoplankton_species_classifier.egg-info/
 # Mac OS-specific storage files
