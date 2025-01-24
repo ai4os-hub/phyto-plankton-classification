@@ -41,7 +41,7 @@ links:
   dataset: https://zenodo.org/records/10554845
   documentation: https://github.com/ai4os-hub/phyto-plankton-classification/blob/main/README_marketplace.md
   citation: https://www.vliz.be/en
-  tags:
+tags:
   - deep learning
   - vo.imagine-ai.eu
 tasks:
