@@ -4,7 +4,7 @@
 **Flowchart:** The flow inside the module
 
 
-<img src="references/Flowchart_github_call_in_h.png" alt="Flowchart: Phytoplankton Classifier Process" width="1000"/>
+<img src="Flowchart_github_call_in_h.png" alt="Flowchart: Phytoplankton Classifier Process" width="1000"/>
 
 Call-in on Imagine Marketplace and follow the [Tutorial](https://docs.ai4os.eu/en/latest/user/howto/train/dashboard.html).  
 Important to remember here: if you have coding experience through the flowchart, use 'Jupyter', if not, use 'Deepaas' when you fill in the general information.
