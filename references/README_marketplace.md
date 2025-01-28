@@ -231,4 +231,6 @@ https://aai.egi.eu/registry/co_petitions/start/coef:546
 
 ## 3.3.1: Predict through python scripts
 You can follow the [Oscar Tutorial](https://docs.ai4eosc.eu/en/latest/howtos/deploy/oscar.html). 
-Some example scripts can be found here [oscar](./oscar). 
+Some example scripts can be found here [oscar](https://github.com/ai4os-hub/phyto-plankton-classification/tree/main/oscar).
+
+Some example scripts can be found here [oscar](oscar/).
