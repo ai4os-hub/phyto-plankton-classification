@@ -207,8 +207,11 @@ you want and click 'Execute'. You can **either** supply a:
 
 ## 3.3: Predict with OSCAR 
 
-You can follow the [Oscar Tutorial](https://docs.ai4os.eu/en/latest/user/howto/deploy/oscar.html). 
-But basically go to: https://inference.cloud.ai4eosc.eu/ui/#/login and sign in and look for the 'phyto-plankton-classifier'. 
+Oscar has two options, either you can work through the oscar website (user friendly) or you can use python scripts (coding experience.)
+## 3.3.1: Predict through site 
+
+You can follow the [Oscar Tutorial](https://docs.ai4eosc.eu/en/latest/howtos/deploy/oscar-manual.html). 
+But basically go to: https://inference.cloud.ai4eosc.eu/ui/#/login or https://inference-walton.cloud.imagine-ai.eu/ui/#/login and sign in and look for the 'phyto-plankton-classifier'. You can put upload images in the phytoplankton-classifier bucket under "input" and found the results under "output".
 
 If  you don't have an account yet then:
 
@@ -225,3 +228,7 @@ be "Active", also "Valid Through" should be in future.
 4) IF you DON'T see "vo.imagine-ai.eu" listed, please, apply for the
 membership by clicking:
 https://aai.egi.eu/registry/co_petitions/start/coef:546
+
+## 3.3.1: Predict through python scripts
+You can follow the [Oscar Tutorial](https://docs.ai4eosc.eu/en/latest/howtos/deploy/oscar.html). 
+Some example scripts can be found here [oscar](./oscar). 
