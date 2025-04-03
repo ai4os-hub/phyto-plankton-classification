@@ -3,7 +3,7 @@ title: Phytoplankton species classifier (VLIZ)
 summary: Identify the species level of Plankton for 95 classes.
 description: |-
     Phytoplankton species classifier is an application to classify phytoplankton, features DEEPaaS API.
-    Provided by [VLIZ (Flanders Marine Institute)](https://www.vliz.be/nl).
+    Provided by [VLIZ (Flanders Marine Institute)](https://www.vliz.be/nl). 
 
     Plankton, though small, plays a critical role in marine ecosystems. Identifying plankton species is vital for understanding ecosystem health, predicting harmful algal blooms, and managing marine environments.
     The FlowCam, a technology capturing high-resolution images of plankton, coupled with artificial intelligence (AI), has revolutionized plankton identification.
