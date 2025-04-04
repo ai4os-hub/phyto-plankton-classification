@@ -174,7 +174,7 @@ def train_fn(TIMESTAMP, CONF):
 
     model.compile(
         optimizer=customAdam(
-            lr=CONF["training"]["initial_lr"],
+            learning_rate=CONF["training"]["initial_lr"],
             amsgrad=True,
             lr_mult=0.1,
             excluded_vars=top_vars,
@@ -183,18 +183,15 @@ def train_fn(TIMESTAMP, CONF):
         metrics=["accuracy"],
     )
 
-    history = model.fit_generator(
-        generator=train_gen,
+    history = model.fit(
+        x=train_gen,
         steps_per_epoch=train_steps,
-        epochs=CONF["training"]["epochs"],
+        epochs=1,#CONF["training"]["epochs"],
         class_weight=class_weights,
         validation_data=val_gen,
         validation_steps=val_steps,
         callbacks=utils.get_callbacks(CONF),
         verbose=1,
-        max_queue_size=5,
-        workers=4,
-        use_multiprocessing=CONF["training"]["use_multiprocessing"],
         initial_epoch=0,
     )
 
@@ -219,9 +216,7 @@ def train_fn(TIMESTAMP, CONF):
     fpath = os.path.join(paths.get_checkpoints_dir(), "final_model.h5")
     model.save(fpath, include_optimizer=False)
 
-    # print('Saving the model to protobuf...')
-    # fpath = os.path.join(paths.get_checkpoints_dir(), 'final_model.proto')
-    # model_utils.save_to_pb(model, fpath)
+ 
 
     print("Finished training")
 

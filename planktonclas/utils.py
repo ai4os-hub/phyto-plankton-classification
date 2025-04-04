@@ -73,7 +73,7 @@ class LR_scheduler(callbacks.LearningRateScheduler):
         super().__init__(schedule=self.schedule)
 
     def schedule(self, epoch):
-        current_lr = K.eval(self.model.optimizer.lr)
+        current_lr = K.eval(self.model.optimizer.learning_rate)
         if epoch in self.epoch_milestones:
             new_lr = current_lr * self.lr_decay
             print("Decaying the learning rate to {}".format(new_lr))
@@ -142,7 +142,7 @@ def get_callbacks(CONF, use_lr_decay=True):
         milestones = (
             np.array(CONF["training"]["lr_step_schedule"]) * CONF["training"]["epochs"]
         )
-        milestones = milestones.astype(np.int)
+        milestones = milestones.astype(np.int64)
         calls.append(
             LR_scheduler(
                 lr_decay=CONF["training"]["lr_step_decay"],
