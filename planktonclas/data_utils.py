@@ -757,7 +757,7 @@ def compute_meanRGB(im_list, verbose=False, workers=4):
     https://stackoverflow.com/questions/41920124/multiprocessing-use-tqdm-to-display-a-progress-bar
     """
 
-    print("Computing mean RGB pixel with {} workers...".format(workers))
+    #print("Computing mean RGB pixel with {} workers...".format(workers))
 
     with Pool(workers) as p:
         r = list(tqdm(p.imap(im_stats, im_list), total=len(im_list), disable=verbose))
