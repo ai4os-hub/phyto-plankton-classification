@@ -186,7 +186,7 @@ def train_fn(TIMESTAMP, CONF):
     history = model.fit(
         x=train_gen,
         steps_per_epoch=train_steps,
-        epochs=1,#CONF["training"]["epochs"],
+        epochs=CONF["training"]["epochs"],
         class_weight=class_weights,
         validation_data=val_gen,
         validation_steps=val_steps,
@@ -245,9 +245,9 @@ def train_fn(TIMESTAMP, CONF):
         output = model.predict(
             test_gen,
             verbose=1,
-            max_queue_size=10,
-            workers=4,
-            use_multiprocessing=CONF["training"]["use_multiprocessing"],
+            #max_queue_size=10,
+            #workers=16,
+            #use_multiprocessing=CONF["training"]["use_multiprocessing"],
         )
 
         # reshape to (N, crop_number, num_classes)

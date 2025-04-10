@@ -95,7 +95,7 @@ class LRHistory(callbacks.Callback):
         super().__init__()
 
     def on_epoch_end(self, epoch, logs=None):
-        logs.update({"lr": K.eval(self.model.optimizer.lr).astype(np.float64)})
+        logs.update({"lr": K.eval(self.model.optimizer.learning_rate).astype(np.float64)})
         super().on_epoch_end(epoch, logs)
 
 
