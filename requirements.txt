@@ -3,6 +3,7 @@ python-dotenv>=0.5.1
 numpy~=1.26.0
 tensorboardX>=2.5.0
 protobuf>=3.20.0,<6.0
+tensorflow==2.19.0
 opencv-python>=4.5.0
 albumentations==0.1.8
 tqdm>=4.64.0
