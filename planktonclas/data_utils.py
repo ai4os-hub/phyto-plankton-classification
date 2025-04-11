@@ -1,8 +1,8 @@
 """
 Miscellaneous functions manage data.
 
-Date: September 2018
-Author: Ignacio Heredia
+Date: April 2025
+Author: Ignacio Heredia (Updated for Albumentations 2.0)
 Email: iheredia@ifca.unican.es
 Github: ignacioheredia
 """
@@ -16,12 +16,10 @@ import threading
 import warnings
 from multiprocessing import Pool
 
-import albumentations
+import albumentations as A
 import cv2
 import numpy as np
 import requests
-from albumentations.augmentations import transforms
-from albumentations.imgaug import transforms as imgaug_transforms
 from tensorflow.keras.utils import Sequence, to_categorical
 from tqdm import tqdm
 
@@ -334,11 +332,11 @@ def augment(im, params=None):
     rand_x = np.random.randint(low=0, high=lx - crop_size + 1)
     rand_y = np.random.randint(low=0, high=ly - crop_size + 1)
 
-    crop = transforms.Crop(
+    crop_transform = A.Crop(
         x_min=rand_x, y_min=rand_y, x_max=rand_x + crop_size, y_max=rand_y + crop_size
     )
 
-    im = crop(image=im)["image"]
+    im = crop_transform(image=im)["image"]
 
     # 2) Now add the transformations for augmenting the image pixels
     transform_list = []
@@ -346,31 +344,31 @@ def augment(im, params=None):
     # Add random stretching
     if params["stretch"]:
         transform_list.append(
-            imgaug_transforms.IAAPerspective(scale=0.1, p=params["stretch"])
+            A.PerspectiveTransform(scale=(0.05, 0.1), p=params["stretch"])
         )
 
     # Add random rotation
     if params["rot"]:
         transform_list.append(
-            transforms.Rotate(limit=params["rot_lim"], p=params["rot"])
+            A.Rotate(limit=params["rot_lim"], p=params["rot"])
         )
 
     # Add horizontal flip
     if params["h_flip"]:
-        transform_list.append(transforms.HorizontalFlip(p=params["h_flip"]))
+        transform_list.append(A.HorizontalFlip(p=params["h_flip"]))
 
     # Add vertical flip
     if params["v_flip"]:
-        transform_list.append(transforms.VerticalFlip(p=params["v_flip"]))
+        transform_list.append(A.VerticalFlip(p=params["v_flip"]))
 
     # Add some blur to the image
     if params["blur"]:
         transform_list.append(
-            albumentations.OneOf(
+            A.OneOf(
                 [
-                    transforms.MotionBlur(blur_limit=7, p=1.0),
-                    transforms.MedianBlur(blur_limit=7, p=1.0),
-                    transforms.Blur(blur_limit=7, p=1.0),
+                    A.MotionBlur(blur_limit=7, p=1.0),
+                    A.MedianBlur(blur_limit=7, p=1.0),
+                    A.Blur(blur_limit=7, p=1.0),
                 ],
                 p=params["blur"],
             )
@@ -379,18 +377,15 @@ def augment(im, params=None):
     # Add pixel noise
     if params["pixel_noise"]:
         transform_list.append(
-            albumentations.OneOf(
+            A.OneOf(
                 [
-                    transforms.CLAHE(clip_limit=2, p=1.0),
-                    imgaug_transforms.IAASharpen(p=1.0),
-                    imgaug_transforms.IAAEmboss(p=1.0),
-                    transforms.RandomBrightnessContrast(contrast_limit=0, p=1.0),
-                    transforms.RandomBrightnessContrast(brightness_limit=0, p=1.0),
-                    transforms.RGBShift(p=1.0),
-                    transforms.RandomGamma(p=1.0)  # ,
-                    # transforms.JpegCompression(),
-                    # transforms.ChannelShuffle(),
-                    # transforms.ToGray()
+                    A.CLAHE(clip_limit=2, p=1.0),
+                    A.Sharpen(p=1.0),
+                    A.Emboss(p=1.0),
+                    A.RandomBrightnessContrast(contrast_limit=0, p=1.0),
+                    A.RandomBrightnessContrast(brightness_limit=0, p=1.0),
+                    A.RGBShift(p=1.0),
+                    A.RandomGamma(p=1.0)
                 ],
                 p=params["pixel_noise"],
             )
@@ -398,7 +393,7 @@ def augment(im, params=None):
 
     # Add pixel saturation
     if params["pixel_sat"]:
-        transform_list.append(transforms.HueSaturationValue(p=params["pixel_sat"]))
+        transform_list.append(A.HueSaturationValue(p=params["pixel_sat"]))
 
     # Remove randomly remove some regions from the image
     if params["cutout"]:
@@ -409,7 +404,7 @@ def augment(im, params=None):
         )  # min and max size of the squares wrt the full image
         scale = np.random.uniform(scale_low, scale_high)
         transform_list.append(
-            transforms.Cutout(
+            A.Cutout(
                 num_holes=8,
                 max_h_size=int(scale * ly),
                 max_w_size=int(scale * lx),
@@ -418,14 +413,14 @@ def augment(im, params=None):
         )
 
     # Compose all image transformations and augment the image
-    augmentation_fn = albumentations.Compose(transform_list)
+    augmentation_fn = A.Compose(transform_list)
     im = augmentation_fn(image=im)["image"]
 
     return im
 
 
 def resize_im(im, height, width):
-    resize_fn = transforms.Resize(height=height, width=width)
+    resize_fn = A.Resize(height=height, width=width)
     return resize_fn(image=im)["image"]
 
 
@@ -463,11 +458,6 @@ def data_generator(
     idxs = np.arange(len(inputs))
     if shuffle:
         np.random.shuffle(idxs)
-
-    # # Reshape targets to the correct shape
-    # if len(targets.shape) == 1:
-    #     print('reshaping targets')
-    #     targets = targets.reshape(-1, 1)
 
     for start_idx in range(0, len(inputs) - batch_size + 1, batch_size):
         excerpt = idxs[start_idx : start_idx + batch_size]
@@ -526,8 +516,6 @@ class data_sequence(Sequence):
     """
     Instance of a Keras Sequence that is safer to use with multiprocessing than a standard generator.
     Check https://stanford.edu/~shervine/blog/keras-how-to-generate-data-on-the-fly
-
-    TODO: Add sample weights on request
     """
 
     def __init__(
@@ -616,29 +604,29 @@ def standard_tencrop_batch(im, crop_prop=0.9):
     crop_size = int(crop_prop * min_side)
 
     # Crops
-    c1 = transforms.Crop(x_min=0, y_min=0, x_max=crop_size, y_max=crop_size)(image=im)[
+    c1 = A.Crop(x_min=0, y_min=0, x_max=crop_size, y_max=crop_size)(image=im)[
         "image"
     ]  # top-left
 
-    c2 = transforms.Crop(x_min=0, y_min=h - crop_size, x_max=crop_size, y_max=h)(
+    c2 = A.Crop(x_min=0, y_min=h - crop_size, x_max=crop_size, y_max=h)(
         image=im
     )[
         "image"
     ]  # bottom-left
 
-    c3 = transforms.Crop(x_min=w - crop_size, y_min=0, x_max=w, y_max=crop_size)(
+    c3 = A.Crop(x_min=w - crop_size, y_min=0, x_max=w, y_max=crop_size)(
         image=im
     )[
         "image"
     ]  # top-right
 
-    c4 = transforms.Crop(x_min=w - crop_size, y_min=h - crop_size, x_max=w, y_max=h)(
+    c4 = A.Crop(x_min=w - crop_size, y_min=h - crop_size, x_max=w, y_max=h)(
         image=im
     )[
         "image"
     ]  # bottom-right
 
-    c5 = transforms.Crop(
+    c5 = A.Crop(
         x_min=np.round((w - crop_size) / 2).astype(int),
         y_min=np.round((h - crop_size) / 2).astype(int),
         x_max=np.round((w + crop_size) / 2).astype(int),
@@ -648,7 +636,7 @@ def standard_tencrop_batch(im, crop_prop=0.9):
     ]  # center
 
     # Save crop and its mirror
-    lr_aug = albumentations.HorizontalFlip(p=1)
+    lr_aug = A.HorizontalFlip(p=1)
     for image in [c1, c2, c3, c4, c5]:
         batch.append(image)
         batch.append(lr_aug(image=image)["image"])
@@ -756,8 +744,6 @@ def compute_meanRGB(im_list, verbose=False, workers=4):
     ----------
     https://stackoverflow.com/questions/41920124/multiprocessing-use-tqdm-to-display-a-progress-bar
     """
-
-    #print("Computing mean RGB pixel with {} workers...".format(workers))
 
     with Pool(workers) as p:
         r = list(tqdm(p.imap(im_stats, im_list), total=len(im_list), disable=verbose))
