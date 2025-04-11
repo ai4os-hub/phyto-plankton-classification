@@ -33,6 +33,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
         gcc \
         git \
         libgl1\
+        psmisc \
         curl \
         libglib2.0-0\
     && rm -rf /var/lib/apt/lists/*
@@ -77,9 +78,9 @@ ENV SHELL /bin/bash
 RUN git clone -b $branch --depth 1 https://github.com/ai4os-hub/phyto-plankton-classification && \
     cd  phyto-plankton-classification && \
     pip install --ignore-installed blinker -e .  && \
-    cd ..&& \
-    pip uninstall -y numpy && \
-    pip install numpy~=1.24
+    cd ..
+   # pip uninstall -y numpy && \
+  #  pip install numpy~=1.24
 
 # https://share.services.ai4os.eu/index.php/s/rJQPQtBReqHAPf3/download/phytoplankton_vliz.tar.gz
 # https://share.services.ai4os.eu/index.php/s/dFg9cma5FwG6PZD/download/phytoplankton_vliz.tar.xz
