@@ -74,9 +74,9 @@ def predict(
     output = model.predict(
         data_gen,
         verbose=1,
-        max_queue_size=10,
-        workers=4,
-        use_multiprocessing=use_multiprocessing,
+       # max_queue_size=10,
+        #workers=4,
+        #use_multiprocessing=use_multiprocessing,
     )
 
     # reshape to (N, crop_number, num_classes)

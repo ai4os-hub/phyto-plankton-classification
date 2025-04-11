@@ -1,21 +1,22 @@
-# external requirements
-Sphinx
+Sphinx>=5.0.0
 python-dotenv>=0.5.1
-numpy>=1.14.5
-tensorboardX>=1.4
-opencv-python~=3.4.17.61
+numpy>=1.20.0
+tensorboardX>=2.5.0
+opencv-python>=4.5.0
 albumentations==0.1.8
-tqdm>=4.25.0
-requests>=2.18.4
-PyYAML>=3.12
-matplotlib>=2.2.2
+tqdm>=4.64.0
+requests>=2.27.1
+PyYAML>=6.0
+matplotlib>=3.5.0
 flaat~=0.8.0
-Jinja2>=2.10
-Flask>=1.0.2
-gunicorn>=19.9.0
-#requests~=2.27.1
-seaborn>=0.8.1
-scikit-learn>=0.19.1
+Jinja2>=3.0.0
+Flask>=2.0.0
+gunicorn>=20.1.0
+seaborn>=0.12.0
+scikit-learn>=1.0.0
+## DEEPaaS framework requirements
 webargs>=5.5.2,<6.0.0
 aiohttp>=3.6.2
 deepaas>=2.1.0
+ 
+ 
