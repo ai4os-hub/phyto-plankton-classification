@@ -20,6 +20,6 @@ scikit-learn>=0.19.1
 aiohttp>=3.6.2
  
 webargs~=5.5.3
-deepaas>=2.2.0, <3.0
-flaat~=1.1.0
+deepaas==2.2.0
+flaat~=0.8.0
 
