@@ -10,7 +10,7 @@
 # Be Aware! For the Jenkins CI/CD pipeline, 
 # input args are defined inside the JenkinsConstants.groovy, not here!
 
-ARG tag=2.19.0
+ARG tag=2.19.0-gpu
 
 # Base image, e.g. tensorflow/tensorflow:2.9.1
 FROM tensorflow/tensorflow:${tag}
@@ -19,39 +19,22 @@ LABEL maintainer='Ignacio Heredia (CSIC), Wout Decrop (VLIZ)'
 LABEL version='0.1.0'
 # Add container's metadata to appear along the models metadata
 ENV CONTAINER_MAINTAINER "Wout Decrop <wout.decrop@vliz.be>"
-ENV CONTAINER_VERSION "0.1"
-ENV CONTAINER_DESCRIPTION "AI4OS/DEEP as a Service Container: Phyto-Plankton Classification"
+
 # Identify the species level of Plankton for 95 classes. Working on OSCAR
 
 # What user branch to clone [!]
 ARG branch=tf2.19
 ARG tag   # need to correctly parse $tag variable
 
-ARG DEBIAN_FRONTEND=noninteractive
-
-# 2024: need to re-add GPG keys for Nvidia repos but only in the case of GPU images
-# Note for GPU build: see https://askubuntu.com/questions/1444943/nvidia-gpg-error-the-following-signatures-couldnt-be-verified-because-the-publi
-RUN if [[ "$tag" =~ "-gpu" ]]; then \
-    apt-key del 7fa2af80 ; \
-    curl https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/3bf863cc.pub | apt-key add - ; \
-    curl https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64/7fa2af80.pub | apt-key add - ; fi
-
-
 # Install Ubuntu packages
 # - gcc is needed in Pytorch images because deepaas installation might break otherwise (see docs) (it is already installed in tensorflow images)
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
+    apt-get install -y --no-install-recommends \
         gcc \
         git \
+        libgl1\
         curl \
-        psmisc \
-        python3-setuptools \
-        python3-pip \
-        python3-wheel \
-        libgl1 \
-        libsm6 \
-        libxrender1 \
-        libfontconfig1 \
-    && apt-get clean \
+        libglib2.0-0\
     && rm -rf /var/lib/apt/lists/*
 
 # Update python packages
@@ -83,15 +66,9 @@ ENV RCLONE_CONFIG=/srv/.rclone/rclone.conf
 ENV DISABLE_AUTHENTICATION_AND_ASSUME_AUTHENTICATED_USER yes
 
 # Initialization scripts
-# * allows to run shorter command "deep-start"
-# * deep-start can install JupyterLab or VSCode if requested
+# deep-start can install JupyterLab or VSCode if requested
 RUN git clone https://github.com/ai4os/deep-start /srv/.deep-start && \
     ln -s /srv/.deep-start/deep-start.sh /usr/local/bin/deep-start
-
-# Useful tool to debug extensions loading
-RUN pip install --no-cache-dir entry_point_inspector && \
-    rm -rf /root/.cache/pip/* && \
-    rm -rf /tmp/*
 
 # Necessary for the Jupyter Lab terminal
 ENV SHELL /bin/bash
@@ -99,8 +76,10 @@ ENV SHELL /bin/bash
 # Install user app
 RUN git clone -b $branch --depth 1 https://github.com/ai4os-hub/phyto-plankton-classification && \
     cd  phyto-plankton-classification && \
-    pip3 install --no-cache-dir --ignore-installed blinker -e . && \
-    cd ..
+    pip install --ignore-installed blinker -e .  && \
+    cd ..&& \
+    pip uninstall -y numpy && \
+    pip install numpy~=1.24
 
 # https://share.services.ai4os.eu/index.php/s/rJQPQtBReqHAPf3/download/phytoplankton_vliz.tar.gz
 # https://share.services.ai4os.eu/index.php/s/dFg9cma5FwG6PZD/download/phytoplankton_vliz.tar.xz
