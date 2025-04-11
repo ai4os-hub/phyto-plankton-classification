@@ -16,8 +16,7 @@ gunicorn>=20.1.0
 seaborn>=0.12.0
 scikit-learn>=1.0.0
 ## DEEPaaS framework requirements
-aiohttp>=3.6.2
+aiohttp==3.11.16
 webargs==5.5.2 
-
-deepaas==2.1.0
-flaat~=0.8.0
+deepaas==2.5.2
+flaat~=0.8.4
