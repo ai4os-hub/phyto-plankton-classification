@@ -25,7 +25,7 @@ general:
           If path is relative it will be appended to the package path.
 
   images_directory:
-    value: "/hkfs/home/project/hk-project-test-p0023500/mp9809/plankton/phytoplankton_images_and_datasplit/images_DS"
+    value: "/storage/Imagine_UC5/data/images_mini_version"
     type: "str"
     help: >
           Base directory for images. If the path is relative, it will be appended to the package path.
@@ -119,7 +119,7 @@ training:
           Initial learning rate.
 
   batch_size:
-    value: 64
+    value: 16
     type: "int"
     range: [1, 64]
     help: >
@@ -127,7 +127,7 @@ training:
           your batchsize so that the model still fits in the GPU.
 
   epochs:
-    value: 3
+    value: 15
     type: "int"
     range: [0, None]
     help: >

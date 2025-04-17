@@ -89,11 +89,11 @@ ENV SWIFT_CONTAINER=https://share.services.ai4os.eu/index.php/s/rJQPQtBReqHAPf3/
 ENV MODEL_TAR=phytoplankton_vliz.tar.gz
 # mkdir -p ./phyto-plankton-classification/models \
 # Download and extract the file
-RUN mkdir -p ./phyto-plankton-classification/models && \
-    curl -L ${SWIFT_CONTAINER} -o ./phyto-plankton-classification/models/${MODEL_TAR}
-RUN cd ./phyto-plankton-classification/models && \
-    tar -xzf ${MODEL_TAR} && \
-    rm ${MODEL_TAR}
+#RUN mkdir -p ./phyto-plankton-classification/models && \
+#    curl -L ${SWIFT_CONTAINER} -o ./phyto-plankton-classification/models/${MODEL_TAR}
+#RUN cd ./phyto-plankton-classification/models && \
+#    tar -xzf ${MODEL_TAR} && \
+#    rm ${MODEL_TAR}
 
 # Open ports: DEEPaaS (5000), Monitoring (6006), Jupyter (8888)
 EXPOSE 5000 6006 8888
