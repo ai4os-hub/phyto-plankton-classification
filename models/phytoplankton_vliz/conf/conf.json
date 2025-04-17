@@ -6,9 +6,9 @@
     },
     "dataset": {
         "mean_RGB": [
-            158.33844060679408,
-            158.33844060679408,
-            158.33844060679408
+            147.6598303732786,
+            147.6598303732786,
+            147.6598303732786
         ],
         "split_ratios": [
             0.8,
@@ -16,14 +16,14 @@
             0.1
         ],
         "std_RGB": [
-            48.89589490647217,
-            48.89589490647217,
-            48.89589490647217
+            41.29076434616755,
+            41.29076434616755,
+            41.29076434616755
         ]
     },
     "general": {
         "base_directory": ".",
-        "images_directory": "/storage/Imagine_UC5_new/data/images"
+        "images_directory": "/hkfs/home/project/hk-project-test-p0023500/mp9809/plankton/phytoplankton_images_and_datasplit/images_DS"
     },
     "model": {
         "image_size": 100,
@@ -37,11 +37,11 @@
     },
     "testing": {
         "ckpt_name": "final_model.h5",
-        "timestamp": null,
-        "use_test": true
+        "output_directory": null,
+        "timestamp": null
     },
     "training": {
-        "batch_size": 16,
+        "batch_size": 64,
         "ckpt_freq": null,
         "epochs": 15,
         "initial_lr": 0.001,
@@ -56,6 +56,7 @@
         "use_class_weights": false,
         "use_early_stopping": false,
         "use_multiprocessing": false,
+        "use_test": true,
         "use_validation": true
     }
 }
