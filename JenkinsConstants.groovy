@@ -10,10 +10,10 @@ def dockerfile = 'Dockerfile'
 
 
 @Field
-def base_cpu_tag = '2.19.0-py3'
+def base_cpu_tag = '2.19.0'
 
 @Field
-def base_gpu_tag = '2.19.0-gpu-py3'
+def base_gpu_tag = '2.19.0-gpu'
 
 
 
