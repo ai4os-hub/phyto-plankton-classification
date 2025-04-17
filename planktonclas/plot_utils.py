@@ -91,12 +91,12 @@ def training_plots(conf, stats, show_val=True, show_ckpt=True):
 
     # Training
     axs[0].plot(stats["epoch"], stats["loss"], label="Training")
-    axs[1].plot(stats["epoch"], stats["acc"], label="Training")
+    axs[1].plot(stats["epoch"], stats["accuracy"], label="Training")
 
     # Validation
     if (conf["training"]["use_validation"]) and show_val:
         axs[0].plot(stats["epoch"], stats["val_loss"], label="Validation")
-        axs[1].plot(stats["epoch"], stats["val_acc"], label="Validation")
+        axs[1].plot(stats["epoch"], stats["val_accuracy"], label="Validation")
 
     # Model Checkpoints
     if (conf["training"]["ckpt_freq"] is not None) and show_ckpt:
@@ -149,12 +149,12 @@ def multi_training_plots(timestamps, legend_loc="upper right"):
 
         # Training
         axs[0].plot(stats["epoch"], stats["loss"], label=ts)
-        axs[1].plot(stats["epoch"], stats["acc"], label=ts)
+        axs[1].plot(stats["epoch"], stats["accuracy"], label=ts)
 
         # Validation
         if conf["training"]["use_validation"]:
             axs[2].plot(stats["epoch"], stats["val_loss"], label=ts)
-            axs[3].plot(stats["epoch"], stats["val_acc"], label=ts)
+            axs[3].plot(stats["epoch"], stats["val_accuracy"], label=ts)
 
     axs[1].set_ylim([0, 1])
     axs[3].set_ylim([0, 1])
