@@ -1,6 +1,7 @@
 import numpy as np
-import matplotlib.pyplot as plt  
-from PIL import Image  
+import matplotlib.pyplot as plt
+from PIL import Image
+
 
 def show_image(image, grayscale=True, ax=None, title=""):
     if ax is None:

@@ -6,10 +6,18 @@ import boto3
 
 
 # This information is retrieved from your deployment information window
-MINIO_BUCKET = "ai4papi-*************************************************"
-MINIO_URL = "https://****************************************************"
-MINIO_ACCESS_KEY = "**********************************************@egi.eu"
-MINIO_SECRET_KEY = "*****************************************************"
+MINIO_BUCKET = (
+    "ai4papi-*************************************************"
+)
+MINIO_URL = (
+    "https://****************************************************"
+)
+MINIO_ACCESS_KEY = (
+    "**********************************************@egi.eu"
+)
+MINIO_SECRET_KEY = (
+    "*****************************************************"
+)
 
 # This is how you decide to name your new prediction
 prediction_ID = "test-prediction"
@@ -29,6 +37,7 @@ pth_remote_input = f"inputs/{prediction_ID}.json"
 pth_remote_output = f"outputs/{prediction_ID}.json"
 pth_remote_logs = f"outputs/{prediction_ID}.log"
 
+
 # Prepare the data you want to predict
 def get_base64(fpath):
     """
@@ -38,6 +47,7 @@ def get_base64(fpath):
     with open(fpath, "rb") as f:
         encoded_str = base64.b64encode(f.read()).decode("utf-8")
     return encoded_str
+
 
 data = {
     "oscar-files": [
@@ -77,14 +87,22 @@ while True:
     # If the output is available, download it
     if pth_remote_logs in contents:
         with open(pth_local_logs, "wb") as data:
-            client.download_fileobj(MINIO_BUCKET, pth_remote_logs, data)
-        print(f"Downloaded logs from {pth_remote_logs} in bucket {MINIO_BUCKET}")
+            client.download_fileobj(
+                MINIO_BUCKET, pth_remote_logs, data
+            )
+        print(
+            f"Downloaded logs from {pth_remote_logs} in bucket {MINIO_BUCKET}"
+        )
 
         # Prediction JSON will only be available if the prediction was successful
         if pth_remote_output in contents:
             with open(pth_local_output, "wb") as data:
-                client.download_fileobj(MINIO_BUCKET, pth_remote_output, data)
-            print(f"Downloaded data from {pth_remote_output} in bucket {MINIO_BUCKET}")
+                client.download_fileobj(
+                    MINIO_BUCKET, pth_remote_output, data
+                )
+            print(
+                f"Downloaded data from {pth_remote_output} in bucket {MINIO_BUCKET}"
+            )
 
         break
 

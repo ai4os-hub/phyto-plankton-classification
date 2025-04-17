@@ -1,17 +1,18 @@
 import base64
 
 import requests
+
 print("start")
 
 endpoint = "https://inference.cloud.ai4eosc.eu/run/ai4papi-***********************"
 token = "*************************************************************************"
 
 
-
 def get_base64(fpath):
     with open(fpath, "rb") as f:
         encoded_str = base64.b64encode(f.read()).decode("utf-8")
     return encoded_str
+
 
 data = {
     "oscar-files": [

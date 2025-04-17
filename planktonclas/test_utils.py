@@ -74,17 +74,21 @@ def predict(
     output = model.predict(
         data_gen,
         verbose=1,
-       # max_queue_size=10,
-        #workers=4,
-        #use_multiprocessing=use_multiprocessing,
+        # max_queue_size=10,
+        # workers=4,
+        # use_multiprocessing=use_multiprocessing,
     )
 
     # reshape to (N, crop_number, num_classes)
     output = output.reshape(len(X), -1, output.shape[-1])
     output = np.mean(output, axis=1)  # take the mean across the crops
     if merge:
-        output = np.mean(output, axis=0)  # take the mean across the images
-        lab = np.argsort(output)[::-1]  # sort labels in descending prob
+        output = np.mean(
+            output, axis=0
+        )  # take the mean across the images
+        lab = np.argsort(output)[
+            ::-1
+        ]  # sort labels in descending prob
         lab = lab[:top_K]  # keep only top_K labels
         # add extra dimension to make to output have a shape (1, top_k)
         lab = np.expand_dims(lab, axis=0)
@@ -94,7 +98,8 @@ def predict(
         lab = np.argsort(output, axis=1)[:, ::-1]
         lab = lab[:, :top_K]  # keep only top_K labels
         prob = output[
-            np.repeat(np.arange(len(lab)), lab.shape[1]), lab.flatten()
+            np.repeat(np.arange(len(lab)), lab.shape[1]),
+            lab.flatten(),
         ].reshape(
             lab.shape
         )  # retrieve corresponding probabilities

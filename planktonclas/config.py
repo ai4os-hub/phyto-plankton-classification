@@ -39,7 +39,9 @@ def check_conf(conf=CONF):
                         )
                     )
 
-            if ("choices" in gg_keys) and (g_val["value"] not in g_val["choices"]):
+            if ("choices" in gg_keys) and (
+                g_val["value"] not in g_val["choices"]
+            ):
                 raise ValueError(
                     "The selected value for {} is not an available choice.".format(
                         g_key
@@ -168,5 +170,9 @@ def print_conf_table(conf=conf_dict):
     print("=" * 75)
     for group, val in sorted(conf.items()):
         for g_key, g_val in sorted(val.items()):
-            print("{:<25}{:<30}{:<15} \n".format(group, g_key, str(g_val)))
+            print(
+                "{:<25}{:<30}{:<15} \n".format(
+                    group, g_key, str(g_val)
+                )
+            )
         print("-" * 75 + "\n")
