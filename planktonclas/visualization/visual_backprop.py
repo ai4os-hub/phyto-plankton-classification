@@ -13,8 +13,12 @@ class VisualBackprop(SaliencyMask):
     def __init__(self, model, output_index=0):
         """Constructs a VisualProp SaliencyMask."""
         inps = [model.input, K.learning_phase()]  # input placeholder
-        outs = [layer.output for layer in model.layers]  # all layer outputs
-        self.forward_pass = K.function(inps, outs)  # evaluation function
+        outs = [
+            layer.output for layer in model.layers
+        ]  # all layer outputs
+        self.forward_pass = K.function(
+            inps, outs
+        )  # evaluation function
 
         self.model = model
 
@@ -54,7 +58,10 @@ class VisualBackprop(SaliencyMask):
 
         deconv_model = Model(inputs=[x], outputs=[y])
 
-        inps = [deconv_model.input, K.learning_phase()]  # input placeholder
+        inps = [
+            deconv_model.input,
+            K.learning_phase(),
+        ]  # input placeholder
         outs = [deconv_model.layers[-1].output]  # output placeholder
         deconv_func = K.function(inps, outs)  # evaluation function
 

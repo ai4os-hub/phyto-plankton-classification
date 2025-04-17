@@ -95,14 +95,22 @@ class LRHistory(callbacks.Callback):
         super().__init__()
 
     def on_epoch_end(self, epoch, logs=None):
-        logs.update({"lr": K.eval(self.model.optimizer.learning_rate).astype(np.float64)})
+        logs.update(
+            {
+                "lr": K.eval(
+                    self.model.optimizer.learning_rate
+                ).astype(np.float64)
+            }
+        )
         super().on_epoch_end(epoch, logs)
 
 
 def launch_tensorboard(port, logdir, host="0.0.0.0"):
     tensorboard_path = shutil.which("tensorboard")
     if tensorboard_path is None:
-        raise RuntimeError("TensorBoard executable not found in PATH.")
+        raise RuntimeError(
+            "TensorBoard executable not found in PATH."
+        )
 
     subprocess.call(
         [
@@ -140,7 +148,8 @@ def get_callbacks(CONF, use_lr_decay=True):
     # Add optional callbacks
     if use_lr_decay:
         milestones = (
-            np.array(CONF["training"]["lr_step_schedule"]) * CONF["training"]["epochs"]
+            np.array(CONF["training"]["lr_step_schedule"])
+            * CONF["training"]["epochs"]
         )
         milestones = milestones.astype(np.int64)
         calls.append(
@@ -154,7 +163,9 @@ def get_callbacks(CONF, use_lr_decay=True):
         # https://github.com/tensorflow/tensorboard/issues/2084#issuecomment-483395808
         calls.append(
             callbacks.TensorBoard(
-                log_dir=paths.get_logs_dir(), write_graph=False, profile_batch=0
+                log_dir=paths.get_logs_dir(),
+                write_graph=False,
+                profile_batch=0,
             )
         )
 
@@ -162,7 +173,9 @@ def get_callbacks(CONF, use_lr_decay=True):
         print(
             "Monitor your training in Tensorboard by executing the following comand on your console:"
         )
-        print("    tensorboard --logdir={}".format(paths.get_logs_dir()))
+        print(
+            "    tensorboard --logdir={}".format(paths.get_logs_dir())
+        )
 
         # Run Tensorboard on a separate Thread/Process on behalf of the user
         port = os.getenv("monitorPORT", 6006)
@@ -176,25 +189,39 @@ def get_callbacks(CONF, use_lr_decay=True):
         subprocess.run([fuser_path, "-k", "{}/tcp".format(port)])
 
         p = Process(
-            target=launch_tensorboard, args=(port, paths.get_logs_dir()), daemon=True
+            target=launch_tensorboard,
+            args=(port, paths.get_logs_dir()),
+            daemon=True,
         )
         p.start()
 
     if CONF["monitor"]["use_remote"]:
         calls.append(callbacks.RemoteMonitor())
 
-    if CONF["training"]["use_validation"] and CONF["training"]["use_early_stopping"]:
+    if (
+        CONF["training"]["use_validation"]
+        and CONF["training"]["use_early_stopping"]
+    ):
         calls.append(
-            callbacks.EarlyStopping(patience=int(0.1 * CONF["training"]["epochs"]))
+            callbacks.EarlyStopping(
+                patience=int(0.1 * CONF["training"]["epochs"])
+            )
         )
 
     if CONF["training"]["ckpt_freq"] is not None:
         calls.append(
             callbacks.ModelCheckpoint(
-                os.path.join(paths.get_checkpoints_dir(), "epoch-{epoch:02d}.hdf5"),
+                os.path.join(
+                    paths.get_checkpoints_dir(),
+                    "epoch-{epoch:02d}.hdf5",
+                ),
                 verbose=1,
                 period=max(
-                    1, int(CONF["training"]["ckpt_freq"] * CONF["training"]["epochs"])
+                    1,
+                    int(
+                        CONF["training"]["ckpt_freq"]
+                        * CONF["training"]["epochs"]
+                    ),
                 ),
             )
         )

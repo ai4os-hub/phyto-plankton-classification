@@ -42,15 +42,15 @@ from webargs import fields
 import logging
 
 import os
-from webargs import fields 
+from webargs import fields
 
-
-
-  
 
 from planktonclas import config, paths, test_utils, utils
-from planktonclas.data_utils import (load_aphia_ids, load_class_info,
-                                     load_class_names)
+from planktonclas.data_utils import (
+    load_aphia_ids,
+    load_class_info,
+    load_class_names,
+)
 from planktonclas.train_runfile import train_fn
 
 logger = logging.getLogger(__name__)
@@ -60,12 +60,12 @@ logger.setLevel(LOG_LEVEL)
 
 
 NOW = str("{:%Y_%m_%d_%H_%M_%S}".format(datetime.now()))
- 
+
 import os
 from marshmallow import fields, ValidationError
 from pathlib import Path
 from marshmallow import ValidationError
- 
+
 loaded_ts, loaded_ckpt = None, None
 graph, model, conf, class_names, class_info, aphia_ids = (
     None,
@@ -118,7 +118,9 @@ def load_inference_model(timestamp=None, ckpt_name=None):
 
     # Set the checkpoint model to use to make the prediction
     ckpt_list = os.listdir(paths.get_checkpoints_dir())
-    ckpt_list = sorted([name for name in ckpt_list if name.endswith(".h5")])
+    ckpt_list = sorted(
+        [name for name in ckpt_list if name.endswith(".h5")]
+    )
     if not ckpt_list:
         raise Exception(
             "You have no checkpoints in your `./models/{}/ckpts` folder to be used for inference. ".format(
@@ -165,10 +167,9 @@ def load_inference_model(timestamp=None, ckpt_name=None):
     model = load_model(
         os.path.join(paths.get_checkpoints_dir(), ckpt_name),
         custom_objects=utils.get_custom_objects(),
-        compile=False
-         # Disable deserialization of training config
+        compile=False,
+        # Disable deserialization of training config
     )
-
 
     loaded_ts = timestamp
     loaded_ckpt = ckpt_name
@@ -225,7 +226,6 @@ def catch_error(f):
 
     return wrap
 
- 
 
 def catch_localfile_error(file_list):
     # Error catch: Empty query
@@ -297,7 +297,9 @@ def predict(**args):
             # Create a temporary directory to extract the files
             with tempfile.TemporaryDirectory() as temp_dir:
                 # Extract the zip file
-                with zipfile.ZipFile(zip_file.filename, "r") as zip_ref:
+                with zipfile.ZipFile(
+                    zip_file.filename, "r"
+                ) as zip_ref:
                     zip_ref.extractall(temp_dir)
 
                 # Get the list of files extracted from the zip
@@ -319,10 +321,12 @@ def predict(**args):
 
                 # Assign the list of files to args["files"]
                 args["files"] = uploaded_files
- 
+
                 return predict_data(args)
         elif args["image"]:
-            args["files"] = [args["image"]]  # patch until list is available
+            args["files"] = [
+                args["image"]
+            ]  # patch until list is available
             # raise RuntimeError("args files ", args["files"])
             print(args["files"])
             return predict_data(args)
@@ -357,24 +361,30 @@ def predict_data(args):
         # Create a list with the path to the images
         filenames = [f.filename for f in args["files"]]
         print(filenames)
-        original_filenames = [f.original_filename for f in args["files"]]
+        original_filenames = [
+            f.original_filename for f in args["files"]
+        ]
 
-        #with graph.as_default():
+        # with graph.as_default():
         pred_lab, pred_prob = test_utils.predict(
-                model=model,
-                X=filenames,
-                conf=conf,
-                top_K=top_K,
-                filemode="local",
-                merge=merge,
-                use_multiprocessing=False,
-            ) 
+            model=model,
+            X=filenames,
+            conf=conf,
+            top_K=top_K,
+            filemode="local",
+            merge=merge,
+            use_multiprocessing=False,
+        )
 
         if merge:
-            pred_lab, pred_prob = np.squeeze(pred_lab), np.squeeze(pred_prob)
+            pred_lab, pred_prob = np.squeeze(pred_lab), np.squeeze(
+                pred_prob
+            )
             print(pred_lab.shape, pred_prob.shape)
 
-        return format_prediction(pred_lab, pred_prob, original_filenames)
+        return format_prediction(
+            pred_lab, pred_prob, original_filenames
+        )
     except Exception as err:
         raise HTTPException(reason=err) from err
 
@@ -383,27 +393,43 @@ def get_predictions_dir(CONF):
     file_location = CONF.get("testing", {}).get("file_location", None)
     output_directory = CONF["testing"]["output_directory"]
 
-    if file_location is not None: 
+    if file_location is not None:
         if os.path.exists(file_location):
-            os.makedirs(os.path.join(os.path.dirname(file_location), "predictions"), exist_ok=True)
-            return os.path.join(os.path.dirname(file_location), "predictions")
+            os.makedirs(
+                os.path.join(
+                    os.path.dirname(file_location), "predictions"
+                ),
+                exist_ok=True,
+            )
+            return os.path.join(
+                os.path.dirname(file_location), "predictions"
+            )
     else:
         if output_directory is None:
             # Define your get_timestamped_dir() function accordingly
-            return os.path.join(paths.get_timestamped_dir(), "predictions")
+            return os.path.join(
+                paths.get_timestamped_dir(), "predictions"
+            )
         else:
             return os.path.join(output_directory)
-        
+
+
 def format_prediction(labels, probabilities, original_filenames):
     if aphia_ids is not None:
         pred_aphia_ids = [aphia_ids[i] for i in labels]
-        pred_aphia_ids = [aphia_id.tolist() for aphia_id in pred_aphia_ids]
+        pred_aphia_ids = [
+            aphia_id.tolist() for aphia_id in pred_aphia_ids
+        ]
     else:
         pred_aphia_ids = aphia_ids
     class_index_map = {
-        index: class_name for index, class_name in enumerate(class_names)
+        index: class_name
+        for index, class_name in enumerate(class_names)
     }
-    pred_lab_names = [[class_index_map[label] for label in labels] for labels in labels]
+    pred_lab_names = [
+        [class_index_map[label] for label in labels]
+        for labels in labels
+    ]
     # pred_labels=[class_names[i] for i in labels]
     pred_prob = probabilities
 
@@ -429,23 +455,33 @@ def format_prediction(labels, probabilities, original_filenames):
 def get_directory_choices(base_path="/srv/data/"):
     # Get a list of all directories in the base_path
     try:
-        directories = [d for d in os.listdir(base_path) if os.path.isdir(os.path.join(base_path, d))]
+        directories = [
+            d
+            for d in os.listdir(base_path)
+            if os.path.isdir(os.path.join(base_path, d))
+        ]
         return directories
     except Exception as e:
         print(f"Error accessing directories: {e}")
         return []
-    
+
+
 def validate_directory(path):
     # Convert the input to a Path object if it's a string
     if isinstance(path, str):
-        path = Path(path.strip('\'"'))  # Remove any leading/trailing quotes
+        path = Path(
+            path.strip("'\"")
+        )  # Remove any leading/trailing quotes
 
     # Check if the path is a valid directory
     if not path.is_dir():
         raise ValidationError(f"{path} is not a valid directory")
 
     return path
+
+
 from pathlib import Path
+
 
 def train(**args):
     """
@@ -460,9 +496,9 @@ def train(**args):
         timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
         config.print_conf_table(CONF)
         K.clear_session()  # remove the model loaded for prediction
-        
+
         validate_directory(args["images_directory"])
-        
+
         train_fn(TIMESTAMP=timestamp, CONF=CONF)
 
         return {"modelname": timestamp}
@@ -483,12 +519,21 @@ def populate_parser(parser, default_conf):
 
             # Load optional keys
             help = g_val["help"] if ("help" in gg_keys) else ""
-            type = getattr(builtins, g_val["type"]) if ("type" in gg_keys) else None
-            choices = g_val["choices"] if ("choices" in gg_keys) else None
+            type = (
+                getattr(builtins, g_val["type"])
+                if ("type" in gg_keys)
+                else None
+            )
+            choices = (
+                g_val["choices"] if ("choices" in gg_keys) else None
+            )
 
             # Additional info in help string
-            help += "\n" + "<font color='#C5576B'> Group name: **{}**".format(
-                str(group)
+            help += (
+                "\n"
+                + "<font color='#C5576B'> Group name: **{}**".format(
+                    str(group)
+                )
             )
             if choices:
                 help += "\n" + "Choices: {}".format(str(choices))
@@ -504,8 +549,10 @@ def populate_parser(parser, default_conf):
             }
             if choices:
                 json_choices = [json.dumps(i) for i in choices]
-                opt_args["metadata"]["enum"] = json_choices  
-                opt_args["validate"] = fields.validate.OneOf(json_choices)  
+                opt_args["metadata"]["enum"] = json_choices
+                opt_args["validate"] = fields.validate.OneOf(
+                    json_choices
+                )
             parser[g_key] = fields.Str(**opt_args)
 
     return parser
@@ -528,9 +575,6 @@ def get_train_args():
     return populate_parser(parser, default_conf)
 
 
-
-
-
 def get_predict_args():
     parser = OrderedDict()
     default_conf = config.CONF
@@ -546,33 +590,33 @@ def get_predict_args():
         timestamp["value"] = timestamp_list[-1]
         timestamp["choices"] = timestamp_list
 
-
-    
     parser["image"] = fields.Field(
         required=False,
         load_default=None,
-       # type="file",
+        # type="file",
         data_key="image",
-      #  location="form",
-        metadata={'description': "Select the image you want to classify.",
-                  'type': 'file', 
-                  'location': 'form'}
+        #  location="form",
+        metadata={
+            "description": "Select the image you want to classify.",
+            "type": "file",
+            "location": "form",
+        },
     )
 
     parser["zip"] = fields.Field(
         required=False,
         load_default=None,
-      #  type="file",
+        #  type="file",
         data_key="zip_data",
-        #location="form",
-        metadata={'description': "Select the ZIP file containing images you want to classify.",
-                  'type': 'file', 
-                  'location': 'form'}
+        # location="form",
+        metadata={
+            "description": "Select the ZIP file containing images you want to classify.",
+            "type": "file",
+            "location": "form",
+        },
     )
-    
 
     return populate_parser(parser, default_conf)
-
 
 
 def get_metadata(distribution_name="planktonclas"):
@@ -592,7 +636,9 @@ def get_metadata(distribution_name="planktonclas"):
     }
 
     for line in pkg.get_metadata_lines("PKG-INFO"):
-        line_low = line.lower()  # to avoid inconsistency due to letter cases
+        line_low = (
+            line.lower()
+        )  # to avoid inconsistency due to letter cases
         for par in meta:
             if line_low.startswith(par.lower() + ":"):
                 _, value = line.split(": ", 1)

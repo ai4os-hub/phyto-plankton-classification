@@ -32,7 +32,9 @@ class GuidedBackprop(SaliencyMask):
         # Create a temporary directory
         with tempfile.TemporaryDirectory() as tmpdirname:
             model_path = os.path.join(tmpdirname, "gb_keras.h5")
-            ckpt_prefix = os.path.join(tmpdirname, "guided_backprop_ckpt")
+            ckpt_prefix = os.path.join(
+                tmpdirname, "guided_backprop_ckpt"
+            )
 
             model.save(model_path)
             with tf.Graph().as_default():
@@ -40,9 +42,13 @@ class GuidedBackprop(SaliencyMask):
                     K.set_learning_phase(0)
 
                     custom_objects = get_custom_objects()
-                    custom_objects.update({"custom_loss": custom_loss})
+                    custom_objects.update(
+                        {"custom_loss": custom_loss}
+                    )
 
-                    load_model(model_path, custom_objects=custom_objects)
+                    load_model(
+                        model_path, custom_objects=custom_objects
+                    )
                     session = K.get_session()
                     tf.train.export_meta_graph()
 
@@ -53,15 +59,23 @@ class GuidedBackprop(SaliencyMask):
             with self.guided_graph.as_default():
                 self.guided_sess = tf.Session(graph=self.guided_graph)
 
-                with self.guided_graph.gradient_override_map({"Relu": "GuidedRelu"}):
-                    saver = tf.train.import_meta_graph(ckpt_prefix + ".meta")
+                with self.guided_graph.gradient_override_map(
+                    {"Relu": "GuidedRelu"}
+                ):
+                    saver = tf.train.import_meta_graph(
+                        ckpt_prefix + ".meta"
+                    )
                     saver.restore(self.guided_sess, ckpt_prefix)
 
-                    self.imported_y = self.guided_graph.get_tensor_by_name(
-                        model.output.name
-                    )[0][output_index]
-                    self.imported_x = self.guided_graph.get_tensor_by_name(
-                        model.input.name
+                    self.imported_y = (
+                        self.guided_graph.get_tensor_by_name(
+                            model.output.name
+                        )[0][output_index]
+                    )
+                    self.imported_x = (
+                        self.guided_graph.get_tensor_by_name(
+                            model.input.name
+                        )
                     )
 
                     self.guided_grads_node = tf.gradients(

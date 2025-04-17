@@ -31,7 +31,11 @@ class customSGD(optimizers.SGD):
         **kwargs
     ):
         super().__init__(
-            learning_rate=learning_rate, momentum=momentum, nesterov=nesterov, name=name, **kwargs
+            learning_rate=learning_rate,
+            momentum=momentum,
+            nesterov=nesterov,
+            name=name,
+            **kwargs
         )
         self.lr_mult = lr_mult
         self.excluded_vars = excluded_vars
@@ -39,62 +43,86 @@ class customSGD(optimizers.SGD):
     def _resource_apply_dense(self, grad, var, apply_state=None):
         var_dtype = var.dtype.base_dtype
         lr_t = self._decayed_lr(var_dtype)
-        
+
         # Apply lr multiplier for vars outside excluded_vars
         if var.name in self.excluded_vars:
             multiplied_lr = lr_t
         else:
             multiplied_lr = lr_t * self.lr_mult
-            
+
         momentum = self.momentum
-        
+
         if apply_state is None:
             apply_state = {}
         momentum_var = self.get_slot(var, "momentum")
-        
+
         if self.nesterov:
-            momentum_buf = momentum * momentum_var - multiplied_lr * grad
-            var_update = var.assign_add(momentum_buf * momentum - multiplied_lr * grad)
+            momentum_buf = (
+                momentum * momentum_var - multiplied_lr * grad
+            )
+            var_update = var.assign_add(
+                momentum_buf * momentum - multiplied_lr * grad
+            )
         else:
-            momentum_buf = momentum * momentum_var - multiplied_lr * grad
+            momentum_buf = (
+                momentum * momentum_var - multiplied_lr * grad
+            )
             var_update = var.assign_add(momentum_buf)
-            
+
         momentum_update = momentum_var.assign(momentum_buf)
-        
+
         return tf.group(var_update, momentum_update)
-        
-    def _resource_apply_sparse(self, grad, var, indices, apply_state=None):
+
+    def _resource_apply_sparse(
+        self, grad, var, indices, apply_state=None
+    ):
         # Implementation for sparse gradients
         var_dtype = var.dtype.base_dtype
         lr_t = self._decayed_lr(var_dtype)
-        
+
         # Apply lr multiplier for vars outside excluded_vars
         if var.name in self.excluded_vars:
             multiplied_lr = lr_t
         else:
             multiplied_lr = lr_t * self.lr_mult
-            
+
         momentum = self.momentum
-        
+
         momentum_var = self.get_slot(var, "momentum")
-        
+
         if self.nesterov:
-            momentum_buf = momentum * momentum_var.sparse_read(indices) - multiplied_lr * grad
-            var_update = self._resource_scatter_add(var, indices, momentum_buf * momentum - multiplied_lr * grad)
+            momentum_buf = (
+                momentum * momentum_var.sparse_read(indices)
+                - multiplied_lr * grad
+            )
+            var_update = self._resource_scatter_add(
+                var,
+                indices,
+                momentum_buf * momentum - multiplied_lr * grad,
+            )
         else:
-            momentum_buf = momentum * momentum_var.sparse_read(indices) - multiplied_lr * grad
-            var_update = self._resource_scatter_add(var, indices, momentum_buf)
-            
-        momentum_update = self._resource_scatter_update(momentum_var, indices, momentum_buf)
-        
+            momentum_buf = (
+                momentum * momentum_var.sparse_read(indices)
+                - multiplied_lr * grad
+            )
+            var_update = self._resource_scatter_add(
+                var, indices, momentum_buf
+            )
+
+        momentum_update = self._resource_scatter_update(
+            momentum_var, indices, momentum_buf
+        )
+
         return tf.group(var_update, momentum_update)
 
     def get_config(self):
         config = super().get_config()
-        config.update({
-            "lr_mult": self.lr_mult,
-            "excluded_vars": self.excluded_vars
-        })
+        config.update(
+            {
+                "lr_mult": self.lr_mult,
+                "excluded_vars": self.excluded_vars,
+            }
+        )
         return config
 
 
@@ -130,88 +158,117 @@ class customAdam(optimizers.Adam):
     def _resource_apply_dense(self, grad, var, apply_state=None):
         var_dtype = var.dtype.base_dtype
         lr_t = self._decayed_lr(var_dtype)
-        
+
         # Apply lr multiplier for vars outside excluded_vars
         if var.name in self.excluded_vars:
             multiplied_lr_t = lr_t
         else:
             multiplied_lr_t = lr_t * self.lr_mult
-            
+
         local_step = tf.cast(self.iterations + 1, var_dtype)
         beta_1_t = tf.cast(self.beta_1, var_dtype)
         beta_2_t = tf.cast(self.beta_2, var_dtype)
         epsilon_t = tf.cast(self.epsilon, var_dtype)
-        
+
         m = self.get_slot(var, "m")
         v = self.get_slot(var, "v")
-        
+
         m_t = beta_1_t * m + (1.0 - beta_1_t) * grad
         v_t = beta_2_t * v + (1.0 - beta_2_t) * tf.square(grad)
-        
+
         m_corr = m_t / (1.0 - tf.pow(beta_1_t, local_step))
         v_corr = v_t / (1.0 - tf.pow(beta_2_t, local_step))
-        
+
         if self.amsgrad:
             vhat = self.get_slot(var, "vhat")
             vhat_t = tf.maximum(vhat, v_corr)
-            var_update = var.assign_sub(multiplied_lr_t * m_corr / (tf.sqrt(vhat_t) + epsilon_t))
+            var_update = var.assign_sub(
+                multiplied_lr_t
+                * m_corr
+                / (tf.sqrt(vhat_t) + epsilon_t)
+            )
             vhat_update = vhat.assign(vhat_t)
-            updates = [var_update, m.assign(m_t), v.assign(v_t), vhat_update]
+            updates = [
+                var_update,
+                m.assign(m_t),
+                v.assign(v_t),
+                vhat_update,
+            ]
         else:
-            var_update = var.assign_sub(multiplied_lr_t * m_corr / (tf.sqrt(v_corr) + epsilon_t))
+            var_update = var.assign_sub(
+                multiplied_lr_t
+                * m_corr
+                / (tf.sqrt(v_corr) + epsilon_t)
+            )
             updates = [var_update, m.assign(m_t), v.assign(v_t)]
-            
+
         return tf.group(*updates)
-        
-    def _resource_apply_sparse(self, grad, var, indices, apply_state=None):
+
+    def _resource_apply_sparse(
+        self, grad, var, indices, apply_state=None
+    ):
         var_dtype = var.dtype.base_dtype
         lr_t = self._decayed_lr(var_dtype)
-        
+
         # Apply lr multiplier for vars outside excluded_vars
         if var.name in self.excluded_vars:
             multiplied_lr_t = lr_t
         else:
             multiplied_lr_t = lr_t * self.lr_mult
-            
+
         local_step = tf.cast(self.iterations + 1, var_dtype)
         beta_1_t = tf.cast(self.beta_1, var_dtype)
         beta_2_t = tf.cast(self.beta_2, var_dtype)
         epsilon_t = tf.cast(self.epsilon, var_dtype)
-        
+
         m = self.get_slot(var, "m")
         v = self.get_slot(var, "v")
-        
+
         m_scaled_g_values = grad * (1 - beta_1_t)
         m_t = m.assign(m * beta_1_t)
         with tf.control_dependencies([m_t]):
-            m_t = self._resource_scatter_add(m, indices, m_scaled_g_values)
-            
+            m_t = self._resource_scatter_add(
+                m, indices, m_scaled_g_values
+            )
+
         v_scaled_g_values = (grad * grad) * (1 - beta_2_t)
         v_t = v.assign(v * beta_2_t)
         with tf.control_dependencies([v_t]):
-            v_t = self._resource_scatter_add(v, indices, v_scaled_g_values)
-            
+            v_t = self._resource_scatter_add(
+                v, indices, v_scaled_g_values
+            )
+
         m_corr = m_t / (1.0 - tf.pow(beta_1_t, local_step))
         v_corr = v_t / (1.0 - tf.pow(beta_2_t, local_step))
-        
+
         if self.amsgrad:
             vhat = self.get_slot(var, "vhat")
             vhat_t = tf.maximum(vhat, v_corr)
-            var_update = var.assign_sub(multiplied_lr_t * m_corr / (tf.sqrt(vhat_t) + epsilon_t))
+            var_update = var.assign_sub(
+                multiplied_lr_t
+                * m_corr
+                / (tf.sqrt(vhat_t) + epsilon_t)
+            )
             vhat_update = vhat.assign(vhat_t)
             updates = [var_update, vhat_update]
         else:
-            var_update = var.assign_sub(multiplied_lr_t * m_corr / (tf.sqrt(v_corr) + epsilon_t))
+            var_update = var.assign_sub(
+                multiplied_lr_t
+                * m_corr
+                / (tf.sqrt(v_corr) + epsilon_t)
+            )
             updates = [var_update]
-            
+
         return tf.group(*updates)
 
     def get_config(self):
         config = super().get_config()
-        config.update({
-            "lr_mult": self.lr_mult,
-            "excluded_vars": self.excluded_vars
-        })
+        config.update(
+            {
+                "lr_mult": self.lr_mult,
+                "excluded_vars": self.excluded_vars,
+            }
+        )
         return config
 
 
@@ -253,94 +310,135 @@ class customAdamW(optimizers.Optimizer):
     def _resource_apply_dense(self, grad, var, apply_state=None):
         var_dtype = var.dtype.base_dtype
         lr_t = self._decayed_lr(var_dtype)
-        
+
         # Apply lr multiplier for vars outside excluded_vars
         if var.name in self.excluded_vars:
             multiplied_lr_t = lr_t
         else:
             multiplied_lr_t = lr_t * self.lr_mult
-            
+
         local_step = tf.cast(self.iterations + 1, var_dtype)
         beta_1_t = tf.cast(self._get_hyper("beta_1"), var_dtype)
         beta_2_t = tf.cast(self._get_hyper("beta_2"), var_dtype)
-        weight_decay = tf.cast(self._get_hyper("weight_decay"), var_dtype)
+        weight_decay = tf.cast(
+            self._get_hyper("weight_decay"), var_dtype
+        )
         epsilon_t = tf.cast(self.epsilon, var_dtype)
-        
+
         m = self.get_slot(var, "m")
         v = self.get_slot(var, "v")
-        
+
         m_t = beta_1_t * m + (1.0 - beta_1_t) * grad
         v_t = beta_2_t * v + (1.0 - beta_2_t) * tf.square(grad)
-        
+
         m_corr = m_t / (1.0 - tf.pow(beta_1_t, local_step))
         v_corr = v_t / (1.0 - tf.pow(beta_2_t, local_step))
-        
+
         if self.amsgrad:
             vhat = self.get_slot(var, "vhat")
             vhat_t = tf.maximum(vhat, v_corr)
-            var_update = var.assign_sub(multiplied_lr_t * m_corr / (tf.sqrt(vhat_t) + epsilon_t) + multiplied_lr_t * weight_decay * var)
+            var_update = var.assign_sub(
+                multiplied_lr_t
+                * m_corr
+                / (tf.sqrt(vhat_t) + epsilon_t)
+                + multiplied_lr_t * weight_decay * var
+            )
             vhat_update = vhat.assign(vhat_t)
-            updates = [var_update, m.assign(m_t), v.assign(v_t), vhat_update]
+            updates = [
+                var_update,
+                m.assign(m_t),
+                v.assign(v_t),
+                vhat_update,
+            ]
         else:
-            var_update = var.assign_sub(multiplied_lr_t * m_corr / (tf.sqrt(v_corr) + epsilon_t) + multiplied_lr_t * weight_decay * var)
+            var_update = var.assign_sub(
+                multiplied_lr_t
+                * m_corr
+                / (tf.sqrt(v_corr) + epsilon_t)
+                + multiplied_lr_t * weight_decay * var
+            )
             updates = [var_update, m.assign(m_t), v.assign(v_t)]
-            
+
         return tf.group(*updates)
-        
-    def _resource_apply_sparse(self, grad, var, indices, apply_state=None):
+
+    def _resource_apply_sparse(
+        self, grad, var, indices, apply_state=None
+    ):
         var_dtype = var.dtype.base_dtype
         lr_t = self._decayed_lr(var_dtype)
-        
+
         # Apply lr multiplier for vars outside excluded_vars
         if var.name in self.excluded_vars:
             multiplied_lr_t = lr_t
         else:
             multiplied_lr_t = lr_t * self.lr_mult
-            
+
         local_step = tf.cast(self.iterations + 1, var_dtype)
         beta_1_t = tf.cast(self._get_hyper("beta_1"), var_dtype)
         beta_2_t = tf.cast(self._get_hyper("beta_2"), var_dtype)
-        weight_decay = tf.cast(self._get_hyper("weight_decay"), var_dtype)
+        weight_decay = tf.cast(
+            self._get_hyper("weight_decay"), var_dtype
+        )
         epsilon_t = tf.cast(self.epsilon, var_dtype)
-        
+
         m = self.get_slot(var, "m")
         v = self.get_slot(var, "v")
-        
+
         m_scaled_g_values = grad * (1 - beta_1_t)
         m_t = m.assign(m * beta_1_t)
         with tf.control_dependencies([m_t]):
-            m_t = self._resource_scatter_add(m, indices, m_scaled_g_values)
-            
+            m_t = self._resource_scatter_add(
+                m, indices, m_scaled_g_values
+            )
+
         v_scaled_g_values = (grad * grad) * (1 - beta_2_t)
         v_t = v.assign(v * beta_2_t)
         with tf.control_dependencies([v_t]):
-            v_t = self._resource_scatter_add(v, indices, v_scaled_g_values)
-            
+            v_t = self._resource_scatter_add(
+                v, indices, v_scaled_g_values
+            )
+
         m_corr = m_t / (1.0 - tf.pow(beta_1_t, local_step))
         v_corr = v_t / (1.0 - tf.pow(beta_2_t, local_step))
-        
+
         if self.amsgrad:
             vhat = self.get_slot(var, "vhat")
             vhat_t = tf.maximum(vhat, v_corr)
-            var_update = var.assign_sub(multiplied_lr_t * m_corr / (tf.sqrt(vhat_t) + epsilon_t) + multiplied_lr_t * weight_decay * var)
+            var_update = var.assign_sub(
+                multiplied_lr_t
+                * m_corr
+                / (tf.sqrt(vhat_t) + epsilon_t)
+                + multiplied_lr_t * weight_decay * var
+            )
             vhat_update = vhat.assign(vhat_t)
             updates = [var_update, vhat_update]
         else:
-            var_update = var.assign_sub(multiplied_lr_t * m_corr / (tf.sqrt(v_corr) + epsilon_t) + multiplied_lr_t * weight_decay * var)
+            var_update = var.assign_sub(
+                multiplied_lr_t
+                * m_corr
+                / (tf.sqrt(v_corr) + epsilon_t)
+                + multiplied_lr_t * weight_decay * var
+            )
             updates = [var_update]
-            
+
         return tf.group(*updates)
 
     def get_config(self):
         config = super().get_config()
-        config.update({
-            "learning_rate": self._serialize_hyperparameter("learning_rate"),
-            "beta_1": self._serialize_hyperparameter("beta_1"),
-            "beta_2": self._serialize_hyperparameter("beta_2"),
-            "weight_decay": self._serialize_hyperparameter("weight_decay"),
-            "epsilon": self.epsilon,
-            "amsgrad": self.amsgrad,
-            "lr_mult": self.lr_mult,
-            "excluded_vars": self.excluded_vars
-        })
+        config.update(
+            {
+                "learning_rate": self._serialize_hyperparameter(
+                    "learning_rate"
+                ),
+                "beta_1": self._serialize_hyperparameter("beta_1"),
+                "beta_2": self._serialize_hyperparameter("beta_2"),
+                "weight_decay": self._serialize_hyperparameter(
+                    "weight_decay"
+                ),
+                "epsilon": self.epsilon,
+                "amsgrad": self.amsgrad,
+                "lr_mult": self.lr_mult,
+                "excluded_vars": self.excluded_vars,
+            }
+        )
         return config

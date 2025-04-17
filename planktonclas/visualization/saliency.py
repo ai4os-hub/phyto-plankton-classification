@@ -37,13 +37,17 @@ class SaliencyMask(object):
         """
         pass
 
-    def get_smoothed_mask(self, input_image, stdev_spread=0.2, nsamples=50):
+    def get_smoothed_mask(
+        self, input_image, stdev_spread=0.2, nsamples=50
+    ):
         """Returns a mask that is smoothed with the SmoothGrad method.
 
         Args:
             input_image: input image with shape (H, W, 3).
         """
-        stdev = stdev_spread * (np.max(input_image) - np.min(input_image))
+        stdev = stdev_spread * (
+            np.max(input_image) - np.min(input_image)
+        )
 
         total_gradients = np.zeros_like(input_image)
         for i in range(nsamples):
@@ -67,7 +71,9 @@ class GradientSaliency(SaliencyMask):
         gradients = model.optimizer.get_gradients(
             model.output[0][output_index], model.input
         )
-        self.compute_gradients = K.function(inputs=input_tensors, outputs=gradients)
+        self.compute_gradients = K.function(
+            inputs=input_tensors, outputs=gradients
+        )
 
     def get_mask(self, input_image):
         """Returns a vanilla gradient mask.

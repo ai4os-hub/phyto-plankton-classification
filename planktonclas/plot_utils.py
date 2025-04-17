@@ -1,4 +1,4 @@
-""""
+""" "
 Miscellaneous functions to plot.
 
 Date: September 2018
@@ -41,7 +41,9 @@ def create_pred_path(save_path, dir="", weighted=False, **kwargs):
             paths.get_results_dir(), dir, "confusion_weighted"
         )
     else:
-        pred_path = save_path or os.path.join(paths.get_results_dir(), dir, value)
+        pred_path = save_path or os.path.join(
+            paths.get_results_dir(), dir, value
+        )
 
     os.makedirs(pred_path, exist_ok=True)
     return pred_path
@@ -60,10 +62,16 @@ def plt_conf_matrix(conf_mat, labels=False):
     )
     fontsize = None
     hm.yaxis.set_ticklabels(
-        hm.yaxis.get_ticklabels(), rotation=0, ha="right", fontsize=fontsize
+        hm.yaxis.get_ticklabels(),
+        rotation=0,
+        ha="right",
+        fontsize=fontsize,
     )
     hm.xaxis.set_ticklabels(
-        hm.xaxis.get_ticklabels(), rotation=90, ha="right", fontsize=fontsize
+        hm.xaxis.get_ticklabels(),
+        rotation=90,
+        ha="right",
+        fontsize=fontsize,
     )
 
     ax.set_ylabel("True label")
@@ -95,19 +103,31 @@ def training_plots(conf, stats, show_val=True, show_ckpt=True):
 
     # Validation
     if (conf["training"]["use_validation"]) and show_val:
-        axs[0].plot(stats["epoch"], stats["val_loss"], label="Validation")
-        axs[1].plot(stats["epoch"], stats["val_accuracy"], label="Validation")
+        axs[0].plot(
+            stats["epoch"], stats["val_loss"], label="Validation"
+        )
+        axs[1].plot(
+            stats["epoch"], stats["val_accuracy"], label="Validation"
+        )
 
     # Model Checkpoints
     if (conf["training"]["ckpt_freq"] is not None) and show_ckpt:
-        period = max(1, int(conf["training"]["ckpt_freq"] * conf["training"]["epochs"]))
+        period = max(
+            1,
+            int(
+                conf["training"]["ckpt_freq"]
+                * conf["training"]["epochs"]
+            ),
+        )
         ckpts = np.arange(0, conf["training"]["epochs"], period)
         for i, c in enumerate(ckpts):
             label = None
             if i == 0:
                 label = "checkpoints"
             axs[0].axvline(c, linestyle="--", color="#f9d1e0")
-            axs[1].axvline(c, linestyle="--", color="#f9d1e0", label=label)
+            axs[1].axvline(
+                c, linestyle="--", color="#f9d1e0", label=label
+            )
 
     axs[1].set_ylim([0, 1])
     axs[0].set_xlabel("Epochs"), axs[0].set_title("Loss")
@@ -154,7 +174,9 @@ def multi_training_plots(timestamps, legend_loc="upper right"):
         # Validation
         if conf["training"]["use_validation"]:
             axs[2].plot(stats["epoch"], stats["val_loss"], label=ts)
-            axs[3].plot(stats["epoch"], stats["val_accuracy"], label=ts)
+            axs[3].plot(
+                stats["epoch"], stats["val_accuracy"], label=ts
+            )
 
     axs[1].set_ylim([0, 1])
     axs[3].set_ylim([0, 1])

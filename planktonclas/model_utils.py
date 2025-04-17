@@ -16,12 +16,19 @@ from tensorflow import keras
 from tensorflow.keras import applications
 from tensorflow.keras import backend as K
 from tensorflow.keras import regularizers
-from tensorflow.keras.layers import Dense, Flatten, GlobalAveragePooling2D
+from tensorflow.keras.layers import (
+    Dense,
+    Flatten,
+    GlobalAveragePooling2D,
+)
 from tensorflow.keras.models import Model, load_model
-from tensorflow.python.saved_model import builder as saved_model_builder
+from tensorflow.python.saved_model import (
+    builder as saved_model_builder,
+)
 from tensorflow.python.saved_model import tag_constants
-from tensorflow.python.saved_model.signature_def_utils import \
-    predict_signature_def
+from tensorflow.python.saved_model.signature_def_utils import (
+    predict_signature_def,
+)
 
 from planktonclas import config, paths, utils
 
@@ -51,9 +58,14 @@ def create_model(CONF):
     architecture = getattr(applications, CONF["model"]["modelname"])
 
     # create the base pre-trained model
-    img_width, img_height = CONF["model"]["image_size"], CONF["model"]["image_size"]
+    img_width, img_height = (
+        CONF["model"]["image_size"],
+        CONF["model"]["image_size"],
+    )
     base_model = architecture(
-        weights="imagenet", include_top=False, input_shape=(img_width, img_height, 3)
+        weights="imagenet",
+        include_top=False,
+        input_shape=(img_width, img_height, 3),
     )
 
     # Add custom layers at the top to adapt it to our problem
@@ -62,7 +74,9 @@ def create_model(CONF):
     # x = Flatten()(x) #might work better on large dataset than
     # GlobalAveragePooling https://github.com/keras-team/keras/issues/8470
     x = Dense(1024, activation="relu")(x)
-    predictions = Dense(CONF["model"]["num_classes"], activation="softmax")(x)
+    predictions = Dense(
+        CONF["model"]["num_classes"], activation="softmax"
+    )(x)
 
     # Full model
     model = Model(inputs=base_model.input, outputs=predictions)
@@ -70,7 +84,9 @@ def create_model(CONF):
     # Add L2 reguralization for all the layers in the whole model
     if CONF["training"]["l2_reg"]:
         for layer in model.layers:
-            layer.kernel_regularizer = regularizers.l2(CONF["training"]["l2_reg"])
+            layer.kernel_regularizer = regularizers.l2(
+                CONF["training"]["l2_reg"]
+            )
 
     return model, base_model
 
@@ -94,7 +110,8 @@ def save_to_pb(keras_model, export_path):
 
     # Create prediction signature to be used by TensorFlow Serving Predict API
     signature = predict_signature_def(
-        inputs={"images": keras_model.input}, outputs={"scores": keras_model.output}
+        inputs={"images": keras_model.input},
+        outputs={"scores": keras_model.output},
     )
 
     with K.get_session() as sess:
@@ -137,11 +154,15 @@ def save_conf(conf):
 
     # Save dict as txt file for easier redability
     txt_file = open(os.path.join(save_dir, "conf.txt"), "w")
-    txt_file.write("{:<25}{:<30}{:<30} \n".format("group", "key", "value"))
+    txt_file.write(
+        "{:<25}{:<30}{:<30} \n".format("group", "key", "value")
+    )
     txt_file.write("=" * 75 + "\n")
     for key, val in sorted(conf.items()):
         for g_key, g_val in sorted(val.items()):
-            txt_file.write("{:<25}{:<30}{:<15} \n".format(key, g_key, str(g_val)))
+            txt_file.write(
+                "{:<25}{:<30}{:<15} \n".format(key, g_key, str(g_val))
+            )
         txt_file.write("-" * 75 + "\n")
     txt_file.close()
 
@@ -163,7 +184,9 @@ def save_default_imagenet_model():
 
     CONF["model"]["modelname"] = "Xception"
     CONF["model"]["image_size"] = 224
-    CONF["model"]["preprocess_mode"] = model_modes[CONF["model"]["modelname"]]
+    CONF["model"]["preprocess_mode"] = model_modes[
+        CONF["model"]["modelname"]
+    ]
     CONF["model"]["num_classes"] = 1000
     CONF["dataset"]["mean_RGB"] = [123.675, 116.28, 103.53]
     CONF["dataset"]["std_RGB"] = [58.395, 57.12, 57.375]
@@ -184,12 +207,19 @@ def save_default_imagenet_model():
 
     # Create the model
     architecture = getattr(applications, CONF["model"]["modelname"])
-    img_width, img_height = CONF["model"]["image_size"], CONF["model"]["image_size"]
+    img_width, img_height = (
+        CONF["model"]["image_size"],
+        CONF["model"]["image_size"],
+    )
     model = architecture(
-        weights="imagenet", include_top=True, input_shape=(img_width, img_height, 3)
+        weights="imagenet",
+        include_top=True,
+        input_shape=(img_width, img_height, 3),
     )
     model.compile(
-        optimizer="adam", loss="categorical_crossentropy", metrics=["accuracy"]
+        optimizer="adam",
+        loss="categorical_crossentropy",
+        metrics=["accuracy"],
     )
 
     # Save everything
@@ -202,7 +232,9 @@ def save_default_imagenet_model():
     )
     save_conf(CONF)
     model.save(
-        fpath=os.path.join(paths.get_checkpoints_dir(), "final_model.h5"),
+        fpath=os.path.join(
+            paths.get_checkpoints_dir(), "final_model.h5"
+        ),
         include_optimizer=False,
     )
 
@@ -211,7 +243,14 @@ def f1_metric(y_true, y_pred):
     y_pred = tf.round(y_pred)
     f1 = (
         2
-        * (tf.reduce_sum(y_true * y_pred) + tf.keras.backend.epsilon())
-        / (tf.reduce_sum(y_true) + tf.reduce_sum(y_pred) + tf.keras.backend.epsilon())
+        * (
+            tf.reduce_sum(y_true * y_pred)
+            + tf.keras.backend.epsilon()
+        )
+        / (
+            tf.reduce_sum(y_true)
+            + tf.reduce_sum(y_pred)
+            + tf.keras.backend.epsilon()
+        )
     )
     return f1

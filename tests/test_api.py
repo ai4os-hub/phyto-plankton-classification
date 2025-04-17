@@ -34,7 +34,8 @@ class TestModelMethods(unittest.TestCase):
             "planktonclas".lower().replace("-", "_"),
         )
         self.assertEqual(
-            self.meta["author"], "Ignacio Heredia (CSIC), Wout Decrop (VLIZ)"
+            self.meta["author"],
+            "Ignacio Heredia (CSIC), Wout Decrop (VLIZ)",
         )
         self.assertEqual(
             self.meta["license"].lower(),
