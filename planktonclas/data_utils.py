@@ -404,10 +404,14 @@ def augment(im, params=None):
         )  # min and max size of the squares wrt the full image
         scale = np.random.uniform(scale_low, scale_high)
         transform_list.append(
-            A.Cutout(
-                num_holes=8,
-                max_h_size=int(scale * ly),
-                max_w_size=int(scale * lx),
+            A.CoarseDropout(
+                min_holes=8,
+                max_holes=8,
+                min_height=int(scale * ly),
+                max_height=int(scale * ly),
+                min_width=int(scale * lx),
+                max_width=int(scale * lx),
+                fill_value=0,  # Default is black, change if you want a different fill
                 p=params["cutout"],
             )
         )
