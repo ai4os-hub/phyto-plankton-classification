@@ -15,7 +15,7 @@ opencv-python>=4.5.0
 tqdm>=4.64.0
 requests>=2.27.1
 PyYAML>=6.0
-matplotlib>=3.10.0
+matplotlib~=3.3
 
 Jinja2>=3.0.0
 Flask==3.0.2
