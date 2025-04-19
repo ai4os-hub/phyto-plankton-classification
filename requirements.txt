@@ -1,7 +1,7 @@
 ## DEEPaaS framework requirements
 webargs~=5.5.3
 aiohttp>=3.8
-deepaas~=2.5.2
+deepaas>=2.3
 
 flaat~=0.8.4
 #model
