@@ -7,8 +7,6 @@
    #   dockerhub: ai4oshub/phyto-plankton-classification
     #  dokertag: test
       
-      
-
 sqa_criteria:
   qc_style:
     repos:
