@@ -1,4 +1,10 @@
 # .sqa/config.yml - jenkins-pipeline-library configuration file
+config:
+  project_repos:
+    worsica-processing:
+      repo: 'https://github.com/ai4os-hub/phyto-plankton-classification.git'
+      branch: tf2.19
+
 sqa_criteria:
   qc_style:
     repos:
