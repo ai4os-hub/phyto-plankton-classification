@@ -1,7 +1,7 @@
 ## DEEPaaS framework requirements
-webargs~=5.5.3
-aiohttp>=3.8
-deepaas>=2.3
+webargs==5.5.3
+aiohttp==3.11.16
+deepaas==2.5.2
 
 flaat~=0.8.4
 #model
@@ -15,13 +15,12 @@ opencv-python>=4.5.0
 tqdm>=4.64.0
 requests>=2.27.1
 PyYAML>=6.0
-matplotlib~=3.3
+matplotlib>=3.10.0
 
 Jinja2>=3.0.0
-Flask<=3.0.2,>2.0
+Flask==3.0.2
 gunicorn>=20.1.0
-seaborn>=0.10.0
-scikit-learn>=>=0.8.1
-albumentations<=2.0.5,>1.0.0
+seaborn>=0.12.0
+scikit-learn>=1.0.0
+albumentations~=2.0.5
 numpy<2.2.0,>=1.26.0
-
