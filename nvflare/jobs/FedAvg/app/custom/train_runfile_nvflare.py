@@ -96,7 +96,7 @@ def main(TIMESTAMP, CONF):
         im_dir=paths.get_images_dir(),
         split_name="train",
     )
-
+    
     # Load the validation data
     if (CONF["training"]["use_validation"]) and (
         f'{client_id}_val.txt' in os.listdir(paths.get_ts_splits_dir())
@@ -218,7 +218,13 @@ def main(TIMESTAMP, CONF):
             verbose=1,
             initial_epoch=0,
         )
-        mlflow_writer.log_metrics(
+
+        if 'val_accuracy' in history.history.keys():
+             mlflow_writer.log_metrics(
+           metrics={'accuracy':history.history['accuracy'][-1], 'val_accuracy':history.history['val_accuracy'][-1]} , step=input_model.current_round
+        )
+        else:
+            mlflow_writer.log_metrics(
            metrics={'accuracy':history.history['accuracy'][-1]} , step=input_model.current_round
         )
 
