@@ -464,10 +464,10 @@ def augment(im, params=None):
         scale = np.random.uniform(scale_low, scale_high)
         transform_list.append(
             A.CoarseDropout(
-                num_holes_range=(8, 8),  # Replaces min_holes/max_holes
-                hole_height_range=(int(scale * ly), int(scale * ly)),  # Replaces min_height/max_height
-                hole_width_range=(int(scale * lx), int(scale * lx)),  # Replaces min_width/max_width
-                fill=0,  # Renamed from fill_value
+                num_holes_range=(8, 8), 
+                hole_height_range=(int(scale * ly), int(scale * ly)), 
+                hole_width_range=(int(scale * lx), int(scale * lx)),  
+                fill=0, 
                 p=params["cutout"],
             )
         )
