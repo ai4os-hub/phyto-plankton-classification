@@ -105,14 +105,14 @@ curl --insecure -L -o "models\phytoplankton_vliz.tar.gz" https://share.services.
 tar -xzf "/models/phytoplankton_vliz.tar.gz" "/models"
 del "/models/phytoplankton_vliz.tar.gz"
 ```
-> **Tip**: Rclone can also be configured to acces nextcloud server, follow [Tutorial](https://docs.ai4os.eu/en/latest/user/howto/train/rclone.html).
+> **Tip**: Rclone can also be configured to acces nextcloud server, follow [Tutorial](https://docs.ai4eosc.eu/en/latest/howtos/train/rclone.html).
 
 
 Now the environment has the right requiremens to be excecuted. 
 
 
 ## Open through Deepaas
-Call-in on Imagine Marketplace and follow the [Tutorial](https://docs.ai4os.eu/en/latest/user/howto/train/dashboard.html). 
+Call-in on Imagine Marketplace and follow the [Tutorial](https://docs.ai4eosc.eu/en/latest/howtos/train/dashboard.html). 
 For more a detailed tutorial, please follow: [readme_tutorial](README_marketplace.md).
 
 # 1. Train the phyto-plankton-classifier
