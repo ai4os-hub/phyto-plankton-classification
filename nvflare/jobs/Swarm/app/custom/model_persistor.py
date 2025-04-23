@@ -4,7 +4,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
+#     http://www.apache.org/licenses-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import os
+import yaml
 
 import tensorflow as tf
 
@@ -21,9 +22,19 @@ from nvflare.apis.fl_context import FLContext
 from nvflare.app_common.abstract.model import ModelLearnable, ModelLearnableKey, make_model_learnable
 from nvflare.app_common.abstract.model_persistor import ModelPersistor
 from nvflare.app_opt.tf.utils import flat_layer_weights_dict, unflat_layer_weights_dict
-from planktonclas import config
+from planktonclas import config, paths
 from planktonclas.optimizers import customAdam
+from planktonclas.data_utils import load_class_names
+
 CONF=  config.get_conf_dict()
+
+def get_conf_with_classes():
+
+    class_names = load_class_names(splits_dir=paths.get_splits_dir())
+    CONF["model"]["num_classes"] = len(class_names)
+    return CONF 
+
+
 
 class TFModelPersistor(ModelPersistor):
     def __init__(self, model: tf.keras.Model, save_name="tf_model.weights.h5", filter_id: str = None):
@@ -32,7 +43,6 @@ class TFModelPersistor(ModelPersistor):
         )
         self.save_name = save_name
         self.model, _= model
-        
         
 
         self.model.compile(
@@ -96,3 +106,4 @@ class TFModelPersistor(ModelPersistor):
             layer = self.model.get_layer(name=k)
             layer.set_weights(result[k])
         self.model.save_weights(self._model_save_path)
+
