@@ -77,7 +77,7 @@ ENV SHELL /bin/bash
 # Install user app
 RUN git clone -b $branch --depth 1 https://github.com/ai4os-hub/phyto-plankton-classification && \
     cd  phyto-plankton-classification/nvflare && \
-    pip install -r requirements_nvflare.txt       && \
+    pip install --ignore-installed blinker -r requirements_nvflare.txt && \
     cd ..                                     && \
     pip install --ignore-installed blinker -e .  && \
     cd ..
