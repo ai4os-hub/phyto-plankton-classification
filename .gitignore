@@ -146,7 +146,7 @@ GTAGS
 ###################################
 planktonclas/webpage/templates/labels.html
 
-
+models/*
 planktonclas/run_file.ipynb
 .Trash-0
 
