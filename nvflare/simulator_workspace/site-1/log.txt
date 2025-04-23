@@ -1,0 +1,213 @@
+2025-04-23 14:08:22,070 - ClientTaskWorker - INFO - ClientTaskWorker started to run
+2025-04-23 14:08:22,110 - CoreCell - INFO - site-1.simulate_job: created backbone external connector to tcp://localhost:52760
+2025-04-23 14:08:22,110 - nvflare.fuel.f3.sfm.conn_manager - INFO - Connector [CH00001 ACTIVE tcp://localhost:52760] is starting
+2025-04-23 14:08:22,112 - nvflare.fuel.f3.sfm.conn_manager - INFO - Connection [CN00002 127.0.0.1:52769 => 127.0.0.1:52760] is created: PID: 19322
+2025-04-23 14:08:22,279 - AuxRunner - INFO - registered aux handler for topic __end_run__
+2025-04-23 14:08:22,279 - AuxRunner - INFO - registered aux handler for topic __do_task__
+2025-04-23 14:08:22,279 - Cell - INFO - Register blob CB for channel='aux_communication', topic='*'
+2025-04-23 14:08:22,785 - Cell - INFO - broadcast: channel='aux_communication', topic='__sync_runner__', targets=['server.simulate_job'], timeout=2.0
+2025-04-23 14:08:22,788 - ClientRunner - INFO - [identity=site-1, run=simulate_job]: synced to Server Runner in 0.5072841644287109 seconds
+2025-04-23 14:08:22,788 - AuxRunner - INFO - registered aux handler for topic RM.RELIABLE_REQUEST
+2025-04-23 14:08:22,789 - AuxRunner - INFO - registered aux handler for topic RM.RELIABLE_REPLY
+2025-04-23 14:08:22,789 - ReliableMessage - INFO - enabled reliable message: max_request_workers=20 query_interval=2.0
+2025-04-23 14:08:22,795 - AuxRunner - INFO - registered aux handler for topic fed.event
+2025-04-23 14:08:22,795 - ClientRunner - INFO - [identity=site-1, run=simulate_job]: client runner started
+2025-04-23 14:08:22,795 - ClientTaskWorker - INFO - Initialize ClientRunner for client: site-1
+2025-04-23 14:08:23,807 - ClientTaskWorker - INFO - Clean up ClientRunner for : site-1 
+2025-04-23 14:08:23,807 - nvflare.fuel.f3.sfm.conn_manager - INFO - Connection [CN00002 Not Connected] is closed PID: 19322
+2025-04-23 14:08:52,139 - ClientTaskWorker - INFO - ClientTaskWorker started to run
+2025-04-23 14:08:52,182 - CoreCell - INFO - site-1.simulate_job: created backbone external connector to tcp://localhost:52760
+2025-04-23 14:08:52,182 - nvflare.fuel.f3.sfm.conn_manager - INFO - Connector [CH00001 ACTIVE tcp://localhost:52760] is starting
+2025-04-23 14:08:52,183 - nvflare.fuel.f3.sfm.conn_manager - INFO - Connection [CN00002 127.0.0.1:52795 => 127.0.0.1:52760] is created: PID: 19347
+2025-04-23 14:08:52,353 - AuxRunner - INFO - registered aux handler for topic __end_run__
+2025-04-23 14:08:52,353 - AuxRunner - INFO - registered aux handler for topic __do_task__
+2025-04-23 14:08:52,354 - Cell - INFO - Register blob CB for channel='aux_communication', topic='*'
+2025-04-23 14:08:52,861 - Cell - INFO - broadcast: channel='aux_communication', topic='__sync_runner__', targets=['server.simulate_job'], timeout=2.0
+2025-04-23 14:08:52,870 - ClientRunner - INFO - [identity=site-1, run=simulate_job]: synced to Server Runner in 0.514307975769043 seconds
+2025-04-23 14:08:52,870 - AuxRunner - INFO - registered aux handler for topic RM.RELIABLE_REQUEST
+2025-04-23 14:08:52,870 - AuxRunner - INFO - registered aux handler for topic RM.RELIABLE_REPLY
+2025-04-23 14:08:52,871 - ReliableMessage - INFO - enabled reliable message: max_request_workers=20 query_interval=2.0
+2025-04-23 14:08:52,883 - AuxRunner - INFO - registered aux handler for topic fed.event
+2025-04-23 14:08:52,884 - ClientRunner - INFO - [identity=site-1, run=simulate_job]: client runner started
+2025-04-23 14:08:52,884 - ClientTaskWorker - INFO - Initialize ClientRunner for client: site-1
+2025-04-23 14:08:53,035 - Communicator - INFO - Received from simulator_server server. getTask: train size: 91.9MB (91931196 Bytes) time: 0.150366 seconds
+2025-04-23 14:08:53,035 - FederatedClient - INFO - pull_task completed. Task name:train Status:True 
+2025-04-23 14:08:53,035 - ClientRunner - INFO - [identity=site-1, run=simulate_job, peer=simulator_server, peer_run=simulate_job]: got task assignment: name=train, id=bfe1175d-0ec5-4d81-992d-e1b8b963567d
+2025-04-23 14:08:53,036 - ClientRunner - INFO - [identity=site-1, run=simulate_job, peer=simulator_server, peer_run=simulate_job, task_name=train, task_id=bfe1175d-0ec5-4d81-992d-e1b8b963567d]: invoking task executor ClientAPILauncherExecutor
+2025-04-23 14:08:53,036 - ClientAPILauncherExecutor - INFO - [identity=site-1, run=simulate_job, peer=simulator_server, peer_run=simulate_job, task_name=train, task_id=bfe1175d-0ec5-4d81-992d-e1b8b963567d]: execute for task (train)
+2025-04-23 14:08:53,036 - ClientAPILauncherExecutor - INFO - [identity=site-1, run=simulate_job, peer=simulator_server, peer_run=simulate_job, task_name=train, task_id=bfe1175d-0ec5-4d81-992d-e1b8b963567d]: External execution for task (train) is launched.
+2025-04-23 14:08:56,562 - ClientAPILauncherExecutor - INFO - [identity=site-1, run=simulate_job, peer=simulator_server, peer_run=simulate_job, task_name=train, task_id=bfe1175d-0ec5-4d81-992d-e1b8b963567d]: sending task to peer self.peer_read_timeout=60.0
+2025-04-23 14:08:56,783 - SubprocessLauncher - INFO - creating /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/models/2025-04-23_140856
+2025-04-23 14:08:56,783 - SubprocessLauncher - INFO - creating /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/models/2025-04-23_140856/logs
+2025-04-23 14:08:56,783 - SubprocessLauncher - INFO - creating /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/models/2025-04-23_140856/ckpts
+2025-04-23 14:08:56,783 - SubprocessLauncher - INFO - creating /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/models/2025-04-23_140856/conf
+2025-04-23 14:08:56,784 - SubprocessLauncher - INFO - creating /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/models/2025-04-23_140856/stats
+2025-04-23 14:08:56,784 - SubprocessLauncher - INFO - creating /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/models/2025-04-23_140856/dataset_files
+2025-04-23 14:08:56,784 - SubprocessLauncher - INFO - creating /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/models/2025-04-23_140856/predictions
+2025-04-23 14:08:56,784 - SubprocessLauncher - INFO - creating /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/models/2025-04-23_140856/results
+2025-04-23 14:08:56,784 - SubprocessLauncher - INFO - Searching files: 0it [00:00, ?it/s]
+2025-04-23 14:08:56,784 - SubprocessLauncher - INFO - Processing /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/data/images: 0it [00:00, ?it/s][AProcessing /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/data/images: 0it [00:00, ?it/s]
+2025-04-23 14:08:56,784 - SubprocessLauncher - INFO - 
+2025-04-23 14:08:56,784 - SubprocessLauncher - INFO - Processing /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/data/images/Bacillariophyceae:   0%|          | 0/16 [00:00<?, ?it/s][AProcessing /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/data/images/Bacillariophyceae: 100%|██████████| 16/16 [00:00<00:00, 106691.36it/s]
+2025-04-23 14:08:56,784 - SubprocessLauncher - INFO - 
+2025-04-23 14:08:56,785 - SubprocessLauncher - INFO - Processing /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/data/images/Dinoflagellata:   0%|          | 0/20 [00:00<?, ?it/s][AProcessing /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/data/images/Dinoflagellata: 100%|██████████| 20/20 [00:00<00:00, 101434.20it/s]
+2025-04-23 14:08:56,785 - SubprocessLauncher - INFO - 
+2025-04-23 14:08:56,785 - SubprocessLauncher - INFO - Processing /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/data/images/Tripos:   0%|          | 0/13 [00:00<?, ?it/s][AProcessing /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/data/images/Tripos: 100%|██████████| 13/13 [00:00<00:00, 103268.85it/s]
+2025-04-23 14:08:56,785 - SubprocessLauncher - INFO - 
+2025-04-23 14:08:56,785 - SubprocessLauncher - INFO - Processing /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/data/images/Actinoptychus:   0%|          | 0/14 [00:00<?, ?it/s][AProcessing /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/data/images/Actinoptychus: 100%|██████████| 14/14 [00:00<00:00, 141154.46it/s]
+2025-04-23 14:08:56,787 - SubprocessLauncher - INFO - 
+2025-04-23 14:08:56,787 - SubprocessLauncher - INFO - Processing /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/data/images/Ciliophora:   0%|          | 0/19 [00:00<?, ?it/s][AProcessing /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/data/images/Ciliophora: 100%|██████████| 19/19 [00:00<00:00, 167772.16it/s]
+2025-04-23 14:08:56,788 - SubprocessLauncher - INFO - 
+2025-04-23 14:08:56,788 - SubprocessLauncher - INFO - Processing /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/data/images/Noctilucales:   0%|          | 0/23 [00:00<?, ?it/s][AProcessing /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/data/images/Noctilucales: 100%|██████████| 23/23 [00:00<00:00, 152159.29it/s]
+2025-04-23 14:08:56,788 - SubprocessLauncher - INFO - Searching files: 7it [00:00, 1409.31it/s]
+2025-04-23 14:08:56,789 - SubprocessLauncher - INFO - Writing /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/models/2025-04-23_140856/dataset_files/train.txt:   0%|          | 0/82 [00:00<?, ?it/s]Writing /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/models/2025-04-23_140856/dataset_files/train.txt: 100%|██████████| 82/82 [00:00<00:00, 1322818.95it/s]
+2025-04-23 14:08:56,790 - SubprocessLauncher - INFO - Writing /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/models/2025-04-23_140856/dataset_files/test.txt:   0%|          | 0/8 [00:00<?, ?it/s]Writing /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/models/2025-04-23_140856/dataset_files/test.txt: 100%|██████████| 8/8 [00:00<00:00, 441505.68it/s]
+2025-04-23 14:08:56,791 - SubprocessLauncher - INFO - Writing /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/models/2025-04-23_140856/dataset_files/val.txt:   0%|          | 0/15 [00:00<?, ?it/s]Writing /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/models/2025-04-23_140856/dataset_files/val.txt: 100%|██████████| 15/15 [00:00<00:00, 714938.18it/s]
+2025-04-23 14:08:56,791 - SubprocessLauncher - INFO - Writing classes file:   0%|          | 0/6 [00:00<?, ?it/s]Writing classes file: 100%|██████████| 6/6 [00:00<00:00, 426539.39it/s]
+2025-04-23 14:08:56,796 - SubprocessLauncher - INFO - Loading train data...
+2025-04-23 14:08:56,796 - SubprocessLauncher - INFO - No validation data.
+2025-04-23 14:08:56,796 - SubprocessLauncher - INFO - Loading class names...
+2025-04-23 14:08:56,796 - SubprocessLauncher - INFO - Loading aphia_ids...
+2025-04-23 14:08:56,826 - ClientAPILauncherExecutor - INFO - [identity=site-1, run=simulate_job, peer=simulator_server, peer_run=simulate_job, task_name=train, task_id=bfe1175d-0ec5-4d81-992d-e1b8b963567d]: task train sent to peer in 0.2631492614746094 secs
+2025-04-23 14:09:00,947 - SubprocessLauncher - INFO -   0%|          | 0/82 [00:00<?, ?it/s]  1%|          | 1/82 [00:04<05:29,  4.07s/it]100%|██████████| 82/82 [00:04<00:00, 19.87it/s]
+2025-04-23 14:09:01,460 - SubprocessLauncher - INFO - /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/nvflare/simulator_workspace/site-1/simulate_job/app_site-1/custom/train_runfile_nvflare.py:201: DeprecationWarning: Call to deprecated function train (@flare.train is deprecated and will be removed in a future version.Use flare send/receive instead.).
+2025-04-23 14:09:01,460 - SubprocessLauncher - INFO -   @flare.train
+2025-04-23 14:09:01,531 - SubprocessLauncher - INFO - Unknown option: k
+2025-04-23 14:09:01,532 - SubprocessLauncher - INFO - fuser: [-cfu] file ...
+2025-04-23 14:09:01,532 - SubprocessLauncher - INFO - 	-c	file is treated as mount point
+2025-04-23 14:09:01,532 - SubprocessLauncher - INFO - 	-f	the report is only for the named files
+2025-04-23 14:09:01,532 - SubprocessLauncher - INFO - 	-u	print username of pid in parenthesis
+2025-04-23 14:09:01,532 - SubprocessLauncher - INFO - Mean RGB pixel: [141.04593772608612, 141.04593772608612, 141.04593772608612]
+2025-04-23 14:09:01,532 - SubprocessLauncher - INFO - Standard deviation of RGB pixel: [44.73591396174586, 44.73591396174586, 44.73591396174586]
+2025-04-23 14:09:01,532 - SubprocessLauncher - INFO - the training conf {'general': {'base_directory': '.', 'images_directory': 'data/images'}, 'model': {'modelname': 'Xception', 'image_size': 100, 'num_classes': 6, 'preprocess_mode': 'tf'}, 'dataset': {'mean_RGB': [141.04593772608612, 141.04593772608612, 141.04593772608612], 'std_RGB': [44.73591396174586, 44.73591396174586, 44.73591396174586], 'split_ratios': [0.8, 0.1, 0.1]}, 'training': {'mode': 'normal', 'initial_lr': 0.001, 'batch_size': 16, 'epochs': 15, 'ckpt_freq': None, 'lr_schedule_mode': 'step', 'lr_step_decay': 0.1, 'lr_step_schedule': [0.7, 0.9], 'l2_reg': 0.0001, 'use_class_weights': False, 'use_validation': False, 'use_test': True, 'use_early_stopping': False, 'use_multiprocessing': False}, 'monitor': {'use_tensorboard': True, 'use_remote': False}, 'augmentation': {'use_augmentation': True, 'train_mode': {'h_flip': 0.5, 'v_flip': 0.5, 'rot': 0.7, 'rot_lim': 90, 'stretch': 0.0, 'crop': 1.0, 'zoom': 0.2, 'blur': 0.3, 'pixel_noise': 0.3, 'pixel_sat': 0.3, 'cutout': 0.5}, 'val_mode': {'h_flip': 0.5, 'v_flip': 0.0, 'rot': 0.5, 'rot_lim': 30, 'stretch': 0.0, 'crop': 0.9, 'zoom': 0.1, 'blur': 0.1, 'pixel_noise': 0.1, 'pixel_sat': 0.1, 'cutout': 0.0}}, 'testing': {'timestamp': None, 'ckpt_name': 'final_model.h5', 'output_directory': None}}
+2025-04-23 14:09:01,532 - SubprocessLauncher - INFO - Currently in round 0 out of a total of 2 rounds
+2025-04-23 14:09:01,532 - SubprocessLauncher - INFO - NVFlare system info: {'site_name': 'site-1', 'job_id': 'simulate_job'}
+2025-04-23 14:09:01,532 - SubprocessLauncher - INFO - Monitor your training in Tensorboard by executing the following comand on your console:
+2025-04-23 14:09:01,532 - SubprocessLauncher - INFO -     tensorboard --logdir=/Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/models/2025-04-23_140856/logs
+2025-04-23 14:09:01,543 - SubprocessLauncher - INFO - /Users/leo/Desktop/dockerEnv/lib/python3.11/site-packages/keras/src/trainers/data_adapters/py_dataset_adapter.py:121: UserWarning: Your `PyDataset` class should call `super().__init__(**kwargs)` in its constructor. `**kwargs` can include `workers`, `use_multiprocessing`, `max_queue_size`. Do not pass these arguments to `fit()`, as they will be ignored.
+2025-04-23 14:09:01,544 - SubprocessLauncher - INFO -   self._warn_if_super_not_called()
+2025-04-23 14:09:01,662 - SubprocessLauncher - INFO - /Users/leo/Desktop/dockerEnv/lib/python3.11/site-packages/keras/src/backend/tensorflow/core.py:158: DeprecationWarning: __array__ implementation doesn't accept a copy keyword, so passing copy=False failed. __array__ must implement 'dtype' and 'copy' keyword arguments.
+2025-04-23 14:09:01,662 - SubprocessLauncher - INFO -   return np.array(x)
+2025-04-23 14:09:08,983 - SubprocessLauncher - INFO - TensorBoard 2.19.0 at http://0.0.0.0:6006/ (Press CTRL+C to quit)
+2025-04-23 14:09:14,426 - SubprocessLauncher - INFO - [1m1/6[0m [32m━━━[0m[37m━━━━━━━━━━━━━━━━━[0m [1m53s[0m 11s/step - accuracy: 0.2500 - loss: 1.7450[1m2/6[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m1s[0m 496ms/step - accuracy: 0.2500 - loss: 2.0268[1m3/6[0m [32m━━━━━━━━━━[0m[37m━━━━━━━━━━[0m [1m1s[0m 486ms/step - accuracy: 0.2708 - loss: 2.0657[1m4/6[0m [32m━━━━━━━━━━━━━[0m[37m━━━━━━━[0m [1m0s[0m 487ms/step - accuracy: 0.2773 - loss: 2.0619[1m5/6[0m [32m━━━━━━━━━━━━━━━━[0m[37m━━━━[0m [1m0s[0m 390ms/step - accuracy: 0.2825 - loss: 2.0529[1m6/6[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 407ms/step - accuracy: 0.2862 - loss: 2.0393[1m6/6[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m13s[0m 409ms/step - accuracy: 0.2889 - loss: 2.0295 - lr: 0.0010 - learning_rate: 0.0010
+2025-04-23 14:09:15,034 - SubprocessLauncher - INFO - Saving data to /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/models/2025-04-23_140856 folder.
+2025-04-23 14:09:15,035 - SubprocessLauncher - INFO - Saving training stats ...
+2025-04-23 14:09:15,035 - SubprocessLauncher - INFO - Saving the configuration ...
+2025-04-23 14:09:15,035 - SubprocessLauncher - INFO - Saving the model to h5...
+2025-04-23 14:09:15,035 - SubprocessLauncher - INFO - local model summary
+2025-04-23 14:09:15,035 - SubprocessLauncher - INFO - Finished training
+2025-04-23 14:09:15,035 - SubprocessLauncher - INFO - Start testing
+2025-04-23 14:09:15,035 - SubprocessLauncher - INFO - Loading test data...
+2025-04-23 14:09:15,535 - SubprocessLauncher - INFO - [1m1/8[0m [32m━━[0m[37m━━━━━━━━━━━━━━━━━━[0m [1m3s[0m 438ms/step[1m2/8[0m [32m━━━━━[0m[37m━━━━━━━━━━━━━━━[0m [1m0s[0m 71ms/step [1m3/8[0m [32m━━━━━━━[0m[37m━━━━━━━━━━━━━[0m [1m0s[0m 77ms/step[1m4/8[0m [32m━━━━━━━━━━[0m[37m━━━━━━━━━━[0m [1m0s[0m 75ms/step[1m5/8[0m [32m━━━━━━━━━━━━[0m[37m━━━━━━━━[0m [1m0s[0m 73ms/step[1m6/8[0m [32m━━━━━━━━━━━━━━━[0m[37m━━━━━[0m [1m0s[0m 72ms/step[1m7/8[0m [32m━━━━━━━━━━━━━━━━━[0m[37m━━━[0m [1m0s[0m 72ms/step[1m8/8[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 71ms/step[1m8/8[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m1s[0m 72ms/step
+2025-04-23 14:09:15,945 - ClientAPILauncherExecutor - INFO - [identity=site-1, run=simulate_job, peer=simulator_server, peer_run=simulate_job, task_name=train, task_id=bfe1175d-0ec5-4d81-992d-e1b8b963567d]: got result 'Message(topic=train, msg_id=39a120c1-7cd0-4dc0-9384-030e248bf747, req_id=bfe1175d-0ec5-4d81-992d-e1b8b963567d, msg_type=REP)' for task 'train'
+2025-04-23 14:09:15,945 - ClientAPILauncherExecutor - INFO - [identity=site-1, run=simulate_job, peer=simulator_server, peer_run=simulate_job, task_name=train, task_id=bfe1175d-0ec5-4d81-992d-e1b8b963567d]: received result of train from peer in 19.119634866714478 secs
+2025-04-23 14:09:15,946 - ClientAPILauncherExecutor - INFO - [identity=site-1, run=simulate_job, peer=simulator_server, peer_run=simulate_job, task_name=train, task_id=bfe1175d-0ec5-4d81-992d-e1b8b963567d]: Calling stop task (train).
+2025-04-23 14:09:15,947 - ClientRunner - INFO - [identity=site-1, run=simulate_job, peer=simulator_server, peer_run=simulate_job, task_name=train, task_id=bfe1175d-0ec5-4d81-992d-e1b8b963567d]: finished processing task
+2025-04-23 14:09:15,947 - ClientRunner - INFO - [identity=site-1, run=simulate_job, peer=simulator_server, peer_run=simulate_job, task_name=train, task_id=bfe1175d-0ec5-4d81-992d-e1b8b963567d]: try #1: sending task result to server
+2025-04-23 14:09:15,947 - ClientRunner - INFO - [identity=site-1, run=simulate_job, peer=simulator_server, peer_run=simulate_job, task_name=train, task_id=bfe1175d-0ec5-4d81-992d-e1b8b963567d]: checking task ...
+2025-04-23 14:09:15,947 - Cell - INFO - broadcast: channel='aux_communication', topic='__task_check__', targets=['server.simulate_job'], timeout=5.0
+2025-04-23 14:09:15,952 - ClientRunner - INFO - [identity=site-1, run=simulate_job, peer=simulator_server, peer_run=simulate_job, task_name=train, task_id=bfe1175d-0ec5-4d81-992d-e1b8b963567d]: start to send task result to server
+2025-04-23 14:09:15,952 - FederatedClient - INFO - Starting to push execute result.
+2025-04-23 14:09:16,267 - Communicator - INFO -  SubmitUpdate size: 91.9MB (91931134 Bytes). time: 0.314674 seconds
+2025-04-23 14:09:16,269 - ClientRunner - INFO - [identity=site-1, run=simulate_job, peer=simulator_server, peer_run=simulate_job, task_name=train, task_id=bfe1175d-0ec5-4d81-992d-e1b8b963567d]: task result sent to server
+2025-04-23 14:09:16,269 - ClientTaskWorker - INFO - Finished one task run for client: site-1 interval: 2 task_processed: True
+2025-04-23 14:09:16,270 - ClientTaskWorker - INFO - Clean up ClientRunner for : site-1 
+2025-04-23 14:09:16,271 - nvflare.fuel.f3.sfm.conn_manager - INFO - Connection [CN00002 Not Connected] is closed PID: 19347
+2025-04-23 14:09:44,505 - ClientTaskWorker - INFO - ClientTaskWorker started to run
+2025-04-23 14:09:44,547 - CoreCell - INFO - site-1.simulate_job: created backbone external connector to tcp://localhost:52760
+2025-04-23 14:09:44,547 - nvflare.fuel.f3.sfm.conn_manager - INFO - Connector [CH00001 ACTIVE tcp://localhost:52760] is starting
+2025-04-23 14:09:44,548 - nvflare.fuel.f3.sfm.conn_manager - INFO - Connection [CN00002 127.0.0.1:52844 => 127.0.0.1:52760] is created: PID: 19424
+2025-04-23 14:09:44,717 - AuxRunner - INFO - registered aux handler for topic __end_run__
+2025-04-23 14:09:44,717 - AuxRunner - INFO - registered aux handler for topic __do_task__
+2025-04-23 14:09:44,717 - Cell - INFO - Register blob CB for channel='aux_communication', topic='*'
+2025-04-23 14:09:45,226 - Cell - INFO - broadcast: channel='aux_communication', topic='__sync_runner__', targets=['server.simulate_job'], timeout=2.0
+2025-04-23 14:09:45,235 - ClientRunner - INFO - [identity=site-1, run=simulate_job]: synced to Server Runner in 0.5149538516998291 seconds
+2025-04-23 14:09:45,235 - AuxRunner - INFO - registered aux handler for topic RM.RELIABLE_REQUEST
+2025-04-23 14:09:45,235 - AuxRunner - INFO - registered aux handler for topic RM.RELIABLE_REPLY
+2025-04-23 14:09:45,235 - ReliableMessage - INFO - enabled reliable message: max_request_workers=20 query_interval=2.0
+2025-04-23 14:09:45,242 - AuxRunner - INFO - registered aux handler for topic fed.event
+2025-04-23 14:09:45,242 - ClientRunner - INFO - [identity=site-1, run=simulate_job]: client runner started
+2025-04-23 14:09:45,242 - ClientTaskWorker - INFO - Initialize ClientRunner for client: site-1
+2025-04-23 14:09:45,396 - Communicator - INFO - Received from simulator_server server. getTask: train size: 91.9MB (91931226 Bytes) time: 0.153448 seconds
+2025-04-23 14:09:45,396 - FederatedClient - INFO - pull_task completed. Task name:train Status:True 
+2025-04-23 14:09:45,396 - ClientRunner - INFO - [identity=site-1, run=simulate_job, peer=simulator_server, peer_run=simulate_job]: got task assignment: name=train, id=fc0ea03c-ab52-4e81-949a-aa61431af87f
+2025-04-23 14:09:45,397 - ClientRunner - INFO - [identity=site-1, run=simulate_job, peer=simulator_server, peer_run=simulate_job, task_name=train, task_id=fc0ea03c-ab52-4e81-949a-aa61431af87f]: invoking task executor ClientAPILauncherExecutor
+2025-04-23 14:09:45,397 - ClientAPILauncherExecutor - INFO - [identity=site-1, run=simulate_job, peer=simulator_server, peer_run=simulate_job, task_name=train, task_id=fc0ea03c-ab52-4e81-949a-aa61431af87f]: execute for task (train)
+2025-04-23 14:09:45,397 - ClientAPILauncherExecutor - INFO - [identity=site-1, run=simulate_job, peer=simulator_server, peer_run=simulate_job, task_name=train, task_id=fc0ea03c-ab52-4e81-949a-aa61431af87f]: External execution for task (train) is launched.
+2025-04-23 14:09:49,290 - SubprocessLauncher - INFO - creating /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/models/2025-04-23_140949
+2025-04-23 14:09:49,291 - SubprocessLauncher - INFO - creating /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/models/2025-04-23_140949/logs
+2025-04-23 14:09:49,291 - SubprocessLauncher - INFO - creating /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/models/2025-04-23_140949/ckpts
+2025-04-23 14:09:49,291 - SubprocessLauncher - INFO - creating /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/models/2025-04-23_140949/conf
+2025-04-23 14:09:49,291 - SubprocessLauncher - INFO - creating /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/models/2025-04-23_140949/stats
+2025-04-23 14:09:49,291 - SubprocessLauncher - INFO - creating /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/models/2025-04-23_140949/dataset_files
+2025-04-23 14:09:49,291 - SubprocessLauncher - INFO - creating /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/models/2025-04-23_140949/predictions
+2025-04-23 14:09:49,291 - SubprocessLauncher - INFO - creating /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/models/2025-04-23_140949/results
+2025-04-23 14:09:49,291 - SubprocessLauncher - INFO - Searching files: 0it [00:00, ?it/s]
+2025-04-23 14:09:49,291 - SubprocessLauncher - INFO - Processing /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/data/images: 0it [00:00, ?it/s][AProcessing /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/data/images: 0it [00:00, ?it/s]
+2025-04-23 14:09:49,291 - SubprocessLauncher - INFO - 
+2025-04-23 14:09:49,291 - SubprocessLauncher - INFO - Processing /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/data/images/Bacillariophyceae:   0%|          | 0/16 [00:00<?, ?it/s][AProcessing /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/data/images/Bacillariophyceae: 100%|██████████| 16/16 [00:00<00:00, 91056.80it/s]
+2025-04-23 14:09:49,291 - SubprocessLauncher - INFO - 
+2025-04-23 14:09:49,292 - SubprocessLauncher - INFO - Processing /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/data/images/Dinoflagellata:   0%|          | 0/20 [00:00<?, ?it/s][AProcessing /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/data/images/Dinoflagellata: 100%|██████████| 20/20 [00:00<00:00, 131482.88it/s]
+2025-04-23 14:09:49,292 - SubprocessLauncher - INFO - 
+2025-04-23 14:09:49,292 - SubprocessLauncher - INFO - Processing /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/data/images/Tripos:   0%|          | 0/13 [00:00<?, ?it/s][AProcessing /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/data/images/Tripos: 100%|██████████| 13/13 [00:00<00:00, 120366.34it/s]
+2025-04-23 14:09:49,292 - SubprocessLauncher - INFO - 
+2025-04-23 14:09:49,292 - SubprocessLauncher - INFO - Processing /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/data/images/Actinoptychus:   0%|          | 0/14 [00:00<?, ?it/s][AProcessing /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/data/images/Actinoptychus: 100%|██████████| 14/14 [00:00<00:00, 127100.12it/s]
+2025-04-23 14:09:49,292 - SubprocessLauncher - INFO - 
+2025-04-23 14:09:49,293 - SubprocessLauncher - INFO - Processing /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/data/images/Ciliophora:   0%|          | 0/19 [00:00<?, ?it/s][AProcessing /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/data/images/Ciliophora: 100%|██████████| 19/19 [00:00<00:00, 130002.90it/s]
+2025-04-23 14:09:49,293 - SubprocessLauncher - INFO - 
+2025-04-23 14:09:49,293 - SubprocessLauncher - INFO - Processing /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/data/images/Noctilucales:   0%|          | 0/23 [00:00<?, ?it/s][AProcessing /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/data/images/Noctilucales: 100%|██████████| 23/23 [00:00<00:00, 140013.05it/s]
+2025-04-23 14:09:49,293 - SubprocessLauncher - INFO - Searching files: 7it [00:00, 2718.28it/s]
+2025-04-23 14:09:49,294 - SubprocessLauncher - INFO - Writing /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/models/2025-04-23_140949/dataset_files/train.txt:   0%|          | 0/82 [00:00<?, ?it/s]Writing /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/models/2025-04-23_140949/dataset_files/train.txt: 100%|██████████| 82/82 [00:00<00:00, 1173832.52it/s]
+2025-04-23 14:09:49,294 - SubprocessLauncher - INFO - Writing /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/models/2025-04-23_140949/dataset_files/test.txt:   0%|          | 0/8 [00:00<?, ?it/s]Writing /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/models/2025-04-23_140949/dataset_files/test.txt: 100%|██████████| 8/8 [00:00<00:00, 424739.65it/s]
+2025-04-23 14:09:49,294 - SubprocessLauncher - INFO - Writing /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/models/2025-04-23_140949/dataset_files/val.txt:   0%|          | 0/15 [00:00<?, ?it/s]Writing /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/models/2025-04-23_140949/dataset_files/val.txt: 100%|██████████| 15/15 [00:00<00:00, 714938.18it/s]
+2025-04-23 14:09:49,294 - SubprocessLauncher - INFO - Writing classes file:   0%|          | 0/6 [00:00<?, ?it/s]Writing classes file: 100%|██████████| 6/6 [00:00<00:00, 426539.39it/s]
+2025-04-23 14:09:49,297 - SubprocessLauncher - INFO - Loading train data...
+2025-04-23 14:09:49,297 - SubprocessLauncher - INFO - No validation data.
+2025-04-23 14:09:49,298 - SubprocessLauncher - INFO - Loading class names...
+2025-04-23 14:09:49,298 - SubprocessLauncher - INFO - Loading aphia_ids...
+2025-04-23 14:09:49,441 - ClientAPILauncherExecutor - INFO - [identity=site-1, run=simulate_job, peer=simulator_server, peer_run=simulate_job, task_name=train, task_id=fc0ea03c-ab52-4e81-949a-aa61431af87f]: sending task to peer self.peer_read_timeout=60.0
+2025-04-23 14:09:49,622 - ClientAPILauncherExecutor - INFO - [identity=site-1, run=simulate_job, peer=simulator_server, peer_run=simulate_job, task_name=train, task_id=fc0ea03c-ab52-4e81-949a-aa61431af87f]: task train sent to peer in 0.18082094192504883 secs
+2025-04-23 14:09:53,447 - SubprocessLauncher - INFO -   0%|          | 0/82 [00:00<?, ?it/s]  1%|          | 1/82 [00:04<05:31,  4.09s/it]100%|██████████| 82/82 [00:04<00:00, 19.85it/s]
+2025-04-23 14:09:53,959 - SubprocessLauncher - INFO - /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/nvflare/simulator_workspace/site-1/simulate_job/app_site-1/custom/train_runfile_nvflare.py:201: DeprecationWarning: Call to deprecated function train (@flare.train is deprecated and will be removed in a future version.Use flare send/receive instead.).
+2025-04-23 14:09:53,959 - SubprocessLauncher - INFO -   @flare.train
+2025-04-23 14:09:54,032 - SubprocessLauncher - INFO - Unknown option: k
+2025-04-23 14:09:54,032 - SubprocessLauncher - INFO - fuser: [-cfu] file ...
+2025-04-23 14:09:54,032 - SubprocessLauncher - INFO - 	-c	file is treated as mount point
+2025-04-23 14:09:54,032 - SubprocessLauncher - INFO - 	-f	the report is only for the named files
+2025-04-23 14:09:54,032 - SubprocessLauncher - INFO - 	-u	print username of pid in parenthesis
+2025-04-23 14:09:54,032 - SubprocessLauncher - INFO - Mean RGB pixel: [138.95391572610396, 138.95391572610396, 138.95391572610396]
+2025-04-23 14:09:54,032 - SubprocessLauncher - INFO - Standard deviation of RGB pixel: [44.28115845458688, 44.28115845458688, 44.28115845458688]
+2025-04-23 14:09:54,032 - SubprocessLauncher - INFO - the training conf {'general': {'base_directory': '.', 'images_directory': 'data/images'}, 'model': {'modelname': 'Xception', 'image_size': 100, 'num_classes': 6, 'preprocess_mode': 'tf'}, 'dataset': {'mean_RGB': [138.95391572610396, 138.95391572610396, 138.95391572610396], 'std_RGB': [44.28115845458688, 44.28115845458688, 44.28115845458688], 'split_ratios': [0.8, 0.1, 0.1]}, 'training': {'mode': 'normal', 'initial_lr': 0.001, 'batch_size': 16, 'epochs': 15, 'ckpt_freq': None, 'lr_schedule_mode': 'step', 'lr_step_decay': 0.1, 'lr_step_schedule': [0.7, 0.9], 'l2_reg': 0.0001, 'use_class_weights': False, 'use_validation': False, 'use_test': True, 'use_early_stopping': False, 'use_multiprocessing': False}, 'monitor': {'use_tensorboard': True, 'use_remote': False}, 'augmentation': {'use_augmentation': True, 'train_mode': {'h_flip': 0.5, 'v_flip': 0.5, 'rot': 0.7, 'rot_lim': 90, 'stretch': 0.0, 'crop': 1.0, 'zoom': 0.2, 'blur': 0.3, 'pixel_noise': 0.3, 'pixel_sat': 0.3, 'cutout': 0.5}, 'val_mode': {'h_flip': 0.5, 'v_flip': 0.0, 'rot': 0.5, 'rot_lim': 30, 'stretch': 0.0, 'crop': 0.9, 'zoom': 0.1, 'blur': 0.1, 'pixel_noise': 0.1, 'pixel_sat': 0.1, 'cutout': 0.0}}, 'testing': {'timestamp': None, 'ckpt_name': 'final_model.h5', 'output_directory': None}}
+2025-04-23 14:09:54,033 - SubprocessLauncher - INFO - Currently in round 1 out of a total of 2 rounds
+2025-04-23 14:09:54,033 - SubprocessLauncher - INFO - NVFlare system info: {'site_name': 'site-1', 'job_id': 'simulate_job'}
+2025-04-23 14:09:54,033 - SubprocessLauncher - INFO - Monitor your training in Tensorboard by executing the following comand on your console:
+2025-04-23 14:09:54,033 - SubprocessLauncher - INFO -     tensorboard --logdir=/Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/models/2025-04-23_140949/logs
+2025-04-23 14:09:54,045 - SubprocessLauncher - INFO - /Users/leo/Desktop/dockerEnv/lib/python3.11/site-packages/keras/src/trainers/data_adapters/py_dataset_adapter.py:121: UserWarning: Your `PyDataset` class should call `super().__init__(**kwargs)` in its constructor. `**kwargs` can include `workers`, `use_multiprocessing`, `max_queue_size`. Do not pass these arguments to `fit()`, as they will be ignored.
+2025-04-23 14:09:54,045 - SubprocessLauncher - INFO -   self._warn_if_super_not_called()
+2025-04-23 14:09:54,253 - SubprocessLauncher - INFO - /Users/leo/Desktop/dockerEnv/lib/python3.11/site-packages/keras/src/backend/tensorflow/core.py:158: DeprecationWarning: __array__ implementation doesn't accept a copy keyword, so passing copy=False failed. __array__ must implement 'dtype' and 'copy' keyword arguments.
+2025-04-23 14:09:54,253 - SubprocessLauncher - INFO -   return np.array(x)
+2025-04-23 14:10:01,399 - SubprocessLauncher - INFO - TensorBoard 2.19.0 at http://0.0.0.0:6006/ (Press CTRL+C to quit)
+2025-04-23 14:10:06,481 - SubprocessLauncher - INFO - [1m1/6[0m [32m━━━[0m[37m━━━━━━━━━━━━━━━━━[0m [1m50s[0m 10s/step - accuracy: 0.2500 - loss: 1.9647[1m2/6[0m [32m━━━━━━[0m[37m━━━━━━━━━━━━━━[0m [1m1s[0m 496ms/step - accuracy: 0.1875 - loss: 1.9178[1m3/6[0m [32m━━━━━━━━━━[0m[37m━━━━━━━━━━[0m [1m1s[0m 492ms/step - accuracy: 0.1875 - loss: 1.8931[1m4/6[0m [32m━━━━━━━━━━━━━[0m[37m━━━━━━━[0m [1m0s[0m 490ms/step - accuracy: 0.1875 - loss: 1.8793[1m5/6[0m [32m━━━━━━━━━━━━━━━━[0m[37m━━━━[0m [1m0s[0m 487ms/step - accuracy: 0.1900 - loss: 1.8690[1m6/6[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 409ms/step - accuracy: 0.1909 - loss: 1.8684[1m6/6[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m12s[0m 410ms/step - accuracy: 0.1915 - loss: 1.8679 - lr: 0.0010 - learning_rate: 0.0010
+2025-04-23 14:10:07,084 - SubprocessLauncher - INFO - Saving data to /Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/models/2025-04-23_140949 folder.
+2025-04-23 14:10:07,084 - SubprocessLauncher - INFO - Saving training stats ...
+2025-04-23 14:10:07,085 - SubprocessLauncher - INFO - Saving the configuration ...
+2025-04-23 14:10:07,085 - SubprocessLauncher - INFO - Saving the model to h5...
+2025-04-23 14:10:07,085 - SubprocessLauncher - INFO - local model summary
+2025-04-23 14:10:07,085 - SubprocessLauncher - INFO - Finished training
+2025-04-23 14:10:07,085 - SubprocessLauncher - INFO - Start testing
+2025-04-23 14:10:07,085 - SubprocessLauncher - INFO - Loading test data...
+2025-04-23 14:10:07,582 - SubprocessLauncher - INFO - [1m1/8[0m [32m━━[0m[37m━━━━━━━━━━━━━━━━━━[0m [1m3s[0m 438ms/step[1m2/8[0m [32m━━━━━[0m[37m━━━━━━━━━━━━━━━[0m [1m0s[0m 70ms/step [1m3/8[0m [32m━━━━━━━[0m[37m━━━━━━━━━━━━━[0m [1m0s[0m 74ms/step[1m4/8[0m [32m━━━━━━━━━━[0m[37m━━━━━━━━━━[0m [1m0s[0m 73ms/step[1m5/8[0m [32m━━━━━━━━━━━━[0m[37m━━━━━━━━[0m [1m0s[0m 73ms/step[1m6/8[0m [32m━━━━━━━━━━━━━━━[0m[37m━━━━━[0m [1m0s[0m 72ms/step[1m7/8[0m [32m━━━━━━━━━━━━━━━━━[0m[37m━━━[0m [1m0s[0m 71ms/step[1m8/8[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 71ms/step[1m8/8[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m1s[0m 71ms/step
+2025-04-23 14:10:08,241 - ClientAPILauncherExecutor - INFO - [identity=site-1, run=simulate_job, peer=simulator_server, peer_run=simulate_job, task_name=train, task_id=fc0ea03c-ab52-4e81-949a-aa61431af87f]: got result 'Message(topic=train, msg_id=9907b71a-7e5c-46e8-9177-3bc16384cf1d, req_id=fc0ea03c-ab52-4e81-949a-aa61431af87f, msg_type=REP)' for task 'train'
+2025-04-23 14:10:08,241 - ClientAPILauncherExecutor - INFO - [identity=site-1, run=simulate_job, peer=simulator_server, peer_run=simulate_job, task_name=train, task_id=fc0ea03c-ab52-4e81-949a-aa61431af87f]: received result of train from peer in 18.61901617050171 secs
+2025-04-23 14:10:08,242 - ClientAPILauncherExecutor - INFO - [identity=site-1, run=simulate_job, peer=simulator_server, peer_run=simulate_job, task_name=train, task_id=fc0ea03c-ab52-4e81-949a-aa61431af87f]: Calling stop task (train).
+2025-04-23 14:10:08,242 - ClientRunner - INFO - [identity=site-1, run=simulate_job, peer=simulator_server, peer_run=simulate_job, task_name=train, task_id=fc0ea03c-ab52-4e81-949a-aa61431af87f]: finished processing task
+2025-04-23 14:10:08,242 - ClientRunner - INFO - [identity=site-1, run=simulate_job, peer=simulator_server, peer_run=simulate_job, task_name=train, task_id=fc0ea03c-ab52-4e81-949a-aa61431af87f]: try #1: sending task result to server
+2025-04-23 14:10:08,243 - ClientRunner - INFO - [identity=site-1, run=simulate_job, peer=simulator_server, peer_run=simulate_job, task_name=train, task_id=fc0ea03c-ab52-4e81-949a-aa61431af87f]: checking task ...
+2025-04-23 14:10:08,243 - Cell - INFO - broadcast: channel='aux_communication', topic='__task_check__', targets=['server.simulate_job'], timeout=5.0
+2025-04-23 14:10:08,246 - ClientRunner - INFO - [identity=site-1, run=simulate_job, peer=simulator_server, peer_run=simulate_job, task_name=train, task_id=fc0ea03c-ab52-4e81-949a-aa61431af87f]: start to send task result to server
+2025-04-23 14:10:08,246 - FederatedClient - INFO - Starting to push execute result.
+2025-04-23 14:10:08,629 - Communicator - INFO -  SubmitUpdate size: 91.9MB (91931134 Bytes). time: 0.383026 seconds
+2025-04-23 14:10:08,632 - ClientRunner - INFO - [identity=site-1, run=simulate_job, peer=simulator_server, peer_run=simulate_job, task_name=train, task_id=fc0ea03c-ab52-4e81-949a-aa61431af87f]: task result sent to server
+2025-04-23 14:10:08,632 - ClientTaskWorker - INFO - Finished one task run for client: site-1 interval: 2 task_processed: True
+2025-04-23 14:10:08,633 - ClientTaskWorker - INFO - Clean up ClientRunner for : site-1 
+2025-04-23 14:10:08,634 - nvflare.fuel.f3.sfm.conn_manager - INFO - Connection [CN00002 Not Connected] is closed PID: 19424
