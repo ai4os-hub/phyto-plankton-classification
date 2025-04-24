@@ -149,7 +149,7 @@ GTAGS
 ###################################
 planktonclas/webpage/templates/labels.html
 
-
+models/phytoplankton_vliz/*
 planktonclas/run_file.ipynb
 .Trash-0
 
