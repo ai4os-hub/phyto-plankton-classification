@@ -23,7 +23,7 @@ ENV CONTAINER_MAINTAINER "Wout Decrop <wout.decrop@vliz.be>"
 # Identify the species level of Plankton for 95 classes. Working on OSCAR
 
 # What user branch to clone [!]
-ARG branch=tf2.19
+ARG branch=dev
 ARG tag   # need to correctly parse $tag variable
 
 # Install Ubuntu packages
