@@ -210,7 +210,7 @@ def main(TIMESTAMP, CONF):
         history = model.fit(
             x=train_gen,
             steps_per_epoch=train_steps,
-            epochs=1,#CONF["training"]["epochs"],
+            epochs=CONF["training"]["epochs"],
             class_weight=class_weights,
             validation_data=val_gen,
             validation_steps=val_steps,
