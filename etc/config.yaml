@@ -229,7 +229,7 @@ monitor:
 augmentation:
 
   use_augmentation: 
-    value: True
+    value: False
     type: "bool"
     help: >
           Use image augmentation during the training process.
