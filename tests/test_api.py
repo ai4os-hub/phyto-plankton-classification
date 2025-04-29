@@ -35,7 +35,7 @@ class TestModelMethods(unittest.TestCase):
         )
         self.assertEqual(
             self.meta["author"],
-            "Ignacio Heredia (CSIC), Wout Decrop (VLIZ)",
+             ['"Ignacio Heredia (CSIC)"', '"Wout Decrop (VLIZ)"'],
         )
         self.assertEqual(
             self.meta["license"].lower(),
