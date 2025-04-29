@@ -53,6 +53,8 @@ from planktonclas.data_utils import (
 )
 from planktonclas.train_runfile import train_fn
 
+
+
 logger = logging.getLogger(__name__)
 ENV_LOG_LEVEL = os.getenv("API_LOG_LEVEL", default="INFO")
 LOG_LEVEL = getattr(logging, ENV_LOG_LEVEL.upper())
@@ -624,34 +626,20 @@ def get_metadata(distribution_name="planktonclas"):
     Function to read metadata
     """
 
-    pkg = pkg_resources.get_distribution(distribution_name)
-    meta = {
-        "name": None,
-        "version": None,
-        "summary": None,
-        "home-page": None,
-        "author": None,
-        "author-email": None,
-        "license": None,
-    }
+    metadata = {
+         "name": config.MODEL_METADATA.get("name"),
+            "author": config.MODEL_METADATA.get("authors"),
+            "author-email": config.MODEL_METADATA.get(
+                "author-emails"
+            ),
+            "description": config.MODEL_METADATA.get("summary"),
+            "license": config.MODEL_METADATA.get("license"),
+            "version": config.MODEL_METADATA.get("version"),
+            
+         
+        }
 
-    for line in pkg.get_metadata_lines("PKG-INFO"):
-        line_low = (
-            line.lower()
-        )  # to avoid inconsistency due to letter cases
-        for par in meta:
-            if line_low.startswith(par.lower() + ":"):
-                _, value = line.split(": ", 1)
-                meta[par] = value
-
-    # Update information with Docker info (provided as 'CONTAINER_*' env
-    # variables)
-    r = re.compile("^CONTAINER_(.*?)$")
-    container_vars = list(filter(r.match, list(os.environ)))
-    for var in container_vars:
-        meta[var.capitalize()] = os.getenv(var)
-
-    return meta
+    return metadata
 
 
 schema = {
