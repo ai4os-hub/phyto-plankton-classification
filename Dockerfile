@@ -22,8 +22,9 @@ ENV CONTAINER_MAINTAINER "Wout Decrop <wout.decrop@vliz.be>"
 
 # Identify the species level of Plankton for 95 classes. Working on OSCAR
 
-# What user branch to clone [!]
+
 ARG branch=main
+
 ARG tag   # need to correctly parse $tag variable
 
 # Install Ubuntu packages
@@ -76,11 +77,13 @@ ENV SHELL /bin/bash
 
 # Install user app
 RUN git clone -b $branch --depth 1 https://github.com/ai4os-hub/phyto-plankton-classification && \
-    cd  phyto-plankton-classification && \
+    cd  phyto-plankton-classification/nvflare && \
+    pip install --ignore-installed blinker -r requirements_nvflare.txt && \
+    cd ..                                     && \
     pip install --ignore-installed blinker -e .  && \
     cd ..
    # pip uninstall -y numpy && \
-  #  pip install numpy~=1.24
+  # pip install numpy~=1.24
 
 # https://share.services.ai4os.eu/index.php/s/rJQPQtBReqHAPf3/download/phytoplankton_vliz.tar.gz
 # https://share.services.ai4os.eu/index.php/s/dFg9cma5FwG6PZD/download/phytoplankton_vliz.tar.xz
