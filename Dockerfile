@@ -23,7 +23,7 @@ ENV CONTAINER_MAINTAINER "Wout Decrop <wout.decrop@vliz.be>"
 # Identify the species level of Plankton for 95 classes. Working on OSCAR
 
 
-ARG branch=tf2.19_nvflare
+ARG branch=flare
 
 ARG tag   # need to correctly parse $tag variable
 
