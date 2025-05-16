@@ -18,5 +18,5 @@ FROM ai4oshub/phyto-plankton-classification:${tag}
 LABEL maintainer='Fahimeh Alibabaei, Leonhard Duda'
 LABEL version='0.0.1'
 
-RUN pip install --no-cache-dir  nvflare~=2.5.0 mlflow
+RUN  pip install -r phyto-plankton-classification/nvflare/requirements_nvflare.txt
  
