@@ -82,18 +82,17 @@ RUN git clone -b $branch --depth 1 https://github.com/ai4os-hub/phyto-plankton-c
    # pip uninstall -y numpy && \
   #  pip install numpy~=1.24
 
-# https://share.services.ai4os.eu/index.php/s/rJQPQtBReqHAPf3/download/phytoplankton_vliz.tar.gz
-# https://share.services.ai4os.eu/index.php/s/dFg9cma5FwG6PZD/download/phytoplankton_vliz.tar.xz
-# ENV SWIFT_CONTAINER https://share.services.ai4os.eu/index.php/s/jfS26BjQzHx3osc/download/
-ENV SWIFT_CONTAINER=https://share.services.ai4os.eu/index.php/s/rJQPQtBReqHAPf3/download
-ENV MODEL_TAR=phytoplankton_vliz.tar.gz
-# mkdir -p ./phyto-plankton-classification/models \
-# Download and extract the file
-#RUN mkdir -p ./phyto-plankton-classification/models && \
-#    curl -L ${SWIFT_CONTAINER} -o ./phyto-plankton-classification/models/${MODEL_TAR}
-#RUN cd ./phyto-plankton-classification/models && \
-#    tar -xzf ${MODEL_TAR} && \
-#    rm ${MODEL_TAR}
+# Set environment variables
+ENV MODEL_TAR=Phytoplankton_EfficientNetV2B0.tar.gz
+ENV MODEL_DIR=./phyto-plankton-classification/models
+ENV MODEL_URL=https://zenodo.org/records/15269453/files/${MODEL_TAR}?download=1
+
+# Create models directory, download and extract model, then delete the archive
+RUN mkdir -p ${MODEL_DIR} && \
+    curl -L "${MODEL_URL}" -o ${MODEL_DIR}/${MODEL_TAR} && \
+    tar -xzf ${MODEL_DIR}/${MODEL_TAR} -C ${MODEL_DIR} && \
+    rm ${MODEL_DIR}/${MODEL_TAR}
+
 
 # Open ports: DEEPaaS (5000), Monitoring (6006), Jupyter (8888)
 EXPOSE 5000 6006 8888
