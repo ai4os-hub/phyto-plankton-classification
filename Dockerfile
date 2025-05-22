@@ -22,8 +22,9 @@ ENV CONTAINER_MAINTAINER "Wout Decrop <wout.decrop@vliz.be>"
 
 # Identify the species level of Plankton for 95 classes. Working on OSCAR
 
-# What user branch to clone [!]
-ARG branch=tf2.19
+
+ARG branch=main
+
 ARG tag   # need to correctly parse $tag variable
 
 # Install Ubuntu packages
@@ -80,7 +81,7 @@ RUN git clone -b $branch --depth 1 https://github.com/ai4os-hub/phyto-plankton-c
     pip install --ignore-installed blinker -e .  && \
     cd ..
    # pip uninstall -y numpy && \
-  #  pip install numpy~=1.24
+  # pip install numpy~=1.24
 
 # Set environment variables
 ENV MODEL_TAR=Phytoplankton_EfficientNetV2B0.tar.gz

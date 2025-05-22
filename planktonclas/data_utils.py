@@ -282,7 +282,7 @@ def load_image(filename, filemode="local"):
             ):  # base64 encoded string
                 data = base64.b64decode(filename.split(";base64,")[1])
             else:  # normal url
-                data = requests.get(filename).content
+                data = requests.get(filename, timeout=10).content
             data = np.frombuffer(data, np.uint8)
             image = cv2.imdecode(data, cv2.IMREAD_COLOR)
             if image is None:
@@ -464,13 +464,10 @@ def augment(im, params=None):
         scale = np.random.uniform(scale_low, scale_high)
         transform_list.append(
             A.CoarseDropout(
-                min_holes=8,
-                max_holes=8,
-                min_height=int(scale * ly),
-                max_height=int(scale * ly),
-                min_width=int(scale * lx),
-                max_width=int(scale * lx),
-                fill_value=0,  # Default is black, change if you want a different fill
+                num_holes_range=(8, 8), 
+                hole_height_range=(int(scale * ly), int(scale * ly)), 
+                hole_width_range=(int(scale * lx), int(scale * lx)),  
+                fill=0, 
                 p=params["cutout"],
             )
         )

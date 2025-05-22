@@ -14,12 +14,11 @@
 
 """Utilities to compute SaliencyMasks."""
 import numpy as np
-import tensorflow.keras.backend as K
+import tensorflow as tf
 
 
 class SaliencyMask(object):
     """Base class for saliency masks. Alone, this class doesn't do anything."""
-
     def __init__(self, model, output_index=0):
         """Constructs a SaliencyMask.
 
@@ -37,17 +36,13 @@ class SaliencyMask(object):
         """
         pass
 
-    def get_smoothed_mask(
-        self, input_image, stdev_spread=0.2, nsamples=50
-    ):
+    def get_smoothed_mask(self, input_image, stdev_spread=.2, nsamples=50):
         """Returns a mask that is smoothed with the SmoothGrad method.
 
         Args:
             input_image: input image with shape (H, W, 3).
         """
-        stdev = stdev_spread * (
-            np.max(input_image) - np.min(input_image)
-        )
+        stdev = stdev_spread * (np.max(input_image) - np.min(input_image))
 
         total_gradients = np.zeros_like(input_image)
         for i in range(nsamples):
@@ -58,22 +53,12 @@ class SaliencyMask(object):
 
         return total_gradients / nsamples
 
-
 class GradientSaliency(SaliencyMask):
     r"""A SaliencyMask class that computes saliency masks with a gradient."""
 
     def __init__(self, model, output_index=0):
-        # Define the function to compute the gradient
-        input_tensors = [
-            model.input,  # placeholder for input image tensor
-            K.learning_phase(),  # placeholder for mode (train or test) tense
-        ]
-        gradients = model.optimizer.get_gradients(
-            model.output[0][output_index], model.input
-        )
-        self.compute_gradients = K.function(
-            inputs=input_tensors, outputs=gradients
-        )
+        self.model = model
+        self.output_index = output_index
 
     def get_mask(self, input_image):
         """Returns a vanilla gradient mask.
@@ -81,9 +66,21 @@ class GradientSaliency(SaliencyMask):
         Args:
             input_image: input image with shape (H, W, 3).
         """
+        # Add batch dimension
+        x_value = np.expand_dims(input_image, axis=0).astype(np.float32)
+        x_tensor = tf.convert_to_tensor(x_value)
 
-        # Execute the function to compute the gradient
-        x_value = np.expand_dims(input_image, axis=0)
-        gradients = self.compute_gradients([x_value, 0])[0][0]
-
-        return gradients
+        with tf.GradientTape() as tape:
+            tape.watch(x_tensor)
+            outputs = self.model(x_tensor, training=False)
+            # Handle multiple outputs
+            if isinstance(outputs, (list, tuple)):
+                output = outputs[0]
+            else:
+                output = outputs
+            # Select the required output index (assumes batch dimension first)
+            loss = output[:, self.output_index]
+        gradients = tape.gradient(loss, x_tensor)
+        # Remove batch dimension and convert to numpy
+        gradients_np = gradients[0].numpy()
+        return gradients_np

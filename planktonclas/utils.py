@@ -105,7 +105,7 @@ class LRHistory(callbacks.Callback):
         super().on_epoch_end(epoch, logs)
 
 
-def launch_tensorboard(port, logdir, host="0.0.0.0"):
+def launch_tensorboard(port, logdir, host="0.0.0.0"): #nosec
     tensorboard_path = shutil.which("tensorboard")
     if tensorboard_path is None:
         raise RuntimeError(
