@@ -24,6 +24,12 @@ class_names = load_class_names(splits_dir=paths.get_ts_splits_dir())
 model = load_model(os.path.join(paths.get_checkpoints_dir(), MODEL_NAME),
                    custom_objects=utils.get_custom_objects())
 
+
+conf_path = os.path.join(paths.get_conf_dir(), 'conf.json')
+with open(conf_path) as f:
+    conf = json.load(f)
+
+
 # === LOOP OVER ZIP FILES ===
 zip_files = glob.glob(os.path.join(PARENT_DIR, '*.zip'))
 
@@ -39,8 +45,8 @@ for zip_path in tqdm(zip_files, desc="Processing ZIP files"):
 
     unzip_dir = os.path.join(PARENT_DIR, base_name)
     tqdm.write(f"Unzipping {zip_filename} to {unzip_dir}")
-    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-        zip_ref.extractall(unzip_dir)
+    # with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+    #     zip_ref.extractall(unzip_dir)
 
     FILEPATHS = glob.glob(os.path.join(unzip_dir, '**', '*.tif'), recursive=True)
     tqdm.write(f"Found {len(FILEPATHS)} .tif files in {base_name}")
@@ -49,12 +55,14 @@ for zip_path in tqdm(zip_files, desc="Processing ZIP files"):
         tqdm.write(f"No .tif files found in {base_name}, skipping.")
         shutil.rmtree(unzip_dir)
         continue
-
+    FILEPATHS=FILEPATHS[1:3]
     pred_lab, pred_prob = predict(model, FILEPATHS, conf, top_K=TOP_K, filemode='local')
-
+    print(FILEPATHS)
     results = []
     for i in tqdm(range(len(FILEPATHS)), desc=f"Processing {base_name}", leave=False):
         full_path = FILEPATHS[i]
+        print(full_path)
+        print(PARENT_DIR)
         relative_path = os.path.relpath(full_path, PARENT_DIR)
         labels = [class_names[pred_lab[i, j]] for j in range(TOP_K)]
         probs = [float(pred_prob[i, j]) for j in range(TOP_K)]
@@ -70,3 +78,4 @@ for zip_path in tqdm(zip_files, desc="Processing ZIP files"):
 
     shutil.rmtree(unzip_dir)
     tqdm.write(f"Deleted unzipped directory {unzip_dir}\n")
+    break
