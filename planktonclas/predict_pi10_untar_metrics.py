@@ -19,7 +19,7 @@ from planktonclas.data_utils import load_class_names
 TIMESTAMP = 'PI10_model'
 MODEL_NAME = 'final_model.h5'
 TOP_K = 5
-PARENT_DIR = r'\\qarchive\data_sensors\plankton-imager-10\script_test'
+PARENT_DIR = r'\\qarchive\data_sensors\plankton-imager-10\processed'
 
 # === SETUP ===
 paths.timestamp = TIMESTAMP
