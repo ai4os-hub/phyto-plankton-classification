@@ -37,6 +37,7 @@ model_modes = {
     "DenseNet169": "torch",
     "DenseNet201": "torch",
     "InceptionResNetV2": "tf",
+    "EfficientNetV2B0": "tf",
     "InceptionV3": "tf",
     "MobileNet": "tf",
     "NASNetLarge": "tf",
@@ -46,7 +47,6 @@ model_modes = {
     "VGG16": "caffe",
     "VGG19": "caffe",
 }
-
 
 def create_model(CONF):
     """
