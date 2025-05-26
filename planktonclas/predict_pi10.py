@@ -11,6 +11,7 @@ from planktonclas import paths, config, plot_utils, utils
 from planktonclas.test_utils import predict
 from planktonclas.data_utils import load_class_names
 
+
 # === USER PARAMETERS ===
 TIMESTAMP = 'PI10_model'
 MODEL_NAME = 'final_model.h5'
