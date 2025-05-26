@@ -83,7 +83,7 @@ for tar_path in tqdm(tar_files, desc="Processing TAR files"):
     tar_filename = os.path.basename(tar_path)
     base_name = os.path.splitext(tar_filename)[0]
     json_filename = f"{base_name}_predictions.json"
-    csv_filename = f"{base_name}_properties.csv"
+    csv_filename = f"{base_name}_image_properties.csv"
     json_path = os.path.join(PARENT_DIR, json_filename)
     csv_path = os.path.join(PARENT_DIR, csv_filename)
 
@@ -98,9 +98,11 @@ for tar_path in tqdm(tar_files, desc="Processing TAR files"):
             tar_ref.extractall(untar_dir)
     else:
         tqdm.write(f"Folder already exists for {tar_filename}, skipping extraction.")
-        
+
     FILEPATHS = glob.glob(os.path.join(untar_dir, '**', '*.tif'), recursive=True)
     tqdm.write(f"Found {len(FILEPATHS)} .tif files in {base_name}")
+
+    FILEPATHS=FILEPATHS[3:7]
 
     if not FILEPATHS:
         tqdm.write(f"No .tif files found in {base_name}, skipping.")
@@ -115,14 +117,16 @@ for tar_path in tqdm(tar_files, desc="Processing TAR files"):
 
     for i in tqdm(range(len(FILEPATHS)), desc=f"Processing {base_name}", leave=False):
         path = FILEPATHS[i]
+        if "Background.tif" in path or "FlowCellEdges.tif" in path:
+            continue
         relative_path = os.path.relpath(path, PARENT_DIR)
         labels = [class_names[pred_lab[i, j]] for j in range(TOP_K)]
         probs = [float(pred_prob[i, j]) for j in range(TOP_K)]
 
         results_json.append({
             "filepath": relative_path,
-            "top5_labels": labels,
-            "top5_probs": probs
+            f"top{TOP_K}_labels": labels,
+            f"top5{TOP_K}_probs": probs
         })
 
         region_props = getMaxAreaDict(path)

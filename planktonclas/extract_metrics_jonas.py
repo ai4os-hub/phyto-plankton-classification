@@ -9,6 +9,7 @@ import numpy as np
 from tqdm import tqdm
 
 
+
 # Define the base with cyz files (we need their name to find the csv files)
 base_path1 = r"\\fs\SHARED\transfert\Wout_er_zijn_geen_vaste_stoelen\1740\RawImages"
 
@@ -217,35 +218,3 @@ for tar_filename in tqdm(tar_files, desc="Processing tar files", unit="tar"):
     os.makedirs(temp_folder, exist_ok=True)  # Recreate empty temp_folder
     break
 shutil.rmtree(temp_folder_o)
-# # Define the base folder containing the TIF images
-# base_path1 = r"\\fs\SHARED\transfert\Wout_er_zijn_geen_vaste_stoelen\1740\RawImages"
-# zip_folder=  r"\\qarchive\data_sensors\plankton-imager-10\2025-04-22\tarred"
-
-# output_folder=r"\\qarchive\data_sensors\plankton-imager-10\2025-04-22\lenghts"
-# temp_folder=r"\\qarchive\data_sensors\plankton-imager-10\2025-04-22\temp"
-# # List to store image properties
-# image_properties = []
-
-# # Loop over all .tif files in the specified directory with a progress bar
-# for filename in tqdm(os.listdir(base_path1), desc="Processing files", unit="file"):
-#     if filename.endswith('.tif'):
-#         file_path = os.path.join(base_path1, filename)
-        
-#         # Get properties from your function
-#         props = getMaxAreaDict(file_path)
-        
-#         # Convert the dictionary into a row of data
-#         image_properties.append(props)
-        
-#         # Optionally print the filename for inspection (can be omitted if unnecessary)
-#         # print(filename)
-
-# # Convert the list of dictionaries into a DataFrame
-# df = pd.DataFrame(image_properties)
-
-# # Save the DataFrame to a CSV file one folder up
-# # output_folder = os.path.dirname(base_path1)  # Get the parent directory
-# output_file = os.path.join(output_folder, "image_properties.csv")
-# df.to_csv(output_file, index=False)
-
-# print(f"Image properties have been saved to {output_file}")
