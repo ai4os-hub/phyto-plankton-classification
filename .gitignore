@@ -153,8 +153,8 @@ planktonclas/webpage/templates/labels.html
 planktonclas/run_file.ipynb
 .Trash-0
 
-# models/*
-# !models/.gitkeep
+models/*
+!models/.gitkeep
 # !models/phytoplankton_vliz/*
 
 notebooks\3.2-Saliency_maps.ipynb
