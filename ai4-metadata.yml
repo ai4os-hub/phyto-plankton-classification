@@ -56,3 +56,13 @@ libraries:
   - Keras
 data-type:
   - Image
+resources:
+  inference:
+    cpu: 1
+    memory_MB: 1000-2000
+    storage_MB: 100-1000
+  training:
+    cpu: 8
+    gpu: 1
+    memory_MB: 8000-32000 
+    storage_MB: 1000-50000
