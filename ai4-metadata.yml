@@ -58,7 +58,7 @@ data-type:
   - Image
 resources:
   inference:
-    cpu: 1
+    cpu: 4
     memory_MB: 1000
     storage_MB: 1000
   training:
