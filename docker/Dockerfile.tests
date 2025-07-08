@@ -1,7 +1,7 @@
 # Base image, e.g. tensorflow/tensorflow:1.7.0
 FROM Base docker image for Dockerfile, e.g. tensorflow/tensorflow:1.7.0. Has to match python version!
 
-LABEL maintainer='Ignacio Heredia (CSIC)'
+LABEL maintainer='wout decrop'
 # This is a plug-and-play tool to train and evaluate an image classifier on a custom dataset using deep neural networks.
 
 RUN apt-get update && \ 
