@@ -1,13 +1,12 @@
 """
 API for the image classification package
+Date: 2024
+Author: wout decrop
+Email: wout.decrop@vliz.be
+Github: woutdecrop
 
-Date: September 2018
-Author: Ignacio Heredia
-Email: iheredia@ifca.unican.es
-Github: ignacioheredia
-
-Notes: Based on https://github.com/indigo-dc/plant-classification-theano/blob/package/plant_classification/api.py
-
+Notes: Based on https://github.com/indigo-dc/plant-classification-theano/blob/package/plant_classification/api.py & 
+https://github.com/ai4os-hub/ai4os-image-classification-tf
 Descriptions:
 The API will use the model files inside ../models/api. If not found it will use the model files of the last trained model.
 If several checkpoints are found inside ../models/api/ckpts we will use the last checkpoint.
