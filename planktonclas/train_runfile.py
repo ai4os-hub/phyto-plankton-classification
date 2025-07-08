@@ -1,7 +1,7 @@
 """
 Training runfile
 
-Date: September 2023
+Date: September 2024
 Author: Wout Decrop (based on code from Ignacio Heredia)
 Email: wout.decrop@VLIZ.be
 Github: lifewatch

@@ -1,10 +1,11 @@
 """
 Miscellaneous functions manage data.
 
-Date: April 2025
-Author: Ignacio Heredia (Updated for Albumentations 2.0)
-Email: iheredia@ifca.unican.es
-Github: ignacioheredia
+Date: 2024
+Author: wout decrop
+Email: wout.decrop@vliz.be
+Github: woutdecrop
+
 """
 
 import base64

@@ -1,10 +1,11 @@
 """
 Configuration script of the image classification application. It load configuration from a YAML file.
 
-Date: September 2018
-Author: Ignacio Heredia
-Email: iheredia@ifca.unican.es
-Github: ignacioheredia
+Date: 2024
+Author: wout decrop
+Email: wout.decrop@vliz.be
+Github: woutdecrop
+
 """
 
 import builtins
