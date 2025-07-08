@@ -2,8 +2,8 @@
 Custom optimizers to implement lr_mult as in caffe
 
 Date: April 2025
-Original Author: Ignacio Heredia
-Updated for TensorFlow 2.10
+Original Author: wout decrop
+Updated for TensorFlow 2.19
 
 References
 ----------

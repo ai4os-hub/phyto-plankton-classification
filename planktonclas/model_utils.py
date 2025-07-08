@@ -1,10 +1,11 @@
 """
 Miscellanous functions to handle models.
 
-Date: September 2018
-Author: Ignacio Heredia
-Email: iheredia@ifca.unican.es
-Github: ignacioheredia
+Date: 2024
+Author: wout decrop
+Email: wout.decrop@vliz.be
+Github: woutdecrop
+
 """
 
 import json
