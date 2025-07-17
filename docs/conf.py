@@ -184,8 +184,8 @@ latex_documents = [
     (
         "index",
         "planktonclas.tex",
-        "DEEP-OC-image-classification Documentation",
-        "Ignacio Heredia (CSIC)",
+        "phyto-plankton-classification Documentation",
+        "wout decrop",
         "manual",
     ),
 ]
@@ -220,7 +220,7 @@ man_pages = [
         "index",
         "planktonclas",
         "DEEP-OC-image-classification Documentation",
-        ["Ignacio Heredia (CSIC)"],
+        ["Wout decrop (VLIZ)"],
         1,
     )
 ]
@@ -239,7 +239,7 @@ texinfo_documents = [
         "index",
         "planktonclas",
         "DEEP-OC-image-classification Documentation",
-        "Ignacio Heredia (CSIC)",
+        "wout decrop (VLIZ)",
         "DEEP-OC-image-classification",
         "This is a plug-and-play tool to train and evaluate an image classifier on a custom dataset using deep neural networks.",
         "Miscellaneous",

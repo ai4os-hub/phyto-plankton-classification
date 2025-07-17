@@ -1,6 +1,6 @@
 metadata_version: 2.0.0
 title: Phytoplankton species classifier (VLIZ)
-summary: Identify the species level of Plankton for 95 classes.
+summary: Identify the species level of Plankton for 95 classes!
 description: |-
     Phytoplankton species classifier is an application to classify phytoplankton, features DEEPaaS API.
     Provided by [VLIZ (Flanders Marine Institute)](https://www.vliz.be/nl). 
@@ -58,7 +58,7 @@ data-type:
   - Image
 resources:
   inference:
-    cpu: 1
+    cpu: 4
     memory_MB: 1000
     storage_MB: 1000
   training:
