@@ -35,7 +35,7 @@ Jupyter: accesses jupyter notebook from which deepaas can be ran with this comma
 ***advanced settings***
 - storage: /srv/.rclone/rclone.conf
 - Rclone vendor: nextcloud
-- storage URL: https://share.services.ai4os.eu/remote.php/webdav/
+- storage URL: https://share.services.ai4os.eu/remote.php/dav/files/AI4EOSC_Keycloak-... [<YOUR-USER>]
 - RCLONE user and password:
   - log in to  https://share.services.ai4os.eu/index.php/login?redirect_url=/index.php/apps/dashboard/ using EGI and use your institutes IDP if possible
   - in account go to profile > security > devices and sessions
