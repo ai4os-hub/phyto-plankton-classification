@@ -18,6 +18,8 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 os.environ['NO_ALBUMENTATIONS_UPDATE'] = '1'
 
+import smtplib
+from email.mime.text import MIMEText
 import absl.logging
 absl.logging.set_verbosity(absl.logging.ERROR)
 import shutil
@@ -29,7 +31,6 @@ import time
 import random
 import json
 import numpy as np
-from tqdm import tqdm
 from skimage.io import imread
 from skimage.color import rgb2gray
 from skimage import measure, morphology
@@ -39,8 +40,11 @@ from planktonclas.test_utils import predict
 from planktonclas.data_utils import load_class_names
 import datetime
 import threading
-import time
 import csv
+from dotenv import load_dotenv
+
+
+
 
 last_summary_date = None  # will track the last date email was sent
 last_afternoon_summary_sent_day = None  # for 15:00 status update
@@ -51,8 +55,7 @@ log_file_path = "/paths/PI10/logs/processing_times.csv"
 
 
 #=== MAILING ===
-from dotenv import load_dotenv
-load_dotenv(dotenv_path="/paths/PI10/.env")
+load_dotenv(dotenv_path=".env")
 EMAIL_SETTINGS = {
     'smtp_server': os.getenv('SMTP_SERVER'),
     'smtp_port': int(os.getenv('SMTP_PORT')),
@@ -62,8 +65,7 @@ EMAIL_SETTINGS = {
 }
 daily_tar_reports = []  # Stores dicts with tar_name, quarantined, quarantine_reason, quarantine_path, status_log
 
-import smtplib
-from email.mime.text import MIMEText
+
 #test
 
 def email_scheduler():
@@ -502,7 +504,7 @@ def create_preview_images(extract_dir, preview_dir, tar_name, n=200):
 
 
 
-def extract_exif_metadata(tif_paths, tar_source, batch_size=200):
+def extract_metadata(tif_paths, tar_source, batch_size=200):
     print("⚙ Extracting EXIF metadata in batch...")
 
     exiftool_path = r"\paths\PI10\exiftool-13.31_64\exiftool.exe"
@@ -548,7 +550,8 @@ def extract_exif_metadata(tif_paths, tar_source, batch_size=200):
 
             all_data.extend(data)
 
-        except Exception:
+        except Exception as e:
+            print(f"Skipping due to error: {e}")
             continue
 
     print(f"       ✅ Done in {time.time()-total_start_time:.2f} seconds ({len(all_data)} rows)")
@@ -743,9 +746,6 @@ def classify_and_extract_regions(tar_file, extract_dir):
         print(f"       ⚠️No region properties written for {base_name}")
     return pred_lab  # at the end
 
-import os
-import json
-import pandas as pd
 
 def generate_topspecies_csv(json_path,
                             upper_threshold=0.95,

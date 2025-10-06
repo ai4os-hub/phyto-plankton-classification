@@ -34,7 +34,36 @@ The pipeline continuously monitors a source directory for new `.tar` files and p
 4. **Execution**:
    - Run the script to start the continuous monitoring and processing loop.
    - The script will automatically process new `.tar` files and log results.
- 
+
+
+
+
+
+
+Installation Exif Metadata Extraction Script
+------------
+
+1Install ExifTool
+
+   Windows:
+   - Download exiftool(-k).exe from https://exiftool.org/
+   - Place it in a folder, e.g., C:\ExifTool\
+   - Set exiftool_path in the script:
+     exiftool_path = "C:\\ExifTool\\exiftool.exe"
+
+   Linux (Debian/Ubuntu):
+   - sudo apt install libimage-exiftool-perl
+
+   macOS:
+   - brew install exiftool
+
+3. Optional Python Wrapper (pip install)
+   - You can install a Python wrapper for convenience:
+     pip install exiftool
+   - Note: The wrapper still requires the ExifTool executable installed.
+
+
+
 ## Structure
  
 - **Setup**: Initializes directories, loads model and configuration
