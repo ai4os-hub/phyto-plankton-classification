@@ -8,7 +8,7 @@ Github: ignacioheredia
 """
 
 import numpy as np
-
+import tensorflow as tf
 from planktonclas.data_utils import k_crop_data_sequence
 
 
@@ -54,6 +54,13 @@ def predict(
             Array of predicted probabilities
     """
 
+    # --- GPU check ---
+    gpus = tf.config.list_physical_devices('GPU')
+    if gpus:
+        print("⚙ GPU is available. Using GPU:", gpus[0])
+    else:
+        print("⚙ GPU is NOT available. Using CPU.")
+
     if top_K is None:
         top_K = conf["model"]["num_classes"]
     if isinstance(X, str):  # if not isinstance(X, list):
@@ -70,14 +77,16 @@ def predict(
         crop_number=crop_num,
         filemode=filemode,
     )
-
-    output = model.predict(
-        data_gen,
-        verbose=1,
-        # max_queue_size=10,
-        # workers=4,
-        # use_multiprocessing=use_multiprocessing,
-    )
+    # --- Run prediction ---
+    try:
+        with tf.device('/GPU:0' if gpus else '/CPU:0'):
+            output = model.predict(
+                data_gen,
+                verbose=1,
+            )
+    except Exception as e:
+        print("Error using GPU, falling back to CPU:", e)
+        output = model.predict(data_gen, verbose=1)
 
     # reshape to (N, crop_number, num_classes)
     output = output.reshape(len(X), -1, output.shape[-1])

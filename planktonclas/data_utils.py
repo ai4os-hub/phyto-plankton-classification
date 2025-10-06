@@ -37,6 +37,8 @@ def create_data_splits(
         os.walk(im_dir), desc="Searching files"
     ):
         for file in tqdm(files, desc=f"Processing {root}"):
+            if file.endswith(".db"):
+                continue  # skip .db files
             file_path = os.path.join(root, file)
             relative_path = os.path.relpath(file_path, im_dir)
             file_paths.append(relative_path)
@@ -54,7 +56,7 @@ def create_data_splits(
     folder_counts = {folder_name: 0 for folder_name in folder_names}
     for file_path in file_paths:
         # Assuming UNIX-like path separator
-        folder_name = file_path.split("/")[0]
+        folder_name = file_path.split("/")[0].split("\\")[0]
         if folder_name in folder_counts:
             folder_counts[folder_name] += 1
 
@@ -76,6 +78,7 @@ def create_data_splits(
             file_path
             for file_path in file_paths
             if file_path.startswith(folder_name + "/")
+               or file_path.startswith(folder_name + "\\")
         ]
         random.shuffle(folder_files)
         num_files = len(folder_files)
@@ -203,7 +206,7 @@ def load_class_names(splits_dir):
     -------
     Numpy array of shape (N) containing strs with class names
     """
-    print("Loading class names...")
+    # print("Loading class names...")
     class_names = np.genfromtxt(
         os.path.join(splits_dir, "classes.txt"),
         dtype="str",

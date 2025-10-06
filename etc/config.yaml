@@ -25,8 +25,7 @@ general:
           If path is relative it will be appended to the package path.
 
   images_directory:
-    value: "/srv/phyto-plankton-classification/data/images"
-    #"/storage/Imagine_UC5/data/images_mini_version"
+    value: "D:/USERS/wout.decrop/environments/PI10/phyto-plankton-classification/data/VLIZlearning-zebra"
     type: "str"
     help: >
           Base directory for images. If the path is relative, it will be appended to the package path.
