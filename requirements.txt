@@ -26,3 +26,4 @@ albumentations~=2.0.5
 numpy<2.2.0,>=1.26.0
 
 scikit-image==0.24.0
+renumics-spotlight==1.6.14
