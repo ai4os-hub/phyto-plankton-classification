@@ -1,0 +1,87 @@
+Actinoptychus
+Actinoptychus senarius
+Actinoptychus splendens
+Appendicularia
+Asterionella
+Aulacodiscus argus
+Bacillaria paxillifer
+Bacillariophyceae
+Bacillariophyceae_type1_colony
+Bacteriastrum
+Bellerochea horologicalis
+Biddulphia alternans
+Biddulphianae
+Brockmanniella brockmannii
+Bubbles
+Centric Diatom
+Ceratium horridum/C. longipes
+Chaetoceros
+Chaetoceros affinis
+Chaetoceros curvisetus/C. pseudocurvisetus
+Chaetoceros danicus
+Chaetoceros socialis
+Ciliophora:part
+Copepoda adult
+Coscinodiscus concinnus
+Coscinodiscus granii
+Crustacea
+Crustaceae:part
+Detritus
+Dinoflagellata
+Dinoflagellate cyst
+Diploneis
+Ditylum brightwellii
+Egg/Cyst
+Eucampia
+Faecal pellet
+Favella
+Fibers
+Guinardia delicatula
+Guinardia flaccida
+Guinardia striata/Dactyliosolen phuketensis
+Helicotheca tamesis
+Hobaniella longicruris
+Lauderia/Melosira/Detonula
+Leptocylindraceae
+Lithodesmium undulatum
+Long (chained) diatom
+Meuniera membranacea
+Mollusca incertae
+Nauplii
+Neocalyptrella robusta
+Noctiluca scintillans
+Noctilucales
+Odontella aurita/Ralfsiella minima
+Paralia
+Pennate Diatom
+Peritrichia
+Phytoplankton Colony
+Pleurosira laevis
+Pollen
+Polychaeta
+Porifera spicule
+Proboscia alata
+Proboscia indica
+Pseudo-nitzschia
+Rhizosolenia
+Rhizosolenia setigera (f. pungens)/R. hebetata f. semispina
+Rotifera
+Skeletonema
+Stellarima stellaris/Podosira/Hyalodiscus
+Stephanopyxis
+Suctoria
+Synedra/Thalassionema
+Thalassiosira/Porosira
+Triceratium favus
+Trieres mobiliensis/T. regia
+Trieres sinensis
+Tripos fusus
+Tripos:part
+Unknown_3
+Veliger larvae D-shaped
+Zooplankton
+Tintinnina
+Dactyliosolen/Cerataulina/Guinardia
+Zygoceros
+Protoperidinium
+Tripos
