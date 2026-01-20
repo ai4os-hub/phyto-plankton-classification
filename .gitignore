@@ -153,9 +153,10 @@ planktonclas/webpage/templates/labels.html
 planktonclas/run_file.ipynb
 .Trash-0
 
-# models/*
-# !models/.gitkeep
-# !models/phytoplankton_vliz/*
+models/*
+!models/.gitkeep
+!models/phytoplankton_vliz/*
+!models/Phytoplankton_EfficientNetV2B0/*
 
 notebooks\3.2-Saliency_maps.ipynb
 flowcam_2021_TEMP.csv
