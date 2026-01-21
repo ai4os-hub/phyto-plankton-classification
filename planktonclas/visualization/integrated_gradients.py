@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Utilities to compute an IntegratedGradients SaliencyMask."""
 
 import numpy as np
@@ -36,8 +35,7 @@ class IntegratedGradients(GradientSaliency):
 
         for alpha in np.linspace(0, 1, nsamples):
             input_step = input_baseline + alpha * input_diff
-            total_gradients += super(
-                IntegratedGradients, self
-            ).get_mast(input_step)
+            total_gradients += super(IntegratedGradients,
+                                     self).get_mast(input_step)
 
         return total_gradients * input_diff

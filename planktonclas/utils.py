@@ -60,7 +60,8 @@ def get_custom_objects():
 
 class LR_scheduler(callbacks.LearningRateScheduler):
     """
-    Custom callback to decay the learning rate. Schedule follows a 'step' decay.
+    Custom callback to decay the learning rate.
+    Schedule follows a 'step' decay.
 
     Reference
     ---------
@@ -95,34 +96,27 @@ class LRHistory(callbacks.Callback):
         super().__init__()
 
     def on_epoch_end(self, epoch, logs=None):
-        logs.update(
-            {
-                "lr": K.eval(
-                    self.model.optimizer.learning_rate
-                ).astype(np.float64)
-            }
-        )
+        logs.update({
+            "lr":
+            K.eval(self.model.optimizer.learning_rate).astype(np.float64)
+        })
         super().on_epoch_end(epoch, logs)
 
 
-def launch_tensorboard(port, logdir, host="0.0.0.0"): #nosec
+def launch_tensorboard(port, logdir, host="0.0.0.0"):  # nosec
     tensorboard_path = shutil.which("tensorboard")
     if tensorboard_path is None:
-        raise RuntimeError(
-            "TensorBoard executable not found in PATH."
-        )
+        raise RuntimeError("TensorBoard executable not found in PATH.")
 
-    subprocess.call(
-        [
-            tensorboard_path,
-            "--logdir",
-            "{}".format(logdir),
-            "--port",
-            "{}".format(port),
-            "--host",
-            "{}".format(host),
-        ]
-    )
+    subprocess.call([
+        tensorboard_path,
+        "--logdir",
+        "{}".format(logdir),
+        "--port",
+        "{}".format(port),
+        "--host",
+        "{}".format(host),
+    ])
 
 
 def get_callbacks(CONF, use_lr_decay=True):
@@ -147,17 +141,14 @@ def get_callbacks(CONF, use_lr_decay=True):
 
     # Add optional callbacks
     if use_lr_decay:
-        milestones = (
-            np.array(CONF["training"]["lr_step_schedule"])
-            * CONF["training"]["epochs"]
-        )
+        milestones = (np.array(CONF["training"]["lr_step_schedule"]) *
+                      CONF["training"]["epochs"])
         milestones = milestones.astype(np.int64)
         calls.append(
             LR_scheduler(
                 lr_decay=CONF["training"]["lr_step_decay"],
                 epoch_milestones=milestones.tolist(),
-            )
-        )
+            ))
 
     if CONF["monitor"]["use_tensorboard"]:
         # https://github.com/tensorflow/tensorboard/issues/2084#issuecomment-483395808
@@ -166,16 +157,14 @@ def get_callbacks(CONF, use_lr_decay=True):
                 log_dir=paths.get_logs_dir(),
                 write_graph=False,
                 profile_batch=0,
-            )
-        )
+            ))
 
         # # Let the user launch Tensorboard
         print(
-            "Monitor your training in Tensorboard by executing the following comand on your console:"
+            "Monitor your training in Tensorboard by executing the "
+            "following comand on your console:"
         )
-        print(
-            "    tensorboard --logdir={}".format(paths.get_logs_dir())
-        )
+        print("    tensorboard --logdir={}".format(paths.get_logs_dir()))
 
         # Run Tensorboard on a separate Thread/Process on behalf of the user
         port = os.getenv("monitorPORT", 6006)
@@ -198,15 +187,11 @@ def get_callbacks(CONF, use_lr_decay=True):
     if CONF["monitor"]["use_remote"]:
         calls.append(callbacks.RemoteMonitor())
 
-    if (
-        CONF["training"]["use_validation"]
-        and CONF["training"]["use_early_stopping"]
-    ):
+    if (CONF["training"]["use_validation"]
+            and CONF["training"]["use_early_stopping"]):
         calls.append(
-            callbacks.EarlyStopping(
-                patience=int(0.1 * CONF["training"]["epochs"])
-            )
-        )
+            callbacks.EarlyStopping(patience=int(0.1 *
+                                                 CONF["training"]["epochs"])))
 
     if CONF["training"]["ckpt_freq"] is not None:
         calls.append(
@@ -218,13 +203,10 @@ def get_callbacks(CONF, use_lr_decay=True):
                 verbose=1,
                 period=max(
                     1,
-                    int(
-                        CONF["training"]["ckpt_freq"]
-                        * CONF["training"]["epochs"]
-                    ),
+                    int(CONF["training"]["ckpt_freq"] *
+                        CONF["training"]["epochs"]),
                 ),
-            )
-        )
+            ))
 
     if not calls:
         calls = None

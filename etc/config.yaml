@@ -25,7 +25,7 @@ general:
           If path is relative it will be appended to the package path.
 
   images_directory:
-    value: "/srv/phyto-plankton-classification/data/images"
+    value: "//fs/SHARED/onderzoek/6. Marine Observation Center/Projects/IMAGINE/UC5/data/images_DS"
     #"/storage/Imagine_UC5/data/images_mini_version"
     type: "str"
     help: >

@@ -1,0 +1,42 @@
+[tox]
+minversion = 3.26.0
+isolated_build = True
+envlist = qc.sty,qc.cov,qc.sec,py312
+
+[testenv]
+usedevelop = True
+install_command = python -m pip install -U {opts} {packages}
+commands = pytest --numprocesses=auto {posargs}
+allowlist_externals =
+   python
+passenv = 
+   RCLONERCLONE_CONFIG_RSHARE_VENDOR
+   RCLONE_CONFIG
+   RCLONE_CONFIG_RSHARE_PASS
+   RCLONE_CONFIG_RSHARE_URL
+   RCLONE_CONFIG_RSHARE_TYPE
+   RCLONE_CONFIG_RSHARE_USER
+setenv =
+   OS_TEST_TIMEOUT=240
+deps =
+    pip
+    -r{toxinidir}/requirements-test.txt
+
+# -----------------------------------------
+# Code style / linting
+[testenv:qc.sty]
+commands =
+    flake8 --statistics --tee --output-file={toxinidir}/flake8.log --format=pylint planktonclas tests
+
+# -----------------------------------------
+# Coverage
+[testenv:qc.cov]
+commands =
+    pytest --cov=planktonclas --cov-report=html:{toxinidir}/htmlcov --cov-report=term-missing tests
+
+# -----------------------------------------
+# Security check
+[testenv:qc.sec]
+commands =
+    python -c "import os; os.makedirs(r'{toxinidir}\\bandit', exist_ok=True)"
+    bandit -r planktonclas -x tests -s B404,B603,B310 -f html -o {toxinidir}/bandit/index.html

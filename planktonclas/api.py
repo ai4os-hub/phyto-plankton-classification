@@ -6,23 +6,30 @@ Author: Ignacio Heredia
 Email: iheredia@ifca.unican.es
 Github: ignacioheredia
 
-Notes: Based on https://github.com/indigo-dc/plant-classification-theano/blob/package/plant_classification/api.py
+Notes: Based on
+https://github.com/indigo-dc/plant-classification-theano/
+blob/package/plant_classification/api.py
 
 Descriptions:
-The API will use the model files inside ../models/api. If not found it will use the model files of the last trained model.
-If several checkpoints are found inside ../models/api/ckpts we will use the last checkpoint.
+The API will use the model files inside ../models/api.
+If not found it will use the model files of the last trained model.
+If several checkpoints are found inside ../models/api/ckpts we
+will use the last checkpoint.
 
 Warnings:
-There is an issue of using Flask with Keras: https://github.com/jrosebr1/simple-keras-rest-api/issues/1
-The fix done (using tf.get_default_graph()) will probably not be valid for standalone wsgi container e.g. gunicorn,
+There is an issue of using Flask with Keras:
+https://github.com/jrosebr1/simple-keras-rest-api/issues/1
+The fix done (using tf.get_default_graph()) will probably not be
+valid for standalone wsgi container e.g. gunicorn,
 gevent, uwsgi.
 """
 
+from pathlib import Path
+from marshmallow import ValidationError
 import builtins
 import glob
 import json
 import os
-import re
 import tempfile
 import warnings
 import zipfile
@@ -32,17 +39,12 @@ from functools import wraps
 from aiohttp.web import HTTPException
 
 import numpy as np
-import pkg_resources
-import requests
 import tensorflow as tf
 from deepaas.model.v2.wrapper import UploadedFile
 from tensorflow.keras import backend as K
 from tensorflow.keras.models import load_model
 from webargs import fields
 import logging
-
-import os
-from webargs import fields
 
 
 from planktonclas import config, paths, test_utils, utils
@@ -53,24 +55,15 @@ from planktonclas.data_utils import (
 )
 from planktonclas.train_runfile import train_fn
 
-
-
 logger = logging.getLogger(__name__)
 ENV_LOG_LEVEL = os.getenv("API_LOG_LEVEL", default="INFO")
 LOG_LEVEL = getattr(logging, ENV_LOG_LEVEL.upper())
 logger.setLevel(LOG_LEVEL)
 
-
 NOW = str("{:%Y_%m_%d_%H_%M_%S}".format(datetime.now()))
 
-import os
-from marshmallow import fields, ValidationError
-from pathlib import Path
-from marshmallow import ValidationError
-
 loaded_ts, loaded_ckpt = None, None
-graph, model, conf, class_names, class_info, aphia_ids = (
-    None,
+model, conf, class_names, class_info, aphia_ids = (
     None,
     None,
     None,
@@ -79,9 +72,8 @@ graph, model, conf, class_names, class_info, aphia_ids = (
 )
 
 # Additional parameters
-allowed_extensions = set(
-    ["png", "jpg", "jpeg", "PNG", "JPG", "JPEG"]
-)  # allow only certain file extensions
+allowed_extensions = set(["png", "jpg", "jpeg", "PNG", "JPG",
+                          "JPEG"])  # allow only certain file extensions
 top_K = 5  # number of top classes predictions to return
 
 
@@ -97,7 +89,7 @@ def load_inference_model(timestamp=None, ckpt_name=None):
         Name of the checkpoint to use. The default is the last checkpoint in `./models/[timestamp]/ckpts`.
     """
     global loaded_ts, loaded_ckpt
-    global graph, model, conf, class_names, class_info, aphia_ids
+    global model, conf, class_names, class_info, aphia_ids
 
     # Set the timestamp
     timestamp_list = next(os.walk(paths.get_models_dir()))[1]
@@ -105,39 +97,30 @@ def load_inference_model(timestamp=None, ckpt_name=None):
     if not timestamp_list:
         raise Exception(
             "You have no models in your `./models` folder to be used for inference. "
-            "Therefore the API can only be used for training."
-        )
+            "Therefore the API can only be used for training.")
     elif timestamp is None:
         timestamp = timestamp_list[-1]
     elif timestamp not in timestamp_list:
         raise ValueError(
-            "Invalid timestamp name: {}. Available timestamp names are: {}".format(
-                timestamp, timestamp_list
-            )
-        )
+            "Invalid timestamp name: {}. Available timestamp names are: {}".
+            format(timestamp, timestamp_list))
     paths.timestamp = timestamp
     print("Using TIMESTAMP={}".format(timestamp))
 
     # Set the checkpoint model to use to make the prediction
     ckpt_list = os.listdir(paths.get_checkpoints_dir())
-    ckpt_list = sorted(
-        [name for name in ckpt_list if name.endswith(".h5")]
-    )
+    ckpt_list = sorted([name for name in ckpt_list if name.endswith(".h5")])
     if not ckpt_list:
         raise Exception(
-            "You have no checkpoints in your `./models/{}/ckpts` folder to be used for inference. ".format(
-                timestamp
-            )
-            + "Therefore the API can only be used for training."
-        )
+            "You have no checkpoints in your `./models/{}/ckpts` folder to be used for inference. "
+            .format(timestamp) +
+            "Therefore the API can only be used for training.")
     elif ckpt_name is None:
         ckpt_name = ckpt_list[-1]
     elif ckpt_name not in ckpt_list:
         raise ValueError(
-            "Invalid checkpoint name: {}. Available checkpoint names are: {}".format(
-                ckpt_name, ckpt_list
-            )
-        )
+            "Invalid checkpoint name: {}. Available checkpoint names are: {}".
+            format(ckpt_name, ckpt_list))
     print("Using CKPT_NAME={}".format(ckpt_name))
 
     # Clear the previous loaded model
@@ -153,8 +136,7 @@ def load_inference_model(timestamp=None, ckpt_name=None):
             warnings.warn(
                 """The 'classes.txt' file has a different length than the 'info.txt' file.
             If a class has no information whatsoever you should leave that classes row empty or put a '-' symbol.
-            The API will run with no info until this is solved."""
-            )
+            The API will run with no info until this is solved.""")
             class_info = None
     if class_info is None:
         class_info = ["" for _ in range(len(class_names))]
@@ -218,6 +200,7 @@ def update_with_query_conf(user_args):
 
 
 def catch_error(f):
+
     @wraps(f)
     def wrap(*args, **kwargs):
         try:
@@ -241,10 +224,8 @@ def catch_localfile_error(file_list):
         if extension not in allowed_extensions:
             raise ValueError(
                 "Local image format error: "
-                "At least one file is not in a standard image format ({}).".format(
-                    allowed_extensions
-                )
-            )
+                "At least one file is not in a standard image format ({}).".
+                format(allowed_extensions))
 
 
 def warm():
@@ -276,10 +257,9 @@ def prepare_files(directory):
             UploadedFile(
                 name="data",
                 filename=file_path,
-                content_type="image/jpeg",  # Adjust if necessary based on file type
+                content_type="image/jpeg",
                 original_filename=file_name,
-            )
-        )
+            ))
     return uploaded_files
 
 
@@ -299,9 +279,7 @@ def predict(**args):
             # Create a temporary directory to extract the files
             with tempfile.TemporaryDirectory() as temp_dir:
                 # Extract the zip file
-                with zipfile.ZipFile(
-                    zip_file.filename, "r"
-                ) as zip_ref:
+                with zipfile.ZipFile(zip_file.filename, "r") as zip_ref:
                     zip_ref.extractall(temp_dir)
 
                 # Get the list of files extracted from the zip
@@ -318,17 +296,14 @@ def predict(**args):
                             filename=file_path,
                             content_type="image/jpeg",
                             original_filename=file,
-                        )
-                    )
+                        ))
 
                 # Assign the list of files to args["files"]
                 args["files"] = uploaded_files
 
                 return predict_data(args)
         elif args["image"]:
-            args["files"] = [
-                args["image"]
-            ]  # patch until list is available
+            args["files"] = [args["image"]]  # patch until list is available
             # raise RuntimeError("args files ", args["files"])
             print(args["files"])
             return predict_data(args)
@@ -351,10 +326,8 @@ def predict_data(args):
         merge = False
         catch_localfile_error(args["files"])
 
-        if (
-            loaded_ts != conf["testing"]["timestamp"]
-            or loaded_ckpt != conf["testing"]["ckpt_name"]
-        ):
+        if (loaded_ts != conf["testing"]["timestamp"]
+                or loaded_ckpt != conf["testing"]["ckpt_name"]):
             load_inference_model(
                 timestamp=conf["testing"]["timestamp"],
                 ckpt_name=conf["testing"]["ckpt_name"],
@@ -363,9 +336,7 @@ def predict_data(args):
         # Create a list with the path to the images
         filenames = [f.filename for f in args["files"]]
         print(filenames)
-        original_filenames = [
-            f.original_filename for f in args["files"]
-        ]
+        original_filenames = [f.original_filename for f in args["files"]]
 
         # with graph.as_default():
         pred_lab, pred_prob = test_utils.predict(
@@ -379,14 +350,10 @@ def predict_data(args):
         )
 
         if merge:
-            pred_lab, pred_prob = np.squeeze(pred_lab), np.squeeze(
-                pred_prob
-            )
+            pred_lab, pred_prob = np.squeeze(pred_lab), np.squeeze(pred_prob)
             print(pred_lab.shape, pred_prob.shape)
 
-        return format_prediction(
-            pred_lab, pred_prob, original_filenames
-        )
+        return format_prediction(pred_lab, pred_prob, original_filenames)
     except Exception as err:
         raise HTTPException(reason=err) from err
 
@@ -398,20 +365,14 @@ def get_predictions_dir(CONF):
     if file_location is not None:
         if os.path.exists(file_location):
             os.makedirs(
-                os.path.join(
-                    os.path.dirname(file_location), "predictions"
-                ),
+                os.path.join(os.path.dirname(file_location), "predictions"),
                 exist_ok=True,
             )
-            return os.path.join(
-                os.path.dirname(file_location), "predictions"
-            )
+            return os.path.join(os.path.dirname(file_location), "predictions")
     else:
         if output_directory is None:
             # Define your get_timestamped_dir() function accordingly
-            return os.path.join(
-                paths.get_timestamped_dir(), "predictions"
-            )
+            return os.path.join(paths.get_timestamped_dir(), "predictions")
         else:
             return os.path.join(output_directory)
 
@@ -419,19 +380,15 @@ def get_predictions_dir(CONF):
 def format_prediction(labels, probabilities, original_filenames):
     if aphia_ids is not None:
         pred_aphia_ids = [aphia_ids[i] for i in labels]
-        pred_aphia_ids = [
-            aphia_id.tolist() for aphia_id in pred_aphia_ids
-        ]
+        pred_aphia_ids = [aphia_id.tolist() for aphia_id in pred_aphia_ids]
     else:
         pred_aphia_ids = aphia_ids
     class_index_map = {
         index: class_name
         for index, class_name in enumerate(class_names)
     }
-    pred_lab_names = [
-        [class_index_map[label] for label in labels]
-        for labels in labels
-    ]
+    pred_lab_names = [[class_index_map[label] for label in labels]
+                      for labels in labels]
     # pred_labels=[class_names[i] for i in labels]
     pred_prob = probabilities
 
@@ -458,8 +415,7 @@ def get_directory_choices(base_path="/srv/data/"):
     # Get a list of all directories in the base_path
     try:
         directories = [
-            d
-            for d in os.listdir(base_path)
+            d for d in os.listdir(base_path)
             if os.path.isdir(os.path.join(base_path, d))
         ]
         return directories
@@ -471,18 +427,13 @@ def get_directory_choices(base_path="/srv/data/"):
 def validate_directory(path):
     # Convert the input to a Path object if it's a string
     if isinstance(path, str):
-        path = Path(
-            path.strip("'\"")
-        )  # Remove any leading/trailing quotes
+        path = Path(path.strip("'\""))  # Remove any leading/trailing quotes
 
     # Check if the path is a valid directory
     if not path.is_dir():
         raise ValidationError(f"{path} is not a valid directory")
 
     return path
-
-
-from pathlib import Path
 
 
 def train(**args):
@@ -521,22 +472,13 @@ def populate_parser(parser, default_conf):
 
             # Load optional keys
             help = g_val["help"] if ("help" in gg_keys) else ""
-            type = (
-                getattr(builtins, g_val["type"])
-                if ("type" in gg_keys)
-                else None
-            )
-            choices = (
-                g_val["choices"] if ("choices" in gg_keys) else None
-            )
+            type = (getattr(builtins, g_val["type"]) if
+                    ("type" in gg_keys) else None)
+            choices = g_val["choices"] if ("choices" in gg_keys) else None
 
             # Additional info in help string
-            help += (
-                "\n"
-                + "<font color='#C5576B'> Group name: **{}**".format(
-                    str(group)
-                )
-            )
+            help += "\n" + "<font color='#C5576B'> Group name: **{}**".format(
+                str(group))
             if choices:
                 help += "\n" + "Choices: {}".format(str(choices))
             if type:
@@ -546,15 +488,15 @@ def populate_parser(parser, default_conf):
             # Create arg dict
             opt_args = {
                 "load_default": json.dumps(g_val["value"]),
-                "metadata": {"description": help},
+                "metadata": {
+                    "description": help
+                },
                 "required": False,
             }
             if choices:
                 json_choices = [json.dumps(i) for i in choices]
                 opt_args["metadata"]["enum"] = json_choices
-                opt_args["validate"] = fields.validate.OneOf(
-                    json_choices
-                )
+                opt_args["validate"] = fields.validate.OneOf(json_choices)
             parser[g_key] = fields.Str(**opt_args)
 
     return parser
@@ -563,16 +505,14 @@ def populate_parser(parser, default_conf):
 def get_train_args():
     parser = OrderedDict()
     default_conf = config.CONF
-    default_conf = OrderedDict(
-        [
-            ("general", default_conf["general"]),
-            ("model", default_conf["model"]),
-            ("training", default_conf["training"]),
-            ("monitor", default_conf["monitor"]),
-            ("dataset", default_conf["dataset"]),
-            ("augmentation", default_conf["augmentation"]),
-        ]
-    )
+    default_conf = OrderedDict([
+        ("general", default_conf["general"]),
+        ("model", default_conf["model"]),
+        ("training", default_conf["training"]),
+        ("monitor", default_conf["monitor"]),
+        ("dataset", default_conf["dataset"]),
+        ("augmentation", default_conf["augmentation"]),
+    ])
 
     return populate_parser(parser, default_conf)
 
@@ -612,7 +552,8 @@ def get_predict_args():
         data_key="zip_data",
         # location="form",
         metadata={
-            "description": "Select the ZIP file containing images you want to classify.",
+            "description":
+            "Select the ZIP file containing images you want to classify.",
             "type": "file",
             "location": "form",
         },
@@ -627,17 +568,13 @@ def get_metadata(distribution_name="planktonclas"):
     """
 
     metadata = {
-         "name": config.MODEL_METADATA.get("name"),
-            "author": config.MODEL_METADATA.get("authors"),
-            "author-email": config.MODEL_METADATA.get(
-                "author-emails"
-            ),
-            "description": config.MODEL_METADATA.get("summary"),
-            "license": config.MODEL_METADATA.get("license"),
-            "version": config.MODEL_METADATA.get("version"),
-            
-         
-        }
+        "name": config.MODEL_METADATA.get("name"),
+        "author": config.MODEL_METADATA.get("authors"),
+        "author-email": config.MODEL_METADATA.get("author-emails"),
+        "description": config.MODEL_METADATA.get("summary"),
+        "license": config.MODEL_METADATA.get("license"),
+        "version": config.MODEL_METADATA.get("version"),
+    }
 
     return metadata
 

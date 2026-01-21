@@ -11,17 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Utilites to computed GuidedBackprop SaliencyMasks"""
 
 import numpy as np
 
 import tensorflow as tf
-from tensorflow.keras.models import load_model
 
 from .saliency import SaliencyMask
-from planktonclas.utils import get_custom_objects
-
 
 
 class GuidedBackprop(SaliencyMask):
@@ -33,7 +29,6 @@ class GuidedBackprop(SaliencyMask):
     """
 
     GuidedReluRegistered = False
-
 
     def __init__(self, model, output_index=0, custom_loss=None):
         """
@@ -49,20 +44,24 @@ class GuidedBackprop(SaliencyMask):
         # Define the custom GuidedReLU activation using @tf.custom_gradient
         @tf.custom_gradient
         def guided_relu(x):
+
             def grad(dy):
                 gate_f = tf.cast(x > 0, dtype=dy.dtype)
                 gate_r = tf.cast(dy > 0, dtype=dy.dtype)
                 return dy * gate_f * gate_r
+
             return tf.nn.relu(x), grad
 
         # Function to replace relu activations with guided_relu
         def replace_relu(layer):
-            if hasattr(layer, "activation") and layer.activation == tf.keras.activations.relu:
+            if (hasattr(layer, "activation")
+                    and layer.activation == tf.keras.activations.relu):
                 layer.activation = guided_relu
             return layer
 
         # Clone the model, swapping out relu for guided_relu
-        self.guided_model = tf.keras.models.clone_model(model, clone_function=replace_relu)
+        self.guided_model = tf.keras.models.clone_model(
+            model, clone_function=replace_relu)
         self.guided_model.set_weights(model.get_weights())
 
     def get_mask(self, input_image):
@@ -88,27 +87,6 @@ class GuidedBackprop(SaliencyMask):
             else:
                 output = outputs
             # Compute loss for the selected output index
-            loss = output[:, self.output_index]
-        gradients = tape.gradient(loss, x_tensor)
-        return gradients[0].numpy()
-
-
-    def get_mask(self, input_image):
-        """Returns a GuidedBackprop mask."""
-        import numpy as np
-        import tensorflow as tf
-
-        # Add batch dimension and ensure float32 dtype
-        x_value = np.expand_dims(input_image, axis=0).astype(np.float32)
-        x_tensor = tf.convert_to_tensor(x_value)
-
-        with tf.GradientTape() as tape:
-            tape.watch(x_tensor)
-            outputs = self.guided_model(x_tensor, training=False)
-            if isinstance(outputs, (list, tuple)):
-                output = outputs[0]
-            else:
-                output = outputs
             loss = output[:, self.output_index]
         gradients = tape.gradient(loss, x_tensor)
         return gradients[0].numpy()

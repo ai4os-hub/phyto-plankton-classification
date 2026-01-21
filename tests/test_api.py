@@ -12,10 +12,11 @@ you make to the code.
 
 import unittest
 
-import planktonclas.api as api
+import planktonclas.api_test as api
 
 
 class TestModelMethods(unittest.TestCase):
+
     def setUp(self):
         self.meta = api.get_metadata()
 
@@ -35,7 +36,7 @@ class TestModelMethods(unittest.TestCase):
         )
         self.assertEqual(
             self.meta["author"],
-             ['"Ignacio Heredia (CSIC)"', '"Wout Decrop (VLIZ)"'],
+            ['"Ignacio Heredia (CSIC)"', '"Wout Decrop (VLIZ)"'],
         )
         self.assertEqual(
             self.meta["license"].lower(),

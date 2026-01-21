@@ -23,7 +23,6 @@ from datetime import datetime
 
 import numpy as np
 import tensorflow as tf
-import tensorflow.keras.backend as K
 
 from planktonclas import config, model_utils, paths, utils
 from planktonclas.data_utils import (
@@ -41,12 +40,10 @@ from planktonclas.optimizers import customAdam
 
 # TODO: Add additional metrics for test time in addition to accuracy
 
-
 # from planktonclas.api import load_inference_model
 
 # Set Tensorflow verbosity logs
 tf.get_logger().setLevel(logging.ERROR)
-
 
 # Allow GPU memory growth
 gpus = tf.config.experimental.list_physical_devices("GPU")
@@ -66,12 +63,10 @@ def train_fn(TIMESTAMP, CONF):
     if "train.txt" not in os.listdir(paths.get_ts_splits_dir()):
         if not (CONF["dataset"]["split_ratios"]):
             if (CONF["training"]["use_validation"]) & (
-                CONF["training"]["use_test"]
-            ):
+                    CONF["training"]["use_test"]):
                 split_ratios = [0.8, 0.1, 0.1]
             elif (CONF["training"]["use_validation"]) & (
-                ~CONF["training"]["use_test"]
-            ):
+                    ~CONF["training"]["use_test"]):
                 split_ratios = [0.9, 0.1, 0]
             else:
                 split_ratios = [1, 0, 0]
@@ -90,9 +85,8 @@ def train_fn(TIMESTAMP, CONF):
     )
 
     # Load the validation data
-    if (CONF["training"]["use_validation"]) and (
-        "val.txt" in os.listdir(paths.get_ts_splits_dir())
-    ):
+    if (CONF["training"]["use_validation"]) and ("val.txt" in os.listdir(
+            paths.get_ts_splits_dir())):
         X_val, y_val = load_data_splits(
             splits_dir=paths.get_ts_splits_dir(),
             im_dir=paths.get_images_dir(),
@@ -104,17 +98,13 @@ def train_fn(TIMESTAMP, CONF):
         CONF["training"]["use_validation"] = False
 
     # Load the class names
-    class_names = load_class_names(
-        splits_dir=paths.get_ts_splits_dir()
-    )
+    class_names = load_class_names(splits_dir=paths.get_ts_splits_dir())
     aphia_ids = load_aphia_ids(splits_dir=paths.get_ts_splits_dir())
     # Update the configuration
-    CONF["model"]["preprocess_mode"] = model_utils.model_modes[
-        CONF["model"]["modelname"]
-    ]
-    CONF["training"]["batch_size"] = min(
-        CONF["training"]["batch_size"], len(X_train)
-    )
+    CONF["model"]["preprocess_mode"] = model_utils.model_modes[CONF["model"]
+                                                               ["modelname"]]
+    CONF["training"]["batch_size"] = min(CONF["training"]["batch_size"],
+                                         len(X_train))
 
     if CONF["model"]["num_classes"] is None:
         CONF["model"]["num_classes"] = len(class_names)
@@ -122,16 +112,14 @@ def train_fn(TIMESTAMP, CONF):
     # Compute the class weights
     if CONF["training"]["use_class_weights"]:
         class_weights = compute_classweights(
-            y_train, max_dim=CONF["model"]["num_classes"]
-        )
+            y_train, max_dim=CONF["model"]["num_classes"])
     else:
         class_weights = None
 
     # Compute the mean and std RGB values
     if CONF["dataset"]["mean_RGB"] is None:
         CONF["dataset"]["mean_RGB"], CONF["dataset"]["std_RGB"] = (
-            compute_meanRGB(X_train)
-        )
+            compute_meanRGB(X_train))
 
     # Create data generator for train and val sets
     train_gen = data_sequence(
@@ -145,9 +133,7 @@ def train_fn(TIMESTAMP, CONF):
         preprocess_mode=CONF["model"]["preprocess_mode"],
         aug_params=CONF["augmentation"]["train_mode"],
     )
-    train_steps = int(
-        np.ceil(len(X_train) / CONF["training"]["batch_size"])
-    )
+    train_steps = int(np.ceil(len(X_train) / CONF["training"]["batch_size"]))
 
     if CONF["training"]["use_validation"]:
         val_gen = data_sequence(
@@ -161,9 +147,7 @@ def train_fn(TIMESTAMP, CONF):
             preprocess_mode=CONF["model"]["preprocess_mode"],
             aug_params=CONF["augmentation"]["val_mode"],
         )
-        val_steps = int(
-            np.ceil(len(X_val) / CONF["training"]["batch_size"])
-        )
+        val_steps = int(np.ceil(len(X_val) / CONF["training"]["batch_size"]))
     else:
         val_gen = None
         val_steps = None
@@ -210,11 +194,7 @@ def train_fn(TIMESTAMP, CONF):
     )
 
     # Saving everything
-    print(
-        "Saving data to {} folder.".format(
-            paths.get_timestamped_dir()
-        )
-    )
+    print("Saving data to {} folder.".format(paths.get_timestamped_dir()))
     print("Saving training stats ...")
     stats = {
         "epoch": history.epoch,
@@ -231,9 +211,7 @@ def train_fn(TIMESTAMP, CONF):
     model_utils.save_conf(CONF)
 
     print("Saving the model to h5...")
-    fpath = os.path.join(
-        paths.get_checkpoints_dir(), "final_model.h5"
-    )
+    fpath = os.path.join(paths.get_checkpoints_dir(), "final_model.h5")
     model.save(fpath, include_optimizer=False)
 
     print("Finished training")
@@ -270,9 +248,7 @@ def train_fn(TIMESTAMP, CONF):
 
         # reshape to (N, crop_number, num_classes)
         output = output.reshape(len(X_test), -1, output.shape[-1])
-        output = np.mean(
-            output, axis=1
-        )  # take the mean across the crops
+        output = np.mean(output, axis=1)  # take the mean across the crops
 
         # sort labels in descending prob
         lab = np.argsort(output, axis=1)[:, ::-1]
@@ -280,17 +256,13 @@ def train_fn(TIMESTAMP, CONF):
         prob = output[
             np.repeat(np.arange(len(lab)), lab.shape[1]),
             lab.flatten(),
-        ].reshape(
-            lab.shape
-        )  # retrieve corresponding probabilities
+        ].reshape(lab.shape)  # retrieve corresponding probabilities
 
         pred_lab, pred_prob = lab, prob
 
         if aphia_ids is not None:
             pred_aphia_ids = [aphia_ids[i] for i in pred_lab]
-            pred_aphia_ids = [
-                aphia_id.tolist() for aphia_id in pred_aphia_ids
-            ]
+            pred_aphia_ids = [aphia_id.tolist() for aphia_id in pred_aphia_ids]
         else:
             pred_aphia_ids = aphia_ids
 
@@ -300,13 +272,9 @@ def train_fn(TIMESTAMP, CONF):
         }
 
         # Convert arrays of strings to lists of integers
-        pred_lab_names = [
-            [class_index_map[label] for label in labels]
-            for labels in pred_lab
-        ]
-        y_test_names = [
-            class_index_map.get(index) for index in y_test
-        ]
+        pred_lab_names = [[class_index_map[label] for label in labels]
+                          for labels in pred_lab]
+        y_test_names = [class_index_map.get(index) for index in y_test]
 
         # Save the predictions
         pred_dict = {
@@ -322,9 +290,7 @@ def train_fn(TIMESTAMP, CONF):
 
         pred_path = os.path.join(
             paths.get_predictions_dir(),
-            "{}+{}+top{}.json".format(
-                "final_model.h5", "DS_split", top_K
-            ),
+            "{}+{}+top{}.json".format("final_model.h5", "DS_split", top_K),
         )
         with open(pred_path, "w") as outfile:
             json.dump(pred_dict, outfile, sort_keys=True)

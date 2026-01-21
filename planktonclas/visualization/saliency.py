@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Utilities to compute SaliencyMasks."""
 import numpy as np
 import tensorflow as tf
@@ -19,6 +18,7 @@ import tensorflow as tf
 
 class SaliencyMask(object):
     """Base class for saliency masks. Alone, this class doesn't do anything."""
+
     def __init__(self, model, output_index=0):
         """Constructs a SaliencyMask.
 
@@ -26,7 +26,6 @@ class SaliencyMask(object):
             model: the keras model used to make prediction
             output_index: the index of the node in the last layer to take derivative on
         """
-        pass
 
     def get_mask(self, input_image):
         """Returns an unsmoothed mask.
@@ -34,9 +33,8 @@ class SaliencyMask(object):
         Args:
             input_image: input image with shape (H, W, 3).
         """
-        pass
 
-    def get_smoothed_mask(self, input_image, stdev_spread=.2, nsamples=50):
+    def get_smoothed_mask(self, input_image, stdev_spread=0.2, nsamples=50):
         """Returns a mask that is smoothed with the SmoothGrad method.
 
         Args:
@@ -52,6 +50,7 @@ class SaliencyMask(object):
             total_gradients += self.get_mask(x_value_plus_noise)
 
         return total_gradients / nsamples
+
 
 class GradientSaliency(SaliencyMask):
     r"""A SaliencyMask class that computes saliency masks with a gradient."""
