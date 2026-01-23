@@ -3,7 +3,7 @@ AI4OS/DEEP Open Catalogue: Image classification
 [![Build Status](https://jenkins.services.ai4os.eu/buildStatus/icon?job=AI4OS-hub/phyto-plankton-classification/main)](https://jenkins.services.ai4os.eu/job/AI4OS-hub/job/phyto-plankton-classification/job/main/)
 
 
-
+# THIS IS BUILD ON THE OLD TF AND MAY NO LONGER BE SUPPORTED
 **Author:** [Ignacio Heredia & Wout Decrop](https://github.com/IgnacioHeredia) (CSIC & VLIZ)
 
 **Project:** This work is part of the [iMagine](https://www.imagine-ai.eu/) project that receives funding from the European Union’s Horizon 2020 research and innovation programme under grant agreement No. 101058625.
