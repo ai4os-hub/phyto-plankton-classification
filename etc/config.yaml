@@ -25,7 +25,7 @@ general:
           If path is relative it will be appended to the package path.
 
   images_directory:
-    value: "//fs/SHARED/onderzoek/6. Marine Observation Center/Projects/IMAGINE/UC5/data/images_DS"
+    value: "./data/demo-images"
     #"/storage/Imagine_UC5/data/images_mini_version"
     type: "str"
     help: >
@@ -39,10 +39,10 @@ general:
 model:
 
   modelname:
-      value: "EfficientNetV2B0"
+      value: "Phytoplankton_EfficientNetV2B0"
       type: "str"
       choices: ["DenseNet121", "DenseNet169", "DenseNet201", "InceptionResNetV2", "InceptionV3", "MobileNet",
-               "NASNetMobile", "Xception", "ResNet50", "VGG16", "VGG19", "EfficientNetV2B0"]
+               "NASNetMobile", "Xception", "ResNet50", "VGG16", "VGG19", "EfficientNetV2B0", "Phytoplankton_EfficientNetV2B0"]
       help: >
             Model to train.
             A performance/size comparison can be found in: https://github.com/keras-team/keras-applications.
