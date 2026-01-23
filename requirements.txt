@@ -3,6 +3,9 @@ webargs==5.5.3
 aiohttp==3.11.16
 deepaas==2.3.2
 
+marshmallow<4
+apispec<6
+aiohttp-apispec<3
 
 flaat~=0.8.4
 #model
