@@ -95,7 +95,7 @@ RUN mkdir -p ${MODEL_DIR} && \
     rm ${MODEL_DIR}/${MODEL_TAR}
 
 
-# Open ports: DEEPaaS (5000), Monitoring (6006), Jupyter (8888)
+# Open ports: DEEPaaS (5000), Monitoring (6006), Jupyter (8888)!
 EXPOSE 5000 6006 8888
 
 # Launch deepaas

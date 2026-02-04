@@ -178,7 +178,7 @@ def update_with_saved_conf(saved_conf):
 
 def update_with_query_conf(user_args):
     """
-    Update the default YAML configuration with the user's input args from the API query
+    Update the default YAML configuration with the user's input args from the API query.
     """
     # Update the default conf with the user input
     CONF = config.CONF
