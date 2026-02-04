@@ -15,6 +15,9 @@ This is a plug-and-play tool to train and evaluate an phytoplankton classifier o
 
 You can find more information about it in the [iMagine Marketplace](https://dashboard.cloud.imagine-ai.eu/marketplace/).
 
+**Related publication:** More information about this model can be found in the paper  
+[*Automated image classification workflow for phytoplankton monitoring*](https://doi.org/10.3389/fmars.2025.1699781)
+
 **Flowchart:** The flow inside github can be found within the orange frame
 ![Flowchart: Phytoplankton Classifier Process](references/Flowchart_github.png)
 
@@ -295,6 +298,11 @@ You can this go to think link in your brower or copy this final link and use it 
 
 ## Acknowledgements
 
-If you consider this project to be useful, please consider citing the DEEP Hybrid DataCloud project:
+If you consider this project to be useful, please consider citing the paper
+
+> Decrop, W., Lagaisse, R., Mortelmans, J., Muñiz, C., Heredia, I., Calatrava, A., & Deneudt, K. (2025). *Automated image classification workflow for phytoplankton monitoring*. **Frontiers in Marine Science, 12**. https://doi.org/10.3389/fmars.2025.1699781
+
+and DEEP Hybrid DataCloud project:
 
 > García, Álvaro López, et al. [A Cloud-Based Framework for Machine Learning Workloads and Applications.](https://ieeexplore.ieee.org/abstract/document/8950411/authors) IEEE Access 8 (2020): 18681-18692. 
+
