@@ -25,7 +25,7 @@ gevent, uwsgi.
 """
 
 from pathlib import Path
-from marshmallow import ValidationError
+from marshmallow import ValidationError, validate
 import builtins
 import glob
 import json
@@ -45,6 +45,9 @@ from tensorflow.keras import backend as K
 from tensorflow.keras.models import load_model
 from webargs import fields
 import logging
+
+
+import json
 
 
 from planktonclas import config, paths, test_utils, utils
@@ -461,7 +464,67 @@ def train(**args):
         raise HTTPException(reason=err) from err
 
 
+
 def populate_parser(parser, default_conf):
+    """
+    Returns an arg-parse like parser suitable for DEEPaaS Swagger UI.
+    Ensures Swagger can see the parameter types.
+    """
+    for group, val in default_conf.items():
+        for g_key, g_val in val.items():
+            gg_keys = g_val.keys()
+
+            # Build help string
+            help_str = g_val.get("help", "")
+            help_str += f"\n<font color='#C5576B'> Group name: **{group}**"
+            if "choices" in gg_keys:
+                help_str += f"\nChoices: {g_val['choices']}"
+            if "type" in gg_keys:
+                help_str += f"\nType: {g_val['type']}"
+            help_str += "</font>"
+
+            # Build Marshmallow field arguments
+            opt_args = {
+                "load_default": g_val.get("value", None),
+                "metadata": {
+                    "description": help_str,
+                    "type": g_val.get("type", "string")  # Swagger-friendly type
+                },
+                "required": False,
+            }
+
+            # Add enum validation if choices exist
+            if "choices" in gg_keys:
+                json_choices = [json.dumps(i) for i in g_val["choices"]]
+                opt_args["metadata"]["enum"] = json_choices
+                # opt_args["validate"] = fields.validate.OneOf(json_choices)
+                opt_args["validate"] = validate.OneOf(json_choices)
+
+            # Use fields.Raw for maximum Swagger compatibility
+            parser[g_key] = fields.Raw(**opt_args)
+
+    return parser
+
+
+def get_train_args():
+    """
+    Return a dictionary of training parameters ready for Swagger / DEEPaaS.
+    """
+    parser = OrderedDict()
+    default_conf = config.CONF
+    # Keep only groups relevant for training
+    default_conf = OrderedDict([
+        ("general", default_conf["general"]),
+        ("model", default_conf["model"]),
+        ("training", default_conf["training"]),
+        ("monitor", default_conf["monitor"]),
+        ("dataset", default_conf["dataset"]),
+        ("augmentation", default_conf["augmentation"]),
+    ])
+
+    return populate_parser(parser, default_conf)
+
+# def populate_parser(parser, default_conf):
     """
     Returns a arg-parse like parser.
     """
@@ -502,7 +565,7 @@ def populate_parser(parser, default_conf):
     return parser
 
 
-def get_train_args():
+# def get_train_args():
     parser = OrderedDict()
     default_conf = config.CONF
     default_conf = OrderedDict([
@@ -517,7 +580,41 @@ def get_train_args():
     return populate_parser(parser, default_conf)
 
 
+
+
 def get_predict_args():
+    parser = OrderedDict()
+    default_conf = config.CONF
+    default_conf = OrderedDict([("testing", default_conf["testing"])])
+
+    # Single image
+    parser["image"] = fields.Raw(
+        required=False,
+        load_default=None,
+        data_key="image",
+        metadata={
+            "description": "Select the image you want to classify.",
+            "type": "file",
+            "location": "form",
+        },
+    )
+
+    # ZIP file of images
+    parser["zip"] = fields.Raw(
+        required=False,
+        load_default=None,
+        data_key="zip_data",
+        metadata={
+            "description": "Select the ZIP file containing images you want to classify.",
+            "type": "file",
+            "location": "form",
+        },
+    )
+
+    return populate_parser(parser, default_conf)
+
+
+# def get_predict_args():
     parser = OrderedDict()
     default_conf = config.CONF
     default_conf = OrderedDict([("testing", default_conf["testing"])])
