@@ -496,12 +496,13 @@ def train(**args):
 # from marshmallow import validate
 
 def populate_parser(parser, default_conf):
-    """
-    Build a DeepaaS / Swagger-compatible parser.
-    Uses fields.Raw and marshmallow.validate to avoid literal_eval errors.
-    """
     for group, val in default_conf.items():
         for g_key, g_val in val.items():
+            if isinstance(g_val, str):
+                # wrap simple string in a dict with 'value' key
+                g_val = {"value": g_val, "help": ""}
+
+            gg_keys = g_val.keys()
             help_str = g_val.get("help", "")
             help_str += f"\n<font color='#C5576B'> Group name: **{group}**</font>"
 
