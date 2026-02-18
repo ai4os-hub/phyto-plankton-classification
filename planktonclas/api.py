@@ -178,6 +178,7 @@ def update_with_saved_conf(saved_conf):
     config.check_conf(conf=CONF)
     config.conf_dict = config.get_conf_dict(conf=CONF)
 
+
 def update_with_query_conf(user_args):
     """
     Update the default YAML configuration with the user's input args from the API query.
@@ -677,7 +678,7 @@ def get_train_args():
     return populate_parser(parser, default_conf)
 
 
-def get_predict_args():
+# def get_predict_args():
     """
     Return a DeepaaS / Swagger-compatible parser for prediction.
     Supports:
@@ -804,6 +805,50 @@ def get_predict_args():
     )
 
     return populate_parser(parser, default_conf)
+def get_predict_args():
+    parser = OrderedDict()
+    
+    # Make a copy of only the testing group
+    default_conf = {"testing": dict(config.CONF["testing"])}
+    
+    # Fix timestamp choices
+    timestamp_list = next(os.walk(paths.get_models_dir()))[1]
+    timestamp_list = sorted(timestamp_list)
+    
+    # Ensure timestamp key exists
+    if "timestamp" in default_conf["testing"]:
+        timestamp_entry = default_conf["testing"]["timestamp"]
+        # Wrap if it's not a dict
+        if not isinstance(timestamp_entry, dict):
+            timestamp_entry = {"value": timestamp_entry, "help": ""}
+        
+        if timestamp_list:
+            timestamp_entry["value"] = timestamp_list[-1]  # default = latest
+            timestamp_entry["choices"] = timestamp_list
+        else:
+            timestamp_entry["value"] = ""
+            timestamp_entry["choices"] = []
+        
+        default_conf["testing"]["timestamp"] = timestamp_entry
+
+    # Populate parser with only this group
+    parser = populate_parser(parser, default_conf)
+
+    # Add image/zip fields separately
+    parser["image"] = fields.Raw(
+        required=False,
+        load_default=None,
+        data_key="image",
+        metadata={"description": "Select the image you want to classify.", "type": "file", "location": "form"},
+    )
+    parser["zip"] = fields.Raw(
+        required=False,
+        load_default=None,
+        data_key="zip_data",
+        metadata={"description": "Select the ZIP file containing images.", "type": "file", "location": "form"},
+    )
+
+    return parser
 
 
 def get_metadata(distribution_name="planktonclas"):
