@@ -179,6 +179,11 @@ def update_with_saved_conf(saved_conf):
     config.conf_dict = config.get_conf_dict(conf=CONF)
 
 def update_with_query_conf(user_args):
+    """
+    Update the default YAML configuration with the user's input args from the API query.
+    Safely handles strings, lists, dicts, None, and avoids TypeError.
+    Skips UploadedFile objects (images/zips) automatically.
+    """
     CONF = config.CONF
     for group, val in CONF.items():
         for g_key, g_val in val.items():
@@ -186,19 +191,21 @@ def update_with_query_conf(user_args):
                 continue
             raw_value = user_args[g_key]
             if raw_value is None:
+                continue  # skip empty values
+
+            # Skip files
+            if hasattr(raw_value, "filename") and hasattr(raw_value, "content_type"):
                 continue
 
-            # Defensive check: ignore non-string/non-list/dict values
+            # Only handle basic types: str, int, float, bool, list, dict
             if isinstance(raw_value, (str, int, float, bool, list, dict)):
                 try:
-                    # Convert non-string inputs to JSON string for parsing
                     if not isinstance(raw_value, str):
                         raw_value = json.dumps(raw_value)
                     g_val["value"] = json.loads(raw_value)
                 except (json.JSONDecodeError, TypeError):
                     g_val["value"] = str(raw_value)
             else:
-                # Fallback: store string representation
                 g_val["value"] = str(raw_value)
 
 
