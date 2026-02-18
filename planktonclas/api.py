@@ -498,9 +498,11 @@ def train(**args):
 def populate_parser(parser, default_conf):
     for group, val in default_conf.items():
         for g_key, g_val in val.items():
-            if isinstance(g_val, str):
-                # wrap simple string in a dict with 'value' key
+            # If g_val is not a dict, wrap it
+            if not isinstance(g_val, dict):
                 g_val = {"value": g_val, "help": ""}
+
+            gg_keys = g_val.keys()
 
             gg_keys = g_val.keys()
             help_str = g_val.get("help", "")
