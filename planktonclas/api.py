@@ -178,8 +178,38 @@ def update_with_saved_conf(saved_conf):
     config.check_conf(conf=CONF)
     config.conf_dict = config.get_conf_dict(conf=CONF)
 
-
 def update_with_query_conf(user_args):
+    """
+    Update the default YAML configuration with the user's input args from the API query.
+    Safely handles strings, lists, dicts, None, and avoids TypeError.
+    """
+    CONF = config.CONF
+    for group, val in CONF.items():
+        for g_key, g_val in val.items():
+            if g_key not in user_args:
+                continue
+            raw_value = user_args[g_key]
+            if raw_value is None:
+                continue  # skip empty values
+
+            # Convert non-string inputs to JSON string
+            if not isinstance(raw_value, str):
+                raw_value = json.dumps(raw_value)
+
+            # Try to parse JSON safely
+            try:
+                g_val["value"] = json.loads(raw_value)
+            except (json.JSONDecodeError, TypeError):
+                # fallback: keep as string
+                g_val["value"] = raw_value
+
+    # Validate and update internal config dictionary
+    config.check_conf(conf=CONF)
+    config.conf_dict = config.get_conf_dict(conf=CONF)
+
+
+
+# def update_with_query_conf(user_args):
     """
     Update the default YAML configuration with the user's input args from the API query.
     """
@@ -463,9 +493,42 @@ def train(**args):
         logger.critical(err, exc_info=True)
         raise HTTPException(reason=err) from err
 
-
+# from marshmallow import validate
 
 def populate_parser(parser, default_conf):
+    """
+    Build a DeepaaS / Swagger-compatible parser.
+    Uses fields.Raw and marshmallow.validate to avoid literal_eval errors.
+    """
+    for group, val in default_conf.items():
+        for g_key, g_val in val.items():
+            help_str = g_val.get("help", "")
+            help_str += f"\n<font color='#C5576B'> Group name: **{group}**</font>"
+
+            # Build basic field arguments
+            opt_args = {
+                "load_default": g_val.get("value", None),
+                "metadata": {
+                    "description": help_str,
+                    "type": g_val.get("type", "string")
+                },
+                "required": False,
+            }
+
+            # Add enum validation if choices exist
+            choices = g_val.get("choices")
+            if choices:
+                # Use primitives, not json.dumps
+                opt_args["validate"] = validate.OneOf(choices)
+                opt_args["metadata"]["enum"] = choices
+
+            # Use fields.Raw for maximum compatibility
+            parser[g_key] = fields.Raw(**opt_args)
+
+    return parser
+
+
+# def populate_parser(parser, default_conf):
     """
     Returns an arg-parse like parser suitable for DEEPaaS Swagger UI.
     Ensures Swagger can see the parameter types.
@@ -580,9 +643,59 @@ def get_train_args():
     return populate_parser(parser, default_conf)
 
 
-
-
 def get_predict_args():
+    """
+    Return a DeepaaS / Swagger-compatible parser for prediction.
+    Supports:
+      - single image upload
+      - zip file of images
+      - model timestamp selection
+    """
+    parser = OrderedDict()
+    default_conf = OrderedDict([("testing", config.CONF["testing"])])
+
+    # Single image
+    parser["image"] = fields.Raw(
+        required=False,
+        load_default=None,
+        data_key="image",
+        metadata={
+            "description": "Select the image you want to classify.",
+            "type": "file",
+            "location": "form",
+        },
+    )
+
+    # ZIP file of images
+    parser["zip"] = fields.Raw(
+        required=False,
+        load_default=None,
+        data_key="zip_data",
+        metadata={
+            "description": "Select the ZIP file containing images you want to classify.",
+            "type": "file",
+            "location": "form",
+        },
+    )
+
+    # Optional timestamp selection for the model
+    testing_conf = default_conf["testing"]
+    timestamp_value = testing_conf.get("timestamp", "")
+    timestamp_list = next(os.walk(paths.get_models_dir()))[1]
+    timestamp_list = sorted(timestamp_list)
+
+    if timestamp_list:
+        timestamp_value = timestamp_list[-1]
+        testing_conf["timestamp"] = timestamp_value
+        testing_conf["choices"] = timestamp_list
+
+    # Populate parser with all testing config
+    parser = populate_parser(parser, default_conf)
+
+    return parser
+
+
+# def get_predict_args():
     parser = OrderedDict()
     default_conf = config.CONF
     default_conf = OrderedDict([("testing", default_conf["testing"])])
