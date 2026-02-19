@@ -55,26 +55,20 @@ You can find more information about it in the [iMagine Marketplace](https://dash
 # Installing this module
 
 ## Local installation (not recommended)
-Although a local installation is possible, we recommend an installation through docker. This is less likely to breake support and has been tested with latest updates. We are working with python 3.6.9 which can be difficult to install. 
+Although a local installation is possible, we recommend an installation through docker. This is less likely to breake support and has been tested with latest updates. We are working with python 3.9.13 which can be difficult to install. 
 > **Requirements**
 >
-> This project has been tested in Ubuntu 18.04 with Python 3.6.9. Further package requirements are described in the
+> This project has been tested with Python  3.9.13. Further package requirements are described in the
 > `requirements.txt` file.
-> - It is a requirement to have [Tensorflow>=1.14 installed](https://www.tensorflow.org/install/pip) (either in gpu 
-> or cpu mode). This is not listed in the `requirements.txt` as it [breaks GPU support](https://github.com/tensorflow/tensorflow/issues/7166). 
-> - Run `python -c 'import cv2'` to check that you installed correctly the `opencv-python` package (sometimes
-> [dependencies are missed](https://stackoverflow.com/questions/47113029/importerror-libsm-so-6-cannot-open-shared-object-file-no-such-file-or-directo) in `pip` installations).
-
-To start using this framework clone the repo and download the [default weights](https://share.services.ai4os.eu/index.php/s/rJQPQtBReqHAPf3/download):
+> - It is a requirement to have [Tensorflow>=2.19.0installed](https://www.tensorflow.org/install/pip) (either in gpu 
+> or cpu mode). 
+To start using this framework clone the repo 
 
 ```bash
 # First line installs OpenCV requirement
-apt-get update && apt-get install -y libgl1
 git clone https://github.com/lifewatch/phyto-plankton-classification
 cd phyto-plankton-classification
 pip install -e .
-curl -o ./models/phytoplankton_vliz.tar.xz https://share.services.ai4os.eu/index.php/s/rJQPQtBReqHAPf3/download #create share link from nextcloud
-cd models && tar -xf phytoplankton_vliz.tar.xz && rm phytoplankton_vliz.tar.xz
 ```
 
 ## Install through Docker (recommended)
@@ -101,13 +95,7 @@ Run container and only have local access
 ```bash
 docker run -ti -p 8888:8888 -p 5000:5000 -v "$(pwd):/srv/phyto-plankton-classification" ai4oshub/phyto-plankton-classification:latest /bin/bash
 ```
-For MacOS:
-To get the latest version of the phytoplankton module running locally as well, please use the following code:
-```bash
-curl --insecure -L -o "models\phytoplankton_vliz.tar.gz" https://share.services.ai4os.eu/index.php/s/rJQPQtBReqHAPf3/download
-tar -xzf "/models/phytoplankton_vliz.tar.gz" "/models"
-del "/models/phytoplankton_vliz.tar.gz"
-```
+
 > **Tip**: Rclone can also be configured to acces nextcloud server, follow [Tutorial](https://docs.ai4eosc.eu/en/latest/howtos/train/rclone.html).
 
 
@@ -115,7 +103,7 @@ Now the environment has the right requiremens to be excecuted.
 
 
 ## Open through Deepaas
-Call-in on Imagine Marketplace and follow the [Tutorial](https://docs.ai4eosc.eu/en/latest/howtos/train/dashboard.html). 
+Call-in on Imagine Marketplace and follow the [Tutorial](https://docs.ai4eosc.eu/en/latest/howtos/train/index.html). 
 For more a detailed tutorial, please follow: [readme_tutorial](README_marketplace.md).
 
 # 1. Train the phyto-plankton-classifier
