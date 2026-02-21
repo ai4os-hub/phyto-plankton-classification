@@ -476,14 +476,18 @@ def format_prediction(labels, probabilities, original_filenames):
     if aphia_ids is not None:
         pred_aphia_ids = [aphia_ids[i] for i in labels]
         pred_aphia_ids = [aphia_id.tolist() for aphia_id in pred_aphia_ids]
+        pred_aphia_ids = [[str(aphia_id) for aphia_id in sublist] for sublist in pred_aphia_ids]
     else:
         pred_aphia_ids = aphia_ids
     class_index_map = {
         index: class_name
         for index, class_name in enumerate(class_names)
     }
-    pred_lab_names = [[class_index_map[label] for label in labels]
-                      for labels in labels]
+    # pred_lab_names = [[class_index_map[label] for label in labels]
+    #                   for labels in labels]
+
+    pred_lab_names = [[str(class_index_map[label]) for label in label_list] for label_list in labels]
+    
     # pred_labels=[class_names[i] for i in labels]
     pred_prob = probabilities
 
