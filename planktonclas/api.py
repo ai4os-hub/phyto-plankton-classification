@@ -276,21 +276,38 @@ def catch_error(f):
 
     return wrap
 
-
 def catch_localfile_error(file_list):
-    # Error catch: Empty query
     if not file_list:
         raise ValueError("Empty query")
 
-    # Error catch: Image format error
     for f in file_list:
-        extension = os.path.basename(f.content_type).split("/")[-1]
-        # extension = mimetypes.guess_extension(f.content_type)
+
+        # Case 1: CLI → string path
+        if isinstance(f, str):
+            extension = os.path.splitext(f)[-1].lower().replace(".", "")
+        else:
+            # Case 2: Swagger → UploadedFile
+            extension = os.path.basename(f.content_type).split("/")[-1].lower()
+
         if extension not in allowed_extensions:
             raise ValueError(
-                "Local image format error: "
-                "At least one file is not in a standard image format ({}).".
-                format(allowed_extensions))
+                f"Local image format error. Allowed: {allowed_extensions}"
+            )
+        
+# def catch_localfile_error(file_list):
+#     # Error catch: Empty query
+#     if not file_list:
+#         raise ValueError("Empty query")
+
+#     # Error catch: Image format error
+#     for f in file_list:
+#         extension = os.path.basename(f.content_type).split("/")[-1]
+#         # extension = mimetypes.guess_extension(f.content_type)
+#         if extension not in allowed_extensions:
+#             raise ValueError(
+#                 "Local image format error: "
+#                 "At least one file is not in a standard image format ({}).".
+#                 format(allowed_extensions))
 
 
 def warm():
@@ -367,12 +384,25 @@ def predict(**args):
                 args["files"] = uploaded_files
 
                 return predict_data(args)
+        # elif args["image"]:
+        #     args["files"] = [args["image"]]  # patch until list is available
+        #     # raise RuntimeError("args files ", args["files"])
+        #     print(args["files"])
+        #     return predict_data(args)
         elif args["image"]:
-            args["files"] = [args["image"]]  # patch until list is available
-            # raise RuntimeError("args files ", args["files"])
-            print(args["files"])
-            return predict_data(args)
+            if isinstance(args["image"], str):
+                args["files"] = [
+                    UploadedFile(
+                        name="data",
+                        filename=args["image"],
+                        content_type="image/jpeg",
+                        original_filename=os.path.basename(args["image"]),
+                    )
+                ]
+            else:
+                args["files"] = [args["image"]]
 
+            return predict_data(args)
     except Exception as err:
         raise HTTPException(reason=err) from err
 
