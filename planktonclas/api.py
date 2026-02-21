@@ -471,23 +471,45 @@ def get_predictions_dir(CONF):
         else:
             return os.path.join(output_directory)
 
-
 def format_prediction(labels, probabilities, original_filenames):
     if aphia_ids is not None:
-        pred_aphia_ids = [aphia_ids[i] for i in labels]
-        pred_aphia_ids = [aphia_id.tolist() for aphia_id in pred_aphia_ids]
-        pred_aphia_ids = [[str(aphia_id) for aphia_id in sublist] for sublist in pred_aphia_ids]
+        pred_aphia_ids = [[str(aphia_ids[i]) for i in label_list] for label_list in labels]
     else:
-        pred_aphia_ids = aphia_ids
-    class_index_map = {
-        index: class_name
-        for index, class_name in enumerate(class_names)
-    }
-    # pred_lab_names = [[class_index_map[label] for label in labels]
-    #                   for labels in labels]
+        pred_aphia_ids = None
 
+    class_index_map = {i: str(name) for i, name in enumerate(class_names)}
     pred_lab_names = [[str(class_index_map[label]) for label in label_list] for label_list in labels]
-    
+    pred_prob = [[float(p) for p in prob_list] for prob_list in probabilities]
+
+    pred_dict = {
+        "filenames": [str(f) for f in original_filenames],
+        "pred_lab": pred_lab_names,
+        "pred_prob": pred_prob,
+        "aphia_ids": pred_aphia_ids,
+    }
+
+    # Save JSON
+    conf = config.conf_dict
+    ckpt_name = conf["testing"]["ckpt_name"]
+    split_name = "test"
+    pred_path = os.path.join(
+        get_predictions_dir(conf),
+        f"{ckpt_name}+{split_name}+top{top_K}.json"
+    )
+    with open(pred_path, "w") as outfile:
+        json.dump(pred_dict, outfile, sort_keys=True)
+
+    return pred_dict
+# def format_prediction(labels, probabilities, original_filenames):
+    if aphia_ids is not None:
+        # Map labels to aphia_ids correctly
+        pred_aphia_ids = [[aphia_ids[i] for i in label_list] for label_list in labels]
+    else:
+        pred_aphia_ids = None
+    class_index_map = {i: name for i, name in enumerate(class_names)}
+    pred_lab_names = [[class_index_map[label] for label in label_list] for label_list in labels]
+
+    # pred_lab_names = [[str(class_index_map[label]) for label in label_list] for label_list in labels]
     # pred_labels=[class_names[i] for i in labels]
     pred_prob = probabilities
 
