@@ -39,6 +39,8 @@ def create_data_splits(
         for file in tqdm(files, desc=f"Processing {root}"):
             if file.endswith(".db"):
                 continue  # skip .db files
+            if file.endswith(".DS_Store"):
+                continue  # skip .db files
             file_path = os.path.join(root, file)
             relative_path = os.path.relpath(file_path, im_dir)
             file_paths.append(relative_path)
