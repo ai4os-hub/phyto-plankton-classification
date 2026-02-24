@@ -29,13 +29,13 @@ _AUTHORS += MODEL_METADATA["Author-emails"].keys()
 MODEL_METADATA["Authors"] = sorted(_AUTHORS)
 
 
-homedir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-conf_path = os.path.join(homedir, "etc", "config.yaml")
-with open(conf_path, "r") as f:
-    CONF = yaml.safe_load(f)
+# homedir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# conf_path = os.path.join(homedir, "etc", "config.yaml")
+# with open(conf_path, "r") as f:
+#     CONF = yaml.safe_load(f)
 
 
-def check_conf(conf=CONF):
+def check_conf(conf):
     """
     Checks for configuration parameters
     """
@@ -124,10 +124,10 @@ def check_conf(conf=CONF):
             )
 
 
-check_conf()
+# check_conf()
 
 
-def get_conf_dict(conf=CONF):
+def get_conf_dict(conf):
     """
     Return configuration as dict
     """
@@ -143,10 +143,10 @@ def get_conf_dict(conf=CONF):
     return conf_d
 
 
-conf_dict = get_conf_dict()
+# conf_dict = get_conf_dict()
 
 
-def print_full_conf(conf=CONF):
+def print_full_conf(conf):
     """
     Print all configuration parameters (including help, range, choices, ...)
     """
@@ -178,7 +178,7 @@ def print_full_conf(conf=CONF):
             print("\n")
 
 
-def print_conf_table(conf=conf_dict):
+def print_conf_table(conf):
     """
     Print configuration parameters in a table
     """

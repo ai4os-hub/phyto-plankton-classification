@@ -25,7 +25,7 @@ general:
           If path is relative it will be appended to the package path.
 
   images_directory:
-    value: "/srv/phyto-plankton-classification/data/images"
+    value: "data/demo-images"
     #"/storage/Imagine_UC5/data/images_mini_version"
     type: "str"
     help: >
@@ -76,7 +76,7 @@ model:
 
 dataset:
   mean_RGB:
-    value: 
+    value: [158.33844060679408, 158.33844060679408, 158.33844060679408]
     type: "list"
     help: >
           Mean RGB value of the image dataset. If not provided it will be automatically computed before the training
@@ -85,7 +85,7 @@ dataset:
           Example: [158.33844060679408, 158.33844060679408, 158.33844060679408]
 
   std_RGB: 
-    value: 
+    value: [48.89589490647217, 48.89589490647217, 48.89589490647217]
     type: "list"
     help: >
           Standard deviation of the RGB value of the image dataset. It is actually not needed for training.

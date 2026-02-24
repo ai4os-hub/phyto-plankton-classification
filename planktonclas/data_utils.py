@@ -6,7 +6,7 @@ Author: Ignacio Heredia (Updated for Albumentations 2.0)
 Email: iheredia@ifca.unican.es
 Github: ignacioheredia
 """
-
+import io
 import base64
 import os
 import queue
@@ -23,6 +23,7 @@ import requests
 from tensorflow.keras.utils import Sequence, to_categorical
 from tqdm import tqdm
 
+from PIL import Image
 
 def create_data_splits(
     splits_dir, im_dir, split_ratios=[0.7, 0.15, 0.15]
@@ -267,14 +268,18 @@ def load_image(filename, filemode="local"):
     A numpy array
     """
     if filemode == "local":
+
+        # if not isinstance(filename, str) or not os.path.exists(filename):
+        #     print(f"Skipping invalid path: {filename}")
+        #     continue
         image = cv2.imread(filename, cv2.IMREAD_COLOR)
+
         if image is None:
             raise ValueError(
                 "The local path does not exist or does not correspond to an image: \n {}".format(
                     filename
                 )
             )
-
     elif filemode == "url":
         try:
             if filename.startswith(
@@ -291,6 +296,19 @@ def load_image(filename, filemode="local"):
             raise ValueError(
                 "Incorrect url path: \n {}".format(filename)
             )
+    elif filemode == 'gridfs':
+        try:
+            img_jpg = Image.open(io.BytesIO(filename.read()))
+            image = np.array(img_jpg)
+            if len(image.shape) != 3:
+                image = np.repeat(image[..., np.newaxis], 3,
+                                  -1)  # make greyscale images "RGB" by copying the same image 3 times
+                # reset cursor
+            filename.seek(0)
+        except:
+            raise ValueError('Problem loading gridfs object: \n {}'.format(filename._id))
+
+    # raise ValueError('Incorrect gridfs object: \n {}'.format(filename))
 
     else:
         raise ValueError("Invalid value for filemode.")
@@ -321,7 +339,14 @@ def preprocess_batch(
     Numpy array
     """
 
+
     mean_RGB, std_RGB = np.array(mean_RGB), np.array(std_RGB)
+
+    if len(batch) == 0:
+        # Here assuming your images are 224x224x3, adjust if needed
+        print("batch empty")
+        batch = np.zeros((1, 224, 224, 3), dtype=np.float32)
+
     batch = (
         np.array(batch) - mean_RGB[None, None, None, :]
     )  # mean centering
@@ -595,7 +620,8 @@ class data_sequence(Sequence):
         preprocess_mode,
         aug_params,
         num_classes,
-        im_size=224,
+        filemode='local',
+        im_size=100,
         shuffle=True,
     ):
         """
@@ -610,6 +636,7 @@ class data_sequence(Sequence):
         self.preprocess_mode = preprocess_mode
         self.aug_params = aug_params
         self.num_classes = num_classes
+        self.filemode=filemode
         self.im_size = im_size
         self.shuffle = shuffle
         self.on_epoch_end()
@@ -624,8 +651,12 @@ class data_sequence(Sequence):
         batch_X = []
         tmp_idxs = []
         for i in batch_idxs:
+            # filename=self.inputs[i]
+            # if not isinstance(filename, str) or not os.path.exists(filename):
+            #     print(f"Skipping invalid path: {filename}")
+            #     continue
             try:
-                im = load_image(self.inputs[i])
+                im = load_image(self.inputs[i],filemode=self.filemode)
             except Exception as e:
                 print(e)
                 continue
@@ -634,6 +665,7 @@ class data_sequence(Sequence):
             im = resize_im(
                 im, height=self.im_size, width=self.im_size
             )
+
             batch_X.append(im)  # shape (N, 224, 224, 3)
             tmp_idxs.append(i)
         batch_X = preprocess_batch(
@@ -671,6 +703,7 @@ def standard_tencrop_batch(im, crop_prop=0.9):
     batch = []
 
     min_side = np.amin(im.shape[:2])
+    print("resizing to: ", min_side)
     # resize to shorter border
     im = resize_im(im, height=min_side, width=min_side)
     h, w = min_side, min_side  # height, width (square)

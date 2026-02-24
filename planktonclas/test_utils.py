@@ -8,7 +8,7 @@ Github: ignacioheredia
 """
 
 import numpy as np
-
+import traceback
 from planktonclas.data_utils import k_crop_data_sequence
 
 
@@ -19,6 +19,7 @@ def predict(
     top_K=None,
     crop_num=10,
     filemode="local",
+    crop_mode="random",
     merge=False,
     use_multiprocessing=False,
 ):
@@ -58,7 +59,30 @@ def predict(
         top_K = conf["model"]["num_classes"]
     if isinstance(X, str):  # if not isinstance(X, list):
         X = [X]
-
+    print("predict size: ",conf["model"]["image_size"])
+    # try:
+    #     data_gen = k_crop_data_sequence(
+    #     inputs=X,
+    #     im_size=conf["model"]["image_size"],
+    #     mean_RGB=conf["dataset"]["mean_RGB"],
+    #     std_RGB=conf["dataset"]["std_RGB"],
+    #     preprocess_mode=conf["model"]["preprocess_mode"],
+    #     aug_params=conf["augmentation"]["val_mode"],
+    #     crop_mode=crop_mode,
+    #     crop_number=crop_num,
+    #     filemode=filemode,
+    # )
+    #
+    #     output = model.predict(
+    #         data_gen,
+    #         verbose=1,
+    #         # max_queue_size=10,
+    #         # workers=4,
+    #         # use_multiprocessing=use_multiprocessing,
+    #     )
+    # except Exception as e:
+    #     print(e)
+    #     traceback.print_exc()
     data_gen = k_crop_data_sequence(
         inputs=X,
         im_size=conf["model"]["image_size"],
@@ -78,7 +102,6 @@ def predict(
         # workers=4,
         # use_multiprocessing=use_multiprocessing,
     )
-
     # reshape to (N, crop_number, num_classes)
     output = output.reshape(len(X), -1, output.shape[-1])
     output = np.mean(output, axis=1)  # take the mean across the crops

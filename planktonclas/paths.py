@@ -11,10 +11,17 @@ import os.path
 from datetime import datetime
 
 from planktonclas import config
+import yaml
 
+
+# Path relative to the repo root
 homedir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+conf_path = os.path.join(homedir, "etc", "config.yaml")
 
-CONF = config.get_conf_dict()
+with open(conf_path, "r") as f:
+    conf = yaml.safe_load(f)
+
+CONF = config.get_conf_dict(conf)
 timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
 
 

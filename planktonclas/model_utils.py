@@ -56,7 +56,7 @@ def create_model(CONF):
         Contains relevant configuration parameters of the model
     """
     architecture = getattr(applications, CONF["model"]["modelname"])
-
+    print("USING MODEL: ",  CONF["model"]["modelname"])
     # create the base pre-trained model
     img_width, img_height = (
         CONF["model"]["image_size"],
