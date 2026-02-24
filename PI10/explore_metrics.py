@@ -82,9 +82,9 @@ def getMaxAreaDict(filename):
 
 # Input folder with .tiff images
 image_folder = rf"\PATH\plankton-imager-10\not_processed\spotlight"
-
+image_folder  = rf"\\qarchive\data_sensors\plankton-imager-10\not_processed\CLASS_DETECTION-zebra\detritus"
 # Output CSV file
-csv_folder = rf"\PATH\plankton-imager-10\not_processed\spotlight"
+csv_folder = rf"\\qarchive\data_sensors\plankton-imager-10\not_processed\CLASS_DETECTION-zebra\wout_test"
 os.makedirs(csv_folder, exist_ok=True)
 output_csv = os.path.join(csv_folder, "image_metrics.csv")
 

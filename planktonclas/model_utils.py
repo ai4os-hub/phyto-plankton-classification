@@ -46,7 +46,9 @@ model_modes = {
     "ResNet50": "caffe",
     "VGG16": "caffe",
     "VGG19": "caffe",
+    "Phytoplankton_EfficientNetV2B0": "TF"
 }
+
 
 def create_model(CONF):
     """
@@ -55,7 +57,44 @@ def create_model(CONF):
     CONF : dict
         Contains relevant configuration parameters of the model
     """
-    architecture = getattr(applications, CONF["model"]["modelname"])
+    modelname = CONF["model"]["modelname"]
+
+    # Check if a local pre-trained model exists
+    models_dir = paths.get_models_dir()
+    local_model_path = os.path.join(models_dir, modelname)
+    print(local_model_path, os.path.isdir(local_model_path))
+    # Try to load from local directory first
+    if os.path.isdir(local_model_path):
+        print(f"Loading locally trained model from: {local_model_path}")
+        # Look for .h5 file in the model directory
+        ckpt_dir = os.path.join(local_model_path, "ckpts")
+
+        # Find all .h5 files in the directory
+        h5_files = [f for f in os.listdir(ckpt_dir) if f.endswith(".h5")]
+
+        if not h5_files:
+            raise FileNotFoundError(f"No .h5 model found in {ckpt_dir}")
+
+        # If there is more than one, pick the first (or sort if you want determinism)
+        h5_files.sort()
+        model_file = os.path.join(ckpt_dir, h5_files[0])
+        print(f"Loading locally trained model from: {model_file}")
+        base_model = load_model(model_file, custom_objects=utils.get_custom_objects())
+        print("Loaded base_model output shape:", base_model.output_shape)
+
+        new_input = base_model.input
+        x = Dense(CONF["model"]["num_classes"], activation="softmax", name="new_dense")(base_model.layers[-1].output)
+        model = Model(inputs=new_input, outputs=x)
+        # Add L2 regularization for all the layers in the whole model
+        if CONF["training"]["l2_reg"]:
+            for layer in model.layers:
+                layer.kernel_regularizer = regularizers.l2(
+                    CONF["training"]["l2_reg"])
+
+        return model, base_model
+
+    # Fall back to tf.keras.applications if no local model found
+    architecture = getattr(applications, modelname)
 
     # create the base pre-trained model
     img_width, img_height = (
@@ -74,9 +113,7 @@ def create_model(CONF):
     # x = Flatten()(x) #might work better on large dataset than
     # GlobalAveragePooling https://github.com/keras-team/keras/issues/8470
     x = Dense(1024, activation="relu")(x)
-    predictions = Dense(
-        CONF["model"]["num_classes"], activation="softmax"
-    )(x)
+    predictions = Dense(CONF["model"]["num_classes"], activation="softmax")(x)
 
     # Full model
     model = Model(inputs=base_model.input, outputs=predictions)
@@ -85,8 +122,7 @@ def create_model(CONF):
     if CONF["training"]["l2_reg"]:
         for layer in model.layers:
             layer.kernel_regularizer = regularizers.l2(
-                CONF["training"]["l2_reg"]
-            )
+                CONF["training"]["l2_reg"])
 
     return model, base_model
 

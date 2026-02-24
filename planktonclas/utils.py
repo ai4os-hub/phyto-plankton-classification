@@ -202,11 +202,25 @@ def get_callbacks(CONF, use_lr_decay=True):
         CONF["training"]["use_validation"]
         and CONF["training"]["use_early_stopping"]
     ):
+
+
         calls.append(
             callbacks.EarlyStopping(
-                patience=int(0.1 * CONF["training"]["epochs"])
+                patience=max(
+            CONF["training"]["early_stopping_patience_min"],
+            int(0.1 * CONF["training"]["epochs"])
+        )))
+
+    if CONF["training"]["use_validation"]:
+        calls.append(
+            callbacks.ModelCheckpoint(
+                filepath=os.path.join(paths.get_checkpoints_dir(), "best_model.keras"),
+                monitor="val_accuracy",  # or "val_loss" if you prefer
+                save_best_only=True,
+                verbose=1,
             )
         )
+
 
     if CONF["training"]["ckpt_freq"] is not None:
         calls.append(

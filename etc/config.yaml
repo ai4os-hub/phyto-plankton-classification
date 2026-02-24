@@ -25,11 +25,9 @@ general:
           If path is relative it will be appended to the package path.
 
   images_directory:
-    value: "D:/USERS/wout.decrop/environments/PI10/phyto-plankton-classification/data/VLIZlearning-zebra"
-    type: "str"
+    value: "Z:/Max/LearningSet/ZOOSCAN_training_15-02-2026"
     help: >
-          Base directory for images. If the path is relative, it will be appended to the package path.
-
+          Base directory for images. If the path is relative, it will be appended to the package path. "D:/USERS/wout.decrop/environments/PI10/phyto-plankton-classification/data/VLIZlearning-anasimyia","//fs/shared/onderzoek/6. Marine Observation Center/Projects/IMAGINE/UC5/data/training/images_exist"
 
 #####################################################
 #  Options to customize the model
@@ -75,22 +73,22 @@ model:
 
 dataset:
   mean_RGB:
-    value: 
+    value:
     type: "list"
     help: >
           Mean RGB value of the image dataset. If not provided it will be automatically computed before the training
           starts. Computing it can be quite time consuming, so it is useful to provide it if one if wishing to try
           different training configurations with the same dataset.
-          Example: [158.33844060679408, 158.33844060679408, 158.33844060679408]
+          Example: [158.33844060679408, 158.33844060679408, 158.33844060679408]? [170.79749673643784, 170.79749673643784, 170.79749673643784]
 
-  std_RGB: 
-    value: 
+  std_RGB:
+    value:
     type: "list"
     help: >
           Standard deviation of the RGB value of the image dataset. It is actually not needed for training.
-          Example: [48.89589490647217, 48.89589490647217, 48.89589490647217]
+          Example: [48.89589490647217, 48.89589490647217, 48.89589490647217]  [26.618377229938194, 26.618377229938194, 26.618377229938194]
 
-  split_ratios: 
+  split_ratios:
     value: [0.8, 0.1, 0.1]
     type: "list"
     help: >
@@ -127,7 +125,7 @@ training:
           your batchsize so that the model still fits in the GPU.
 
   epochs:
-    value: 15
+    value: 35
     type: "int"
     range: [0, None]
     help: >
@@ -156,7 +154,7 @@ training:
           Amount to decay the lr. Only relevant if lr_schedule_mode is set to 'step'
 
   lr_step_schedule:
-    value: [0.7, 0.9]
+    value: [0.2, 0.5]
     type: "list"
     item_type: float
     help: >
@@ -187,12 +185,18 @@ training:
     type: "bool"
     help: >
           Whether to use or not test. If True you have to provide a `test.txt` file in the `splits` directory.
-          
+
   use_early_stopping:
     value: False
     type: "bool"
     help: >
           Whether to use or not early stopping. If True you have to provide a `val.txt` file in the `splits` directory.
+
+  early_stopping_patience_min:
+    value: 15
+    type: "int"
+    help: >
+          Minimum number of epochs without validation improvement before stopping. The effective patience is computed as max(early_stopping_patience_min, int(0.1 * epochs)) to avoid stopping too early for short training runs.
 
   use_multiprocessing:
     value: False
@@ -227,8 +231,8 @@ monitor:
 
 augmentation:
 
-  use_augmentation: 
-    value: False
+  use_augmentation:
+    value: True
     type: "bool"
     help: >
           Use image augmentation during the training process.
@@ -240,54 +244,33 @@ augmentation:
       rot: 0.7
       rot_lim: 90
       stretch: 0.0
-      crop: 1.
+      crop: 1.0
       zoom: 0.2
       blur: 0.3
       pixel_noise: 0.3
       pixel_sat: 0.3
       cutout: 0.5
     help: >
-          Augmentation parameters to use during the training phase. The meaning of the parameters is the following:
-            - h_flip ([0,1] float): probability of performing an horizontal left-right mirroring.
-            - v_flip ([0,1] float): probability of performing an vertical up-down mirroring.
-            - rot ([0,1] float):  probability of performing a rotation to the image.
-            - rot_lim (int):  max degrees of rotation.
-            - stretch ([0,1] float):  probability of randomly stretching an image. It is set to zero by default because
-              on some datasets it can lead to nonsensical images.
-            - crop ([0,1] float): randomly take an image crop.
-            - zoom ([0,1] float): random zoom applied to crop_size.
-                --> Therefore the effective crop size at each iteration will be a
-                    random number between 1 and crop*(1-zoom). For example:
-                      * crop=1, zoom=0: no crop of the image
-                      * crop=1, zoom=0.1: random crop of random size between 100% image and 90% of the image
-                      * crop=0.9, zoom=0.1: random crop of random size between 90% image and 80% of the image
-                      * crop=0.9, zoom=0: random crop of always 90% of the image
-                      Image size refers to the size of the shortest side.
-            - blur ([0,1] float):  probability of randomly blurring an image.
-            - pixel_noise ([0,1] float):  probability of randomly adding pixel noise to an image.
-            - pixel_sat ([0,1] float):  probability of randomly using HueSaturationValue in the image.
-            - cutout ([0,1] float):  probability of using cutout in the image.
-
-          Use an empty dict {} in case you want to disable data augmentation.
+      Augmentation parameters to use during training.
 
   val_mode:
     value:
-      h_flip: 0.5
-      v_flip: 0.
-      rot: 0.5
-      rot_lim: 30
-      stretch: 0.
-      crop: 0.9
-      zoom: 0.1
-      blur: 0.1
-      pixel_noise: 0.1
-      pixel_sat: 0.1
-      cutout: 0.
+      h_flip: 0.0
+      v_flip: 0.0
+      rot: 0.0
+      rot_lim: 0
+      stretch: 0.0
+      crop: 1.0
+      zoom: 0.0
+      blur: 0.0
+      pixel_noise: 0.0
+      pixel_sat: 0.0
+      cutout: 0.0
     help: >
-          Augmentation parameters to use during the validation/testing phase. The augmentation is smaller than in the
-          case of training parameters. The meaning of the parameters is the same as in the train_mode option.
+      Minimal augmentation for validation/testing. The goal is to assess model performance
+      on clean, unaltered data. Only basic preprocessing (like normalization or resizing)
+      should be applied.
 
-          Use an empty dict {} in case you want to disable data augmentation.
 
           
 

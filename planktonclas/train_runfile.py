@@ -234,9 +234,32 @@ def train_fn(TIMESTAMP, CONF):
     fpath = os.path.join(
         paths.get_checkpoints_dir(), "final_model.h5"
     )
+    # model.save(fpath, include_optimizer=False)
+
+    print("Saving the model in native Keras format...")
+    fpath = os.path.join(paths.get_checkpoints_dir(), "final_model.keras")
     model.save(fpath, include_optimizer=False)
 
     print("Finished training")
+
+    # Load the best validation model if it exists
+    best_model_path = os.path.join(paths.get_checkpoints_dir(), "best_model.keras")
+    if os.path.exists(best_model_path):
+        print(f"Loading best validation model from {best_model_path}")
+        model = tf.keras.models.load_model(best_model_path, compile=False)
+        # Re-compile the model if you need metrics
+        model.compile(
+            optimizer=customAdam(
+                learning_rate=CONF["training"]["initial_lr"],
+                amsgrad=True,
+                lr_mult=0.1,
+                excluded_vars=[],  # no need for lr multipliers at test time
+            ),
+            loss="categorical_crossentropy",
+            metrics=["accuracy"],
+        )
+    else:
+        print("Best validation model not found. Using final model for testing.")
 
     if CONF["training"]["use_test"]:
         print("Start testing")
