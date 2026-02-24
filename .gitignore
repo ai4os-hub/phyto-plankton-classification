@@ -156,7 +156,7 @@ planktonclas/run_file.ipynb
 models/*
 data/*
 data/images/*
-!data/dataset_files
+!data/dataset_files_FLOWCAM
 !models/.gitkeep
 !models/phytoplankton_vliz/*
 
