@@ -25,7 +25,7 @@ general:
           If path is relative it will be appended to the package path.
 
   images_directory:
-    value: "//qarchive/data_sensors/plankton-imager-10/not_processed/learning set/VLIZlearning-anasimyia"
+    value: "Z:/Max/LearningSet/learning set/VLIZlearning-anasimyia"
     type: "str"
     help: >
           Base directory for images. If the path is relative, it will be appended to the package path. "D:/USERS/wout.decrop/environments/PI10/phyto-plankton-classification/data/VLIZlearning-anasimyia"
