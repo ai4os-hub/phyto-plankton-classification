@@ -225,7 +225,28 @@ def get_callbacks(CONF, use_lr_decay=True):
                 ),
             )
         )
+    if CONF["training"].get("best_model", True) and CONF["training"]["use_validation"]:
+        model_dir = os.path.join(
+            CONF["general"]["base_directory"],
+            "tmp_models"
+        )
 
+        os.makedirs(model_dir, exist_ok=True)
+
+        best_model_path = os.path.join(model_dir, "best_model.keras")
+
+        calls.append(
+            callbacks.ModelCheckpoint(
+                filepath=best_model_path,
+                monitor="val_accuracy",  # or "val_loss"
+                save_best_only=True,
+                save_weights_only=False,
+                mode="max",
+                verbose=1
+            )
+        )
+
+        print("Best model will be saved to:", best_model_path)
     if not calls:
         calls = None
 
