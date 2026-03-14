@@ -4,6 +4,7 @@ set -eu
 : "${INPUT_FILE_PATH:?Need INPUT_FILE_PATH}"
 
 TMP_OUTPUT_DIR="${TMP_OUTPUT_DIR:-/tmp}"
+
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
 
 RAW_LOG="$TMP_OUTPUT_DIR/output_raw_$TIMESTAMP.txt"
@@ -14,8 +15,14 @@ deepaas-cli predict \
   --timestamp Phytoplankton_EfficientNetV2B0 \
   --ckpt_name final_model.h5 2>&1 | tee "$RAW_LOG"
 
-# Take the last line (prediction output) and fix single quotes
-RAW_JSON=$(tail -n 1 "$RAW_LOG")
-echo "$RAW_JSON" | sed "s/'/\"/g" > "$OUTPUT_JSON"
+LAST_RETURN=$(grep "return:" "$RAW_LOG" | tail -n 1 | sed -E "s/^.*return: //")
+
+python3 -c "
+import json, re, ast
+raw = '''$LAST_RETURN'''
+raw_clean = re.sub(r\"np\.str_\('([^']+)'\)\", r'\"\\1\"', raw)
+data = ast.literal_eval(raw_clean)
+print(json.dumps(data, indent=2))
+" > "$OUTPUT_JSON"
 
 echo "✅ JSON saved to: $OUTPUT_JSON"
