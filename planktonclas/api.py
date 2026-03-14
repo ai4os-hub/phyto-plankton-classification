@@ -6,30 +6,23 @@ Author: Ignacio Heredia
 Email: iheredia@ifca.unican.es
 Github: ignacioheredia
 
-Notes: Based on
-https://github.com/indigo-dc/plant-classification-theano/
-blob/package/plant_classification/api.py
+Notes: Based on https://github.com/indigo-dc/plant-classification-theano/blob/package/plant_classification/api.py
 
 Descriptions:
-The API will use the model files inside ../models/api.
-If not found it will use the model files of the last trained model.
-If several checkpoints are found inside ../models/api/ckpts we
-will use the last checkpoint.
+The API will use the model files inside ../models/api. If not found it will use the model files of the last trained model.
+If several checkpoints are found inside ../models/api/ckpts we will use the last checkpoint.
 
 Warnings:
-There is an issue of using Flask with Keras:
-https://github.com/jrosebr1/simple-keras-rest-api/issues/1
-The fix done (using tf.get_default_graph()) will probably not be
-valid for standalone wsgi container e.g. gunicorn,
+There is an issue of using Flask with Keras: https://github.com/jrosebr1/simple-keras-rest-api/issues/1
+The fix done (using tf.get_default_graph()) will probably not be valid for standalone wsgi container e.g. gunicorn,
 gevent, uwsgi.
 """
 
-from pathlib import Path
-from marshmallow import ValidationError, validate
 import builtins
 import glob
 import json
 import os
+import re
 import tempfile
 import warnings
 import zipfile
@@ -39,6 +32,8 @@ from functools import wraps
 from aiohttp.web import HTTPException
 
 import numpy as np
+import pkg_resources
+import requests
 import tensorflow as tf
 from deepaas.model.v2.wrapper import UploadedFile
 from tensorflow.keras import backend as K
@@ -46,8 +41,8 @@ from tensorflow.keras.models import load_model
 from webargs import fields
 import logging
 
-
-import json
+import os
+from webargs import fields
 
 
 from planktonclas import config, paths, test_utils, utils
@@ -58,15 +53,24 @@ from planktonclas.data_utils import (
 )
 from planktonclas.train_runfile import train_fn
 
+
+
 logger = logging.getLogger(__name__)
 ENV_LOG_LEVEL = os.getenv("API_LOG_LEVEL", default="INFO")
 LOG_LEVEL = getattr(logging, ENV_LOG_LEVEL.upper())
 logger.setLevel(LOG_LEVEL)
 
+
 NOW = str("{:%Y_%m_%d_%H_%M_%S}".format(datetime.now()))
 
+import os
+from marshmallow import fields, ValidationError
+from pathlib import Path
+from marshmallow import ValidationError
+
 loaded_ts, loaded_ckpt = None, None
-model, conf, class_names, class_info, aphia_ids = (
+graph, model, conf, class_names, class_info, aphia_ids = (
+    None,
     None,
     None,
     None,
@@ -75,8 +79,9 @@ model, conf, class_names, class_info, aphia_ids = (
 )
 
 # Additional parameters
-allowed_extensions = set(["png", "jpg", "jpeg", "PNG", "JPG",
-                          "JPEG"])  # allow only certain file extensions
+allowed_extensions = set(
+    ["png", "jpg", "jpeg", "PNG", "JPG", "JPEG"]
+)  # allow only certain file extensions
 top_K = 5  # number of top classes predictions to return
 
 
@@ -92,7 +97,7 @@ def load_inference_model(timestamp=None, ckpt_name=None):
         Name of the checkpoint to use. The default is the last checkpoint in `./models/[timestamp]/ckpts`.
     """
     global loaded_ts, loaded_ckpt
-    global model, conf, class_names, class_info, aphia_ids
+    global graph, model, conf, class_names, class_info, aphia_ids
 
     # Set the timestamp
     timestamp_list = next(os.walk(paths.get_models_dir()))[1]
@@ -100,30 +105,39 @@ def load_inference_model(timestamp=None, ckpt_name=None):
     if not timestamp_list:
         raise Exception(
             "You have no models in your `./models` folder to be used for inference. "
-            "Therefore the API can only be used for training.")
+            "Therefore the API can only be used for training."
+        )
     elif timestamp is None:
         timestamp = timestamp_list[-1]
     elif timestamp not in timestamp_list:
         raise ValueError(
-            "Invalid timestamp name: {}. Available timestamp names are: {}".
-            format(timestamp, timestamp_list))
+            "Invalid timestamp name: {}. Available timestamp names are: {}".format(
+                timestamp, timestamp_list
+            )
+        )
     paths.timestamp = timestamp
     print("Using TIMESTAMP={}".format(timestamp))
 
     # Set the checkpoint model to use to make the prediction
     ckpt_list = os.listdir(paths.get_checkpoints_dir())
-    ckpt_list = sorted([name for name in ckpt_list if name.endswith(".h5")])
+    ckpt_list = sorted(
+        [name for name in ckpt_list if name.endswith(".h5")]
+    )
     if not ckpt_list:
         raise Exception(
-            "You have no checkpoints in your `./models/{}/ckpts` folder to be used for inference. "
-            .format(timestamp) +
-            "Therefore the API can only be used for training.")
+            "You have no checkpoints in your `./models/{}/ckpts` folder to be used for inference. ".format(
+                timestamp
+            )
+            + "Therefore the API can only be used for training."
+        )
     elif ckpt_name is None:
         ckpt_name = ckpt_list[-1]
     elif ckpt_name not in ckpt_list:
         raise ValueError(
-            "Invalid checkpoint name: {}. Available checkpoint names are: {}".
-            format(ckpt_name, ckpt_list))
+            "Invalid checkpoint name: {}. Available checkpoint names are: {}".format(
+                ckpt_name, ckpt_list
+            )
+        )
     print("Using CKPT_NAME={}".format(ckpt_name))
 
     # Clear the previous loaded model
@@ -139,7 +153,8 @@ def load_inference_model(timestamp=None, ckpt_name=None):
             warnings.warn(
                 """The 'classes.txt' file has a different length than the 'info.txt' file.
             If a class has no information whatsoever you should leave that classes row empty or put a '-' symbol.
-            The API will run with no info until this is solved.""")
+            The API will run with no info until this is solved."""
+            )
             class_info = None
     if class_info is None:
         class_info = ["" for _ in range(len(class_names))]
@@ -181,33 +196,25 @@ def update_with_saved_conf(saved_conf):
 
 def update_with_query_conf(user_args):
     """
-    Update the default YAML configuration with the user's input args from the API query.
-    Safely handles strings, lists, dicts, None, and avoids TypeError.
-    Skips UploadedFile objects (images/zips) automatically.
+    Update the default YAML configuration with the user's input args from the API query
     """
+    # Update the default conf with the user input
     CONF = config.CONF
-    for group, val in CONF.items():
-        for g_key, g_val in val.items():
-            if g_key not in user_args:
-                continue
-            raw_value = user_args[g_key]
-            if raw_value is None:
-                continue  # skip empty values
-
-            # Skip files
-            if hasattr(raw_value, "filename") and hasattr(raw_value, "content_type"):
-                continue
-
-            # Only handle basic types: str, int, float, bool, list, dict
-            if isinstance(raw_value, (str, int, float, bool, list, dict)):
+    for group, val in sorted(CONF.items()):
+        for g_key, g_val in sorted(val.items()):
+            if g_key in user_args:
+                raw_value = user_args[g_key]
+                if not raw_value:
+                    continue  # skip if the value is empty
                 try:
-                    if not isinstance(raw_value, str):
-                        raw_value = json.dumps(raw_value)
+                    # Try parsing as JSON
                     g_val["value"] = json.loads(raw_value)
-                except (json.JSONDecodeError, TypeError):
-                    g_val["value"] = str(raw_value)
-            else:
-                g_val["value"] = str(raw_value)
+                except json.JSONDecodeError:
+                    # Fall back to treating it as a plain string
+                    g_val["value"] = raw_value
+    # Check and save the configuration
+    config.check_conf(conf=CONF)
+    config.conf_dict = config.get_conf_dict(conf=CONF)
 
 
 def catch_error(f):
@@ -223,9 +230,11 @@ def catch_error(f):
 
 
 def catch_localfile_error(file_list):
+    # Error catch: Empty query
     if not file_list:
         raise ValueError("Empty query")
 
+    # Error catch: Image format error
     for f in file_list:
         extension = os.path.basename(f.content_type).split("/")[-1]
         # extension = mimetypes.guess_extension(f.content_type)
@@ -381,6 +390,7 @@ def predict_data(args):
     except Exception as err:
         raise HTTPException(reason=err) from err
 
+
 def get_predictions_dir(CONF):
     file_location = CONF.get("testing", {}).get("file_location", None)
     output_directory = CONF["testing"]["output_directory"]
@@ -388,16 +398,23 @@ def get_predictions_dir(CONF):
     if file_location is not None:
         if os.path.exists(file_location):
             os.makedirs(
-                os.path.join(os.path.dirname(file_location), "predictions"),
+                os.path.join(
+                    os.path.dirname(file_location), "predictions"
+                ),
                 exist_ok=True,
             )
-            return os.path.join(os.path.dirname(file_location), "predictions")
+            return os.path.join(
+                os.path.dirname(file_location), "predictions"
+            )
     else:
         if output_directory is None:
             # Define your get_timestamped_dir() function accordingly
-            return os.path.join(paths.get_timestamped_dir(), "predictions")
+            return os.path.join(
+                paths.get_timestamped_dir(), "predictions"
+            )
         else:
             return os.path.join(output_directory)
+
 
 def format_prediction(labels, probabilities, original_filenames):
     if aphia_ids is not None:
@@ -436,11 +453,13 @@ def format_prediction(labels, probabilities, original_filenames):
 
     return pred_dict
 
+
 def get_directory_choices(base_path="/srv/data/"):
     # Get a list of all directories in the base_path
     try:
         directories = [
-            d for d in os.listdir(base_path)
+            d
+            for d in os.listdir(base_path)
             if os.path.isdir(os.path.join(base_path, d))
         ]
         return directories
@@ -452,13 +471,18 @@ def get_directory_choices(base_path="/srv/data/"):
 def validate_directory(path):
     # Convert the input to a Path object if it's a string
     if isinstance(path, str):
-        path = Path(path.strip("'\""))  # Remove any leading/trailing quotes
+        path = Path(
+            path.strip("'\"")
+        )  # Remove any leading/trailing quotes
 
     # Check if the path is a valid directory
     if not path.is_dir():
         raise ValidationError(f"{path} is not a valid directory")
 
     return path
+
+
+from pathlib import Path
 
 
 def train(**args):
