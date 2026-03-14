@@ -9,6 +9,7 @@ Github: ignacioheredia
 
 import json
 import os
+import logging
 
 import numpy as np
 import tensorflow as tf
@@ -28,6 +29,9 @@ from tensorflow.python.saved_model.signature_def_utils import (
     predict_signature_def, )
 
 from planktonclas import config, paths, utils
+
+# Configure logger
+logger = logging.getLogger(__name__)
 
 model_modes = {
     "DenseNet121": "torch",
@@ -59,10 +63,10 @@ def create_model(CONF):
     # Check if a local pre-trained model exists
     models_dir = paths.get_models_dir()
     local_model_path = os.path.join(models_dir, modelname)
-    print(local_model_path, os.path.isdir(local_model_path))
+    
     # Try to load from local directory first
     if os.path.isdir(local_model_path):
-        print(f"Loading locally trained model from: {local_model_path}")
+        logger.info("✓ Found locally trained model: %s", modelname)
         # Look for .h5 file in the model directory
         ckpt_dir = os.path.join(local_model_path, "ckpts")
 
@@ -75,9 +79,9 @@ def create_model(CONF):
         # If there is more than one, pick the first (or sort if you want determinism)
         h5_files.sort()
         model_file = os.path.join(ckpt_dir, h5_files[0])
-        print(f"Loading locally trained model from: {model_file}")
+        logger.info("▌ Loading model checkpoint: %s", os.path.basename(model_file))
         base_model = load_model(model_file, custom_objects=utils.get_custom_objects())
-        print("Loaded base_model output shape:", base_model.output_shape)
+        logger.debug("✓ Model output shape: %s", base_model.output_shape)
 
         new_input = base_model.input
         x = Dense(CONF["model"]["num_classes"], activation="softmax", name="new_dense")(base_model.layers[-1].output)
@@ -195,79 +199,3 @@ def save_conf(conf):
                 key, g_key, str(g_val)))
         txt_file.write("-" * 75 + "\n")
     txt_file.close()
-
-
-def save_default_imagenet_model():
-    """
-    Create a model in models_dir with default ImageNet training
-    """
-    CONF = config.get_conf_dict()
-    TIMESTAMP = "default_imagenet"
-
-    # Clear default conf and create custom conf
-    for k, v in CONF.items():
-        if k in ["general", "augmentation"]:
-            continue
-        for i, j in v.items():
-            CONF[k][i] = None
-    CONF["augmentation"]["train_mode"] = None
-
-    CONF["model"]["modelname"] = "Xception"
-    CONF["model"]["image_size"] = 224
-    CONF["model"]["preprocess_mode"] = model_modes[CONF["model"]["modelname"]]
-    CONF["model"]["num_classes"] = 1000
-    CONF["dataset"]["mean_RGB"] = [123.675, 116.28, 103.53]
-    CONF["dataset"]["std_RGB"] = [58.395, 57.12, 57.375]
-
-    paths.timestamp = TIMESTAMP
-    paths.CONF = CONF
-
-    # Create classes.txt for ImageNet
-    fpath = keras.utils.get_file(
-        "imagenet_class_index.json",
-        "https://s3.amazonaws.com/deep-learning-models/image-models/imagenet_class_index.json",
-        cache_subdir="models",
-        file_hash="c2c37ea517e94d9795004a39431a14cb",
-    )
-    with open(fpath) as f:
-        classes = json.load(f)
-    classes = np.array(list(classes.values()))[:, 1]
-
-    # Create the model
-    architecture = getattr(applications, CONF["model"]["modelname"])
-    img_width, img_height = (
-        CONF["model"]["image_size"],
-        CONF["model"]["image_size"],
-    )
-    model = architecture(
-        weights="imagenet",
-        include_top=True,
-        input_shape=(img_width, img_height, 3),
-    )
-    model.compile(
-        optimizer="adam",
-        loss="categorical_crossentropy",
-        metrics=["accuracy"],
-    )
-
-    # Save everything
-    utils.create_dir_tree()
-    np.savetxt(
-        os.path.join(paths.get_ts_splits_dir(), "classes.txt"),
-        classes,
-        fmt="%s",
-        delimiter="/n",
-    )
-    save_conf(CONF)
-    model.save(
-        fpath=os.path.join(paths.get_checkpoints_dir(), "final_model.h5"),
-        include_optimizer=False,
-    )
-
-
-def f1_metric(y_true, y_pred):
-    y_pred = tf.round(y_pred)
-    f1 = (2 * (tf.reduce_sum(y_true * y_pred) + tf.keras.backend.epsilon()) /
-          (tf.reduce_sum(y_true) + tf.reduce_sum(y_pred) +
-           tf.keras.backend.epsilon()))
-    return f1

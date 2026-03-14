@@ -18,11 +18,16 @@ tutorials.
 import json
 import logging
 import os
+import sys
 import time
 from datetime import datetime
 
 import numpy as np
 import tensorflow as tf
+
+# Configure warnings early
+from planktonclas import warnings_config
+warnings_config.configure_warnings()
 
 from planktonclas import config, model_utils, paths, utils
 from planktonclas.data_utils import (
@@ -44,6 +49,10 @@ from planktonclas.optimizers import customAdam
 
 # Set Tensorflow verbosity logs
 tf.get_logger().setLevel(logging.ERROR)
+
+# Configure logger for training
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 # Allow GPU memory growth
 gpus = tf.config.experimental.list_physical_devices("GPU")
@@ -93,7 +102,7 @@ def train_fn(TIMESTAMP, CONF):
             split_name="val",
         )
     else:
-        print("No validation data.")
+        logger.warning("⚠ No validation data available")
         X_val, y_val = None, None
         CONF["training"]["use_validation"] = False
 
@@ -194,8 +203,12 @@ def train_fn(TIMESTAMP, CONF):
     )
 
     # Saving everything
-    print("Saving data to {} folder.".format(paths.get_timestamped_dir()))
-    print("Saving training stats ...")
+    logger.info("\n" + "="*70)
+    logger.info("✓ Training Complete - Saving model and results...")
+    logger.info("="*70)
+    
+    logger.info("▌ Saving to: %s", paths.get_timestamped_dir())
+    logger.info("▌ Saving training statistics...")
     stats = {
         "epoch": history.epoch,
         "training time (s)": round(time.time() - t0, 2),
@@ -207,17 +220,29 @@ def train_fn(TIMESTAMP, CONF):
     with open(os.path.join(stats_dir, "stats.json"), "w") as outfile:
         json.dump(stats, outfile, sort_keys=True, indent=4)
 
-    print("Saving the configuration ...")
+    logger.info("▌ Saving configuration...")
     model_utils.save_conf(CONF)
 
-    print("Saving the model to h5...")
+    logger.info("▌ Saving model in HDF5 format...")
     fpath = os.path.join(paths.get_checkpoints_dir(), "final_model.h5")
-    model.save(fpath, include_optimizer=False)
+    
+    # Suppress any remaining warnings during model save
+    import io
+    
+    # Capture stderr to suppress any slipping warnings
+    stderr_backup = sys.stderr
+    sys.stderr = io.StringIO()
+    
+    try:
+        model.save(fpath, include_optimizer=False)
+    finally:
+        sys.stderr = stderr_backup
 
-    print("Finished training")
+    logger.info("✓ Training finished successfully!")
+    logger.info("="*70)
 
     if CONF["training"]["use_test"]:
-        print("Start testing")
+        logger.info("▌ Starting model evaluation on test set...")
         X_test, y_test = load_data_splits(
             splits_dir=paths.get_ts_splits_dir(),
             im_dir=paths.get_images_dir(),
@@ -294,8 +319,9 @@ def train_fn(TIMESTAMP, CONF):
         )
         with open(pred_path, "w") as outfile:
             json.dump(pred_dict, outfile, sort_keys=True)
-        print(f"Predictions file saved in: {pred_path}")
-    print("finished testing")
+        logger.info("✓ Predictions saved to: %s", pred_path)
+        logger.info("✓ Test set evaluation completed!")
+        logger.info("="*70)
 
 
 if __name__ == "__main__":

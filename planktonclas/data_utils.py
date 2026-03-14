@@ -8,6 +8,7 @@ Github: ignacioheredia
 """
 
 import base64
+import logging
 import os
 import queue
 import random
@@ -16,6 +17,10 @@ import threading
 import warnings
 from multiprocessing import Pool
 
+# Configure warnings early
+from planktonclas import warnings_config
+warnings_config.configure_warnings()
+
 import albumentations as A
 import cv2
 import numpy as np
@@ -23,7 +28,8 @@ import requests
 from tensorflow.keras.utils import Sequence, to_categorical
 from tqdm import tqdm
 
-
+# Configure logger
+logger = logging.getLogger(__name__)
 def create_data_splits(splits_dir, im_dir, split_ratios=[0.7, 0.15, 0.15]):
     train_txt_file = os.path.join(splits_dir, "train.txt")
     test_txt_file = os.path.join(splits_dir, "test.txt")
@@ -136,7 +142,7 @@ def load_data_splits(splits_dir, im_dir, split_name="train"):
             "directory.".format(split_name, splits_dir))
 
     # Loading splits
-    print("Loading {} data...".format(split_name))
+    logger.info("▌ Loading %s data...", split_name)
     split = np.genfromtxt(
         os.path.join(splits_dir, "{}.txt".format(split_name)),
         dtype="str",
@@ -153,20 +159,6 @@ def load_data_splits(splits_dir, im_dir, split_name="train"):
     return X, y
 
 
-def mount_nextcloud(frompath, topath):
-    """
-    Mount a NextCloud folder in your local machine or viceversa.
-    """
-    command = ["rclone", "copy", frompath, topath]
-    result = subprocess.Popen(command,
-                              stdout=subprocess.PIPE,
-                              stderr=subprocess.PIPE)
-    output, error = result.communicate()
-    if error:
-        warnings.warn("Error while mounting NextCloud: {}".format(error))
-    return output, error
-
-
 def load_class_names(splits_dir):
     """
     Load list of class names
@@ -175,7 +167,7 @@ def load_class_names(splits_dir):
     -------
     Numpy array of shape (N) containing strs with class names
     """
-    print("Loading class names...")
+    logger.info("▌ Loading class names...")
     class_names = np.genfromtxt(
         os.path.join(splits_dir, "classes.txt"),
         dtype="str",
@@ -192,7 +184,7 @@ def load_aphia_ids(splits_dir):
     -------
     Numpy array of shape (N) containing strs with class names
     """
-    print("Loading aphia_ids...")
+    logger.info("▌ Loading aphia_ids...")
     try:
         aphia_ids = np.genfromtxt(
             os.path.join(splits_dir, "aphia_ids.txt"),
@@ -213,7 +205,7 @@ def load_class_info(splits_dir):
     -------
     Numpy array of shape (N) containing strs with class names
     """
-    print("Loading class info...")
+    logger.info("▌ Loading class info...")
     class_info = np.genfromtxt(
         os.path.join(splits_dir, "info.txt"),
         dtype="str",
@@ -765,8 +757,8 @@ def compute_meanRGB(im_list, verbose=False, workers=4):
     mean, std = r[:, 0], r[:, 1]
     mean, std = np.mean(mean, axis=0), np.mean(std, axis=0)
 
-    print("Mean RGB pixel: {}".format(mean.tolist()))
-    print("Standard deviation of RGB pixel: {}".format(std.tolist()))
+    logger.info("✓ Mean RGB pixel: %s", mean.tolist())
+    logger.info("✓ Standard deviation of RGB pixel: %s", std.tolist())
 
     return mean.tolist(), std.tolist()
 
