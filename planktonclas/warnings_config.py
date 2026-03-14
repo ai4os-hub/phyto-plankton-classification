@@ -117,8 +117,10 @@ def configure_warnings():
         import tensorflow as tf
         tf.get_logger().setLevel('ERROR')
         tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
-    except:
-        pass
+    except Exception as e:
+        logging.debug("TensorFlow logging configuration skipped: %s", e)
+
+
     
     # Configure application-level logging to show errors and exceptions
     # This needs to happen AFTER library logger suppression
