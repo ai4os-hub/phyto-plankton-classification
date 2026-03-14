@@ -166,23 +166,27 @@ def get_callbacks(CONF, use_lr_decay=True):
         )
         print("    tensorboard --logdir={}".format(paths.get_logs_dir()))
 
-        # Run Tensorboard on a separate Thread/Process on behalf of the user
+        # Get the full path to the 'fuser' executable
+        # fuser_path = shutil.which("fuser")
         port = os.getenv("monitorPORT", 6006)
         port = int(port) if len(str(port)) >= 4 else 6006
-        # Get the full path to the 'fuser' executable
-        fuser_path = shutil.which("fuser")
-        if fuser_path is None:
-            raise RuntimeError("fuser executable not found in PATH.")
 
-        # kill any previous process on that port
-        subprocess.run([fuser_path, "-k", "{}/tcp".format(port)])
-
+        # Only try to kill existing TensorBoard on Linux/macOS
+        try:
+            if os.name != "nt":
+                fuser_path = shutil.which("fuser")
+                if fuser_path:
+                    subprocess.run([fuser_path, "-k", f"{port}/tcp"])
+        except Exception as e:
+            print(f"Warning: Could not kill existing TensorBoard on port {port}. {e}")
         p = Process(
             target=launch_tensorboard,
             args=(port, paths.get_logs_dir()),
             daemon=True,
         )
         p.start()
+
+
 
     if CONF["monitor"]["use_remote"]:
         calls.append(callbacks.RemoteMonitor())

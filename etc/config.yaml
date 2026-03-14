@@ -39,7 +39,7 @@ general:
 model:
 
   modelname:
-      value: "Phytoplankton_EfficientNetV2B0"
+      value: "EfficientNetV2B0"
       type: "str"
       choices: ["DenseNet121", "DenseNet169", "DenseNet201", "InceptionResNetV2", "InceptionV3", "MobileNet",
                "NASNetMobile", "Xception", "ResNet50", "VGG16", "VGG19", "EfficientNetV2B0", "Phytoplankton_EfficientNetV2B0"]
@@ -94,6 +94,7 @@ dataset:
   split_ratios: 
     value: [0.8, 0.1, 0.1]
     type: "list"
+    item_type: float
     help: >
           Split the dataset in [training, validation, test]
 

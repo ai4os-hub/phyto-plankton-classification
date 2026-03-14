@@ -210,62 +210,7 @@ def update_with_query_conf(user_args):
                 g_val["value"] = str(raw_value)
 
 
-# def update_with_query_conf(user_args):
-#     """
-#     Update the default YAML configuration with the user's input args from the API query.
-#     Safely handles strings, lists, dicts, None, and avoids TypeError.
-#     """
-#     CONF = config.CONF
-#     for group, val in CONF.items():
-#         for g_key, g_val in val.items():
-#             if g_key not in user_args:
-#                 continue
-#             raw_value = user_args[g_key]
-#             if raw_value is None:
-#                 continue  # skip empty values
-
-#             # Convert non-string inputs to JSON string
-#             if not isinstance(raw_value, str):
-#                 raw_value = json.dumps(raw_value)
-
-#             # Try to parse JSON safely
-#             try:
-#                 g_val["value"] = json.loads(raw_value)
-#             except (json.JSONDecodeError, TypeError):
-#                 # fallback: keep as string
-#                 g_val["value"] = raw_value
-
-#     # Validate and update internal config dictionary
-#     config.check_conf(conf=CONF)
-#     config.conf_dict = config.get_conf_dict(conf=CONF)
-
-
-
-# def update_with_query_conf(user_args):
-    """
-    Update the default YAML configuration with the user's input args from the API query.
-    """
-    # Update the default conf with the user input
-    CONF = config.CONF
-    for group, val in sorted(CONF.items()):
-        for g_key, g_val in sorted(val.items()):
-            if g_key in user_args:
-                raw_value = user_args[g_key]
-                if not raw_value:
-                    continue  # skip if the value is empty
-                try:
-                    # Try parsing as JSON
-                    g_val["value"] = json.loads(raw_value)
-                except json.JSONDecodeError:
-                    # Fall back to treating it as a plain string
-                    g_val["value"] = raw_value
-    # Check and save the configuration
-    config.check_conf(conf=CONF)
-    config.conf_dict = config.get_conf_dict(conf=CONF)
-
-
 def catch_error(f):
-
     @wraps(f)
     def wrap(*args, **kwargs):
         try:
@@ -276,38 +221,21 @@ def catch_error(f):
 
     return wrap
 
+
 def catch_localfile_error(file_list):
     if not file_list:
         raise ValueError("Empty query")
 
     for f in file_list:
-
-        # Case 1: CLI → string path
-        if isinstance(f, str):
-            extension = os.path.splitext(f)[-1].lower().replace(".", "")
-        else:
-            # Case 2: Swagger → UploadedFile
-            extension = os.path.basename(f.content_type).split("/")[-1].lower()
-
+        extension = os.path.basename(f.content_type).split("/")[-1]
+        # extension = mimetypes.guess_extension(f.content_type)
         if extension not in allowed_extensions:
             raise ValueError(
-                f"Local image format error. Allowed: {allowed_extensions}"
+                "Local image format error: "
+                "At least one file is not in a standard image format ({}).".format(
+                    allowed_extensions
+                )
             )
-        
-# def catch_localfile_error(file_list):
-#     # Error catch: Empty query
-#     if not file_list:
-#         raise ValueError("Empty query")
-
-#     # Error catch: Image format error
-#     for f in file_list:
-#         extension = os.path.basename(f.content_type).split("/")[-1]
-#         # extension = mimetypes.guess_extension(f.content_type)
-#         if extension not in allowed_extensions:
-#             raise ValueError(
-#                 "Local image format error: "
-#                 "At least one file is not in a standard image format ({}).".
-#                 format(allowed_extensions))
 
 
 def warm():
@@ -339,9 +267,10 @@ def prepare_files(directory):
             UploadedFile(
                 name="data",
                 filename=file_path,
-                content_type="image/jpeg",
+                content_type="image/jpeg",  # Adjust if necessary based on file type
                 original_filename=file_name,
-            ))
+            )
+        )
     return uploaded_files
 
 
@@ -361,7 +290,9 @@ def predict(**args):
             # Create a temporary directory to extract the files
             with tempfile.TemporaryDirectory() as temp_dir:
                 # Extract the zip file
-                with zipfile.ZipFile(zip_file.filename, "r") as zip_ref:
+                with zipfile.ZipFile(
+                    zip_file.filename, "r"
+                ) as zip_ref:
                     zip_ref.extractall(temp_dir)
 
                 # Get the list of files extracted from the zip
@@ -378,31 +309,21 @@ def predict(**args):
                             filename=file_path,
                             content_type="image/jpeg",
                             original_filename=file,
-                        ))
+                        )
+                    )
 
                 # Assign the list of files to args["files"]
                 args["files"] = uploaded_files
 
                 return predict_data(args)
-        # elif args["image"]:
-        #     args["files"] = [args["image"]]  # patch until list is available
-        #     # raise RuntimeError("args files ", args["files"])
-        #     print(args["files"])
-        #     return predict_data(args)
         elif args["image"]:
-            if isinstance(args["image"], str):
-                args["files"] = [
-                    UploadedFile(
-                        name="data",
-                        filename=args["image"],
-                        content_type="image/jpeg",
-                        original_filename=os.path.basename(args["image"]),
-                    )
-                ]
-            else:
-                args["files"] = [args["image"]]
-
+            args["files"] = [
+                args["image"]
+            ]  # patch until list is available
+            # raise RuntimeError("args files ", args["files"])
+            print(args["files"])
             return predict_data(args)
+
     except Exception as err:
         raise HTTPException(reason=err) from err
 
@@ -421,8 +342,10 @@ def predict_data(args):
         merge = False
         catch_localfile_error(args["files"])
 
-        if (loaded_ts != conf["testing"]["timestamp"]
-                or loaded_ckpt != conf["testing"]["ckpt_name"]):
+        if (
+            loaded_ts != conf["testing"]["timestamp"]
+            or loaded_ckpt != conf["testing"]["ckpt_name"]
+        ):
             load_inference_model(
                 timestamp=conf["testing"]["timestamp"],
                 ckpt_name=conf["testing"]["ckpt_name"],
@@ -431,7 +354,9 @@ def predict_data(args):
         # Create a list with the path to the images
         filenames = [f.filename for f in args["files"]]
         print(filenames)
-        original_filenames = [f.original_filename for f in args["files"]]
+        original_filenames = [
+            f.original_filename for f in args["files"]
+        ]
 
         # with graph.as_default():
         pred_lab, pred_prob = test_utils.predict(
@@ -445,13 +370,16 @@ def predict_data(args):
         )
 
         if merge:
-            pred_lab, pred_prob = np.squeeze(pred_lab), np.squeeze(pred_prob)
+            pred_lab, pred_prob = np.squeeze(pred_lab), np.squeeze(
+                pred_prob
+            )
             print(pred_lab.shape, pred_prob.shape)
 
-        return format_prediction(pred_lab, pred_prob, original_filenames)
+        return format_prediction(
+            pred_lab, pred_prob, original_filenames
+        )
     except Exception as err:
         raise HTTPException(reason=err) from err
-
 
 def get_predictions_dir(CONF):
     file_location = CONF.get("testing", {}).get("file_location", None)
@@ -473,43 +401,20 @@ def get_predictions_dir(CONF):
 
 def format_prediction(labels, probabilities, original_filenames):
     if aphia_ids is not None:
-        pred_aphia_ids = [[str(aphia_ids[i]) for i in label_list] for label_list in labels]
+        pred_aphia_ids = [aphia_ids[i] for i in labels]
+        pred_aphia_ids = [
+            aphia_id.tolist() for aphia_id in pred_aphia_ids
+        ]
     else:
-        pred_aphia_ids = None
-
-    class_index_map = {i: str(name) for i, name in enumerate(class_names)}
-    pred_lab_names = [[str(class_index_map[label]) for label in label_list] for label_list in labels]
-    pred_prob = [[float(p) for p in prob_list] for prob_list in probabilities]
-
-    pred_dict = {
-        "filenames": [str(f) for f in original_filenames],
-        "pred_lab": pred_lab_names,
-        "pred_prob": pred_prob,
-        "aphia_ids": pred_aphia_ids,
+        pred_aphia_ids = aphia_ids
+    class_index_map = {
+        index: class_name
+        for index, class_name in enumerate(class_names)
     }
-
-    # Save JSON
-    conf = config.conf_dict
-    ckpt_name = conf["testing"]["ckpt_name"]
-    split_name = "test"
-    pred_path = os.path.join(
-        get_predictions_dir(conf),
-        f"{ckpt_name}+{split_name}+top{top_K}.json"
-    )
-    with open(pred_path, "w") as outfile:
-        json.dump(pred_dict, outfile, sort_keys=True)
-
-    return pred_dict
-# def format_prediction(labels, probabilities, original_filenames):
-    if aphia_ids is not None:
-        # Map labels to aphia_ids correctly
-        pred_aphia_ids = [[aphia_ids[i] for i in label_list] for label_list in labels]
-    else:
-        pred_aphia_ids = None
-    class_index_map = {i: name for i, name in enumerate(class_names)}
-    pred_lab_names = [[class_index_map[label] for label in label_list] for label_list in labels]
-
-    # pred_lab_names = [[str(class_index_map[label]) for label in label_list] for label_list in labels]
+    pred_lab_names = [
+        [class_index_map[label] for label in labels]
+        for labels in labels
+    ]
     # pred_labels=[class_names[i] for i in labels]
     pred_prob = probabilities
 
@@ -530,7 +435,6 @@ def format_prediction(labels, probabilities, original_filenames):
         json.dump(pred_dict, outfile, sort_keys=True)
 
     return pred_dict
-
 
 def get_directory_choices(base_path="/srv/data/"):
     # Get a list of all directories in the base_path
@@ -581,104 +485,8 @@ def train(**args):
         logger.critical(err, exc_info=True)
         raise HTTPException(reason=err) from err
 
-# from marshmallow import validate
 
 def populate_parser(parser, default_conf):
-    for group, val in default_conf.items():
-        for g_key, g_val in val.items():
-            # If g_val is not a dict, wrap it
-            if not isinstance(g_val, dict):
-                g_val = {"value": g_val, "help": ""}
-
-            gg_keys = g_val.keys()
-
-            gg_keys = g_val.keys()
-            help_str = g_val.get("help", "")
-            help_str += f"\n<font color='#C5576B'> Group name: **{group}**</font>"
-
-            # Build basic field arguments
-            opt_args = {
-                "load_default": g_val.get("value", None),
-                "metadata": {
-                    "description": help_str,
-                    "type": g_val.get("type", "string")
-                },
-                "required": False,
-            }
-
-            # Add enum validation if choices exist
-            choices = g_val.get("choices")
-            if choices:
-                # Use primitives, not json.dumps
-                opt_args["validate"] = validate.OneOf(choices)
-                opt_args["metadata"]["enum"] = choices
-
-            # Use fields.Raw for maximum compatibility
-            parser[g_key] = fields.Raw(**opt_args)
-
-    return parser
-
-
-# def populate_parser(parser, default_conf):
-    """
-    Returns an arg-parse like parser suitable for DEEPaaS Swagger UI.
-    Ensures Swagger can see the parameter types.
-    """
-    for group, val in default_conf.items():
-        for g_key, g_val in val.items():
-            gg_keys = g_val.keys()
-
-            # Build help string
-            help_str = g_val.get("help", "")
-            help_str += f"\n<font color='#C5576B'> Group name: **{group}**"
-            if "choices" in gg_keys:
-                help_str += f"\nChoices: {g_val['choices']}"
-            if "type" in gg_keys:
-                help_str += f"\nType: {g_val['type']}"
-            help_str += "</font>"
-
-            # Build Marshmallow field arguments
-            opt_args = {
-                "load_default": g_val.get("value", None),
-                "metadata": {
-                    "description": help_str,
-                    "type": g_val.get("type", "string")  # Swagger-friendly type
-                },
-                "required": False,
-            }
-
-            # Add enum validation if choices exist
-            if "choices" in gg_keys:
-                json_choices = [json.dumps(i) for i in g_val["choices"]]
-                opt_args["metadata"]["enum"] = json_choices
-                # opt_args["validate"] = fields.validate.OneOf(json_choices)
-                opt_args["validate"] = validate.OneOf(json_choices)
-
-            # Use fields.Raw for maximum Swagger compatibility
-            parser[g_key] = fields.Raw(**opt_args)
-
-    return parser
-
-
-def get_train_args():
-    """
-    Return a dictionary of training parameters ready for Swagger / DEEPaaS.
-    """
-    parser = OrderedDict()
-    default_conf = config.CONF
-    # Keep only groups relevant for training
-    default_conf = OrderedDict([
-        ("general", default_conf["general"]),
-        ("model", default_conf["model"]),
-        ("training", default_conf["training"]),
-        ("monitor", default_conf["monitor"]),
-        ("dataset", default_conf["dataset"]),
-        ("augmentation", default_conf["augmentation"]),
-    ])
-
-    return populate_parser(parser, default_conf)
-
-# def populate_parser(parser, default_conf):
     """
     Returns a arg-parse like parser.
     """
@@ -689,13 +497,22 @@ def get_train_args():
 
             # Load optional keys
             help = g_val["help"] if ("help" in gg_keys) else ""
-            type = (getattr(builtins, g_val["type"]) if
-                    ("type" in gg_keys) else None)
-            choices = g_val["choices"] if ("choices" in gg_keys) else None
+            type = (
+                getattr(builtins, g_val["type"])
+                if ("type" in gg_keys)
+                else None
+            )
+            choices = (
+                g_val["choices"] if ("choices" in gg_keys) else None
+            )
 
             # Additional info in help string
-            help += "\n" + "<font color='#C5576B'> Group name: **{}**".format(
-                str(group))
+            help += (
+                "\n"
+                + "<font color='#C5576B'> Group name: **{}**".format(
+                    str(group)
+                )
+            )
             if choices:
                 help += "\n" + "Choices: {}".format(str(choices))
             if type:
@@ -705,120 +522,38 @@ def get_train_args():
             # Create arg dict
             opt_args = {
                 "load_default": json.dumps(g_val["value"]),
-                "metadata": {
-                    "description": help
-                },
+                "metadata": {"description": help},
                 "required": False,
             }
             if choices:
                 json_choices = [json.dumps(i) for i in choices]
                 opt_args["metadata"]["enum"] = json_choices
-                opt_args["validate"] = fields.validate.OneOf(json_choices)
+                opt_args["validate"] = fields.validate.OneOf(
+                    json_choices
+                )
             parser[g_key] = fields.Str(**opt_args)
 
     return parser
 
 
-# def get_train_args():
+def get_train_args():
     parser = OrderedDict()
     default_conf = config.CONF
-    default_conf = OrderedDict([
-        ("general", default_conf["general"]),
-        ("model", default_conf["model"]),
-        ("training", default_conf["training"]),
-        ("monitor", default_conf["monitor"]),
-        ("dataset", default_conf["dataset"]),
-        ("augmentation", default_conf["augmentation"]),
-    ])
-
-    return populate_parser(parser, default_conf)
-
-
-# def get_predict_args():
-    """
-    Return a DeepaaS / Swagger-compatible parser for prediction.
-    Supports:
-      - single image upload
-      - zip file of images
-      - model timestamp selection
-    """
-    parser = OrderedDict()
-    default_conf = OrderedDict([("testing", config.CONF["testing"])])
-
-    # Single image
-    parser["image"] = fields.Raw(
-        required=False,
-        load_default=None,
-        data_key="image",
-        metadata={
-            "description": "Select the image you want to classify.",
-            "type": "file",
-            "location": "form",
-        },
-    )
-
-    # ZIP file of images
-    parser["zip"] = fields.Raw(
-        required=False,
-        load_default=None,
-        data_key="zip_data",
-        metadata={
-            "description": "Select the ZIP file containing images you want to classify.",
-            "type": "file",
-            "location": "form",
-        },
-    )
-
-    # Optional timestamp selection for the model
-    testing_conf = default_conf["testing"]
-    timestamp_value = testing_conf.get("timestamp", "")
-    timestamp_list = next(os.walk(paths.get_models_dir()))[1]
-    timestamp_list = sorted(timestamp_list)
-
-    if timestamp_list:
-        timestamp_value = timestamp_list[-1]
-        testing_conf["timestamp"] = timestamp_value
-        testing_conf["choices"] = timestamp_list
-
-    # Populate parser with all testing config
-    parser = populate_parser(parser, default_conf)
-
-    return parser
-
-
-# def get_predict_args():
-    parser = OrderedDict()
-    default_conf = config.CONF
-    default_conf = OrderedDict([("testing", default_conf["testing"])])
-
-    # Single image
-    parser["image"] = fields.Raw(
-        required=False,
-        load_default=None,
-        data_key="image",
-        metadata={
-            "description": "Select the image you want to classify.",
-            "type": "file",
-            "location": "form",
-        },
-    )
-
-    # ZIP file of images
-    parser["zip"] = fields.Raw(
-        required=False,
-        load_default=None,
-        data_key="zip_data",
-        metadata={
-            "description": "Select the ZIP file containing images you want to classify.",
-            "type": "file",
-            "location": "form",
-        },
+    default_conf = OrderedDict(
+        [
+            ("general", default_conf["general"]),
+            ("model", default_conf["model"]),
+            ("training", default_conf["training"]),
+            ("monitor", default_conf["monitor"]),
+            ("dataset", default_conf["dataset"]),
+            ("augmentation", default_conf["augmentation"]),
+        ]
     )
 
     return populate_parser(parser, default_conf)
 
 
-# def get_predict_args():
+def get_predict_args():
     parser = OrderedDict()
     default_conf = config.CONF
     default_conf = OrderedDict([("testing", default_conf["testing"])])
@@ -853,58 +588,13 @@ def get_train_args():
         data_key="zip_data",
         # location="form",
         metadata={
-            "description":
-            "Select the ZIP file containing images you want to classify.",
+            "description": "Select the ZIP file containing images you want to classify.",
             "type": "file",
             "location": "form",
         },
     )
 
     return populate_parser(parser, default_conf)
-def get_predict_args():
-    parser = OrderedDict()
-    
-    # Make a copy of only the testing group
-    default_conf = {"testing": dict(config.CONF["testing"])}
-    
-    # Fix timestamp choices
-    timestamp_list = next(os.walk(paths.get_models_dir()))[1]
-    timestamp_list = sorted(timestamp_list)
-    
-    # Ensure timestamp key exists
-    if "timestamp" in default_conf["testing"]:
-        timestamp_entry = default_conf["testing"]["timestamp"]
-        # Wrap if it's not a dict
-        if not isinstance(timestamp_entry, dict):
-            timestamp_entry = {"value": timestamp_entry, "help": ""}
-        
-        if timestamp_list:
-            timestamp_entry["value"] = timestamp_list[-1]  # default = latest
-            timestamp_entry["choices"] = timestamp_list
-        else:
-            timestamp_entry["value"] = ""
-            timestamp_entry["choices"] = []
-        
-        default_conf["testing"]["timestamp"] = timestamp_entry
-
-    # Populate parser with only this group
-    parser = populate_parser(parser, default_conf)
-
-    # Add image/zip fields separately
-    parser["image"] = fields.Raw(
-        required=False,
-        load_default=None,
-        data_key="image",
-        metadata={"description": "Select the image you want to classify.", "type": "file", "location": "form"},
-    )
-    parser["zip"] = fields.Raw(
-        required=False,
-        load_default=None,
-        data_key="zip_data",
-        metadata={"description": "Select the ZIP file containing images.", "type": "file", "location": "form"},
-    )
-
-    return parser
 
 
 def get_metadata(distribution_name="planktonclas"):
@@ -913,13 +603,17 @@ def get_metadata(distribution_name="planktonclas"):
     """
 
     metadata = {
-        "name": config.MODEL_METADATA.get("name"),
-        "author": config.MODEL_METADATA.get("authors"),
-        "author-email": config.MODEL_METADATA.get("author-emails"),
-        "description": config.MODEL_METADATA.get("summary"),
-        "license": config.MODEL_METADATA.get("license"),
-        "version": config.MODEL_METADATA.get("version"),
-    }
+         "name": config.MODEL_METADATA.get("name"),
+            "author": config.MODEL_METADATA.get("authors"),
+            "author-email": config.MODEL_METADATA.get(
+                "author-emails"
+            ),
+            "description": config.MODEL_METADATA.get("summary"),
+            "license": config.MODEL_METADATA.get("license"),
+            "version": config.MODEL_METADATA.get("version"),
+            
+         
+        }
 
     return metadata
 
