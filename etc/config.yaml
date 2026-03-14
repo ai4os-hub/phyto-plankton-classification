@@ -1,8 +1,8 @@
 # Configuration file for the image classification application
 #
-# Date: September 2018
-# Author: Ignacio Heredia
-# Email: iheredia@ifca.unican.es
+# Date: September 2025
+# Author: Ignacio Heredia & Wout Decrop
+# Email: iheredia@ifca.unican.es 
 # Github: ignacioheredia
 #
 # References
@@ -174,31 +174,38 @@ training:
   use_class_weights:
     value: False
     type: "bool"
+    choices: [true, false]
     help: >
-          Whether to use or not class_weights for the loss function computation. It's sometimes useful when the dataset
-          classes are very imbalanced although it can make training more unstable.
+          Whether to use class weights for the loss function computation. 
+          This is sometimes useful when dataset classes are very imbalanced,
+          although it can make training more unstable.
+
 
   use_validation:
     value: True
     type: "bool"
+    choices: [true, false]
     help: >
           Whether to use or not validation. If True you have to provide a `val.txt` file in the `splits` directory.
 
   use_test:
     value: True
     type: "bool"
+    choices: [true, false]
     help: >
           Whether to use or not test. If True you have to provide a `test.txt` file in the `splits` directory.
           
   use_early_stopping:
     value: False
     type: "bool"
+    choices: [true, false]
     help: >
           Whether to use or not early stopping. If True you have to provide a `val.txt` file in the `splits` directory.
 
   use_multiprocessing:
     value: False
     type: "bool"
+    choices: [true, false]
     help: >
           Whether to use or not multiple workers to do preprocess data (ie. do data augmentation)
           faster during training. Disable it if your computing resources are scarce. Sometimes
@@ -213,12 +220,14 @@ monitor:
   use_tensorboard:
     value: False
     type: "bool"
+    choices: [true, false]
     help: >
           Use tensorboard to visualize the relevant metrics during the training process.
 
   use_remote:
     value: False
     type: "bool"
+    choices: [true, false]
     help: >
           Forward the logs through a defined port if executing in a remote machine.
 
@@ -232,6 +241,7 @@ augmentation:
   use_augmentation: 
     value: False
     type: "bool"
+    choices: [true, false]
     help: >
           Use image augmentation during the training process.
 
@@ -300,13 +310,6 @@ augmentation:
 
 
 testing:
-  # predict_this:
-  #   value: "no"
-  #   type: "str"
-  #   choices: ['yes', 'no']
-  #   help: >
-  #         Predict the images in this folder: /srv/phyto-plankton-classification/data/predict_these.
-
   timestamp:
     value: 
     type: "str"
@@ -325,16 +328,3 @@ testing:
     help: >
       Location where to save the predictions. If empty, will save in mother folder of file_location folder.
       
-  # file_location-bool:
-  #   value: False
-  #   type: "bool"
-  #   help: >
-  #         Use image augmentation during the training process.
-          
-      
-
-  # file_location:
-  #   value: 
-  #   type: "str"
-  #   help: >
-  #     Select the folder of the images you want to classify. For example: /storage/.../images_to_be_predicted -> "/srv/phyto-plankton-classification/data/demo-images/Actinoptychus"

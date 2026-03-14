@@ -37,24 +37,59 @@ from aiohttp.web import HTTPException
 from planktonclas import warnings_config
 warnings_config.configure_warnings()
 
-import numpy as np
-import pkg_resources
-import requests
-import tensorflow as tf
-from deepaas.model.v2.wrapper import UploadedFile
-from tensorflow.keras import backend as K
-from tensorflow.keras.models import load_model
-from webargs import fields
-import logging
+class LoadingBar:
+    def __init__(self, message="Loading"):
+        self.message = message
+        self.loading = False
+        self.thread = None
+
+    def animate(self):
+        spinner_chars = ['|', '/', '-', '\\']
+        idx = 0
+        while self.loading:
+            sys.stdout.write(f'\r{self.message} {spinner_chars[idx]}')
+            sys.stdout.flush()
+            idx = (idx + 1) % len(spinner_chars)
+            time.sleep(0.1)
+            
+    def start(self):
+        self.loading = True
+        self.thread = threading.Thread(target=self.animate)
+        self.thread.daemon = True
+        self.thread.start()
+
+    def stop(self):
+        self.loading = False
+        if self.thread:
+            self.thread.join()
+        sys.stdout.write('\r' + ' ' * (len(self.message) + 10) + '\r')
+        sys.stdout.flush()
 
 
-from planktonclas import config, paths, test_utils, utils, model_utils
-from planktonclas.data_utils import (
-    load_aphia_ids,
-    load_class_info,
-    load_class_names,
-)
-from planktonclas.train_runfile import train_fn
+_import_loader = LoadingBar("Initializing Phytoplankton Classifier...")
+_import_loader.start()
+
+try:
+    import numpy as np
+    import pkg_resources
+    import requests
+    import tensorflow as tf
+    from deepaas.model.v2.wrapper import UploadedFile
+    from tensorflow.keras import backend as K
+    from tensorflow.keras.models import load_model
+    from webargs import fields
+    import logging
+
+
+    from planktonclas import config, paths, test_utils, utils, model_utils
+    from planktonclas.data_utils import (
+        load_aphia_ids,
+        load_class_info,
+        load_class_names,
+    )
+    from planktonclas.train_runfile import train_fn
+finally:
+    _import_loader.stop()
 
 
 
@@ -84,35 +119,6 @@ allowed_extensions = set(
     ["png", "jpg", "jpeg", "PNG", "JPG", "JPEG"]
 )  # allow only certain file extensions
 top_K = 5  # number of top classes predictions to return
-
-
-class LoadingBar:
-    def __init__(self, message="Loading"):
-        self.message = message
-        self.loading = False
-        self.thread = None
-
-    def animate(self):
-        spinner_chars = ['|', '/', '-', '\\']
-        idx = 0
-        while self.loading:
-            sys.stdout.write(f'\r{self.message} {spinner_chars[idx]}')
-            sys.stdout.flush()
-            idx = (idx + 1) % len(spinner_chars)
-            time.sleep(0.1)
-            
-    def start(self):
-        self.loading = True
-        self.thread = threading.Thread(target=self.animate)
-        self.thread.daemon = True
-        self.thread.start()
-
-    def stop(self):
-        self.loading = False
-        if self.thread:
-            self.thread.join()
-        sys.stdout.write('\r' + ' ' * (len(self.message) + 10) + '\r')
-        sys.stdout.flush()
 
 
 def display_banner():
