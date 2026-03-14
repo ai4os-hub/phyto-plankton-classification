@@ -1,4 +1,4 @@
-﻿aarc_g002_entitlement==0.1.7
+aarc_g002_entitlement==0.1.7
 absl-py==2.3.1
 aiohappyeyeballs==2.6.1
 aiohttp==3.11.16
@@ -141,7 +141,7 @@ typing-inspection==0.4.2
 typing_extensions==4.15.0
 tzdata==2025.2
 url-normalize==2.2.1
-urllib3==2.5.0
+urllib3==2.6.3
 wcwidth==0.2.14
 webargs==5.5.3
 Werkzeug==3.1.3
