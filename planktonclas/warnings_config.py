@@ -1,0 +1,150 @@
+"""
+Warnings suppression configuration
+
+This module suppresses non-critical warnings from dependencies
+to provide a cleaner, user-friendly experience.
+"""
+
+import os
+import warnings
+import logging
+
+class SuppressFilter(logging.Filter):
+    """Filter to suppress specific log messages."""
+    def filter(self, record):
+        # Suppress HDF5 and Keras format warnings from absl
+        suppress_messages = [
+            'HDF5 file',
+            'native Keras format',
+            'saving your model',
+            'file format is considered legacy'
+        ]
+        for msg in suppress_messages:
+            if msg.lower() in record.getMessage().lower():
+                return False
+        return True
+
+def configure_warnings():
+    """Configure warning filters for cleaner output."""
+    
+    # Set environment variables before importing TensorFlow
+    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # Suppress TF INFO and WARNING messages
+    os.environ['CUDA_TF_LOG_LEVEL'] = 'OFF'
+    os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
+    
+    # Suppress all warnings globally with simplefilter (most aggressive)
+    warnings.simplefilter('ignore')
+    
+    # Generic warning suppression for common categories
+    warnings.filterwarnings('ignore', category=DeprecationWarning)
+    warnings.filterwarnings('ignore', category=FutureWarning)
+    warnings.filterwarnings('ignore', category=PendingDeprecationWarning)
+    warnings.filterwarnings('ignore', category=UserWarning)
+    warnings.filterwarnings('ignore', category=RuntimeWarning)
+    warnings.filterwarnings('ignore', category=SyntaxWarning)
+    warnings.filterwarnings('ignore', category=ResourceWarning)
+    
+    # Specific module suppressions
+    warnings.filterwarnings('ignore', module='setuptools.*')
+    warnings.filterwarnings('ignore', module='distutils.*')
+    warnings.filterwarnings('ignore', module='pkg_resources.*')
+    warnings.filterwarnings('ignore', module='pyparsing.*')
+    warnings.filterwarnings('ignore', module='marshmallow.*')
+    warnings.filterwarnings('ignore', module='apispec.*')
+    warnings.filterwarnings('ignore', module='matplotlib.*')
+    warnings.filterwarnings('ignore', module='keras.*')
+    warnings.filterwarnings('ignore', module='tensorflow.*')
+    warnings.filterwarnings('ignore', module='absl.*')
+    
+    # Specific message suppressions
+    warnings.filterwarnings('ignore', message='.*pkg_resources is deprecated.*')
+    warnings.filterwarnings('ignore', message='.*Implementing implicit namespace packages.*')
+    warnings.filterwarnings('ignore', message='.*saving your model as an HDF5 file.*')
+    warnings.filterwarnings('ignore', message='.*You are saving your model.*')
+    warnings.filterwarnings('ignore', message='.*np.object.*')
+    warnings.filterwarnings('ignore', message=".*'missing' attribute.*")
+    warnings.filterwarnings('ignore', message='.*You are saving your model.*')
+    warnings.filterwarnings('ignore', message='.*oneDNN custom operations.*')
+    warnings.filterwarnings('ignore', message='.*deprecated.*oneOf.*')
+    warnings.filterwarnings('ignore', message='.*parseString.*')
+    warnings.filterwarnings('ignore', message='.*enablePackrat.*')
+    warnings.filterwarnings('ignore', message='.*training configuration.*')
+    warnings.filterwarnings('ignore', message='.*No training configuration.*')
+    warnings.filterwarnings('ignore', message='.*HDF5 file.*')
+    warnings.filterwarnings('ignore', message='.*native Keras format.*')
+    
+    # Configure logging levels for all known loggers
+    for logger_name in [
+        'tensorflow',
+        'keras',
+        'absl',
+        'PIL',
+        'matplotlib',
+        'h5py',
+        'flatbuffers',
+        'numpy',
+        'asyncio',
+        'urllib3',
+        'urllib3.connectionpool',
+        'protobuf'
+    ]:
+        logger = logging.getLogger(logger_name)
+        logger.setLevel(logging.ERROR)
+        # Remove existing handlers and add a null handler
+        logger.handlers = []
+        logger.addHandler(logging.NullHandler())
+        # Add suppression filter
+        logger.addFilter(SuppressFilter())
+        # Prevent propagation to root logger
+        logger.propagate = False
+    
+    # Set root logger to ERROR
+    root_logger = logging.getLogger()
+    root_logger.setLevel(logging.ERROR)
+    
+    # Remove all existing handlers from root logger
+    for handler in root_logger.handlers[:]:
+        root_logger.removeHandler(handler)
+    
+    # Add a null handler to root logger
+    root_logger.addHandler(logging.NullHandler())
+    
+    # Add suppression filter to root logger
+    root_logger.addFilter(SuppressFilter())
+    
+    # Configure TensorFlow logging
+    try:
+        import tensorflow as tf
+        tf.get_logger().setLevel('ERROR')
+        tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
+    except:
+        pass
+    
+    # Configure application-level logging to show errors and exceptions
+    # This needs to happen AFTER library logger suppression
+    _configure_app_logging()
+
+
+def _configure_app_logging():
+    """Configure logging for the application itself (not libraries)."""
+    # Set up console handler for application loggers
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(logging.DEBUG)
+    
+    # Format with timestamp and level
+    formatter = logging.Formatter(
+        '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S'
+    )
+    console_handler.setFormatter(formatter)
+    
+    # Configure planktonclas loggers to show everything
+    for logger_name in ['planktonclas', 'planktonclas.api', 'planktonclas.train_runfile', 
+                       'planktonclas.model_utils', 'planktonclas.data_utils', 'planktonclas.utils']:
+        app_logger = logging.getLogger(logger_name)
+        app_logger.setLevel(logging.DEBUG)
+        app_logger.propagate = False  # Prevent propagation to root
+        # Clear existing handlers
+        app_logger.handlers = []
+        # Add console handler
+        app_logger.addHandler(console_handler)

@@ -10,6 +10,7 @@ Github: ignacioheredia
 import os
 import shutil
 import subprocess
+import logging
 from distutils.dir_util import copy_tree
 from multiprocessing import Process
 
@@ -20,25 +21,23 @@ from tensorflow.keras import callbacks
 from planktonclas import paths
 from planktonclas.optimizers import customAdam, customAdamW, customSGD
 
+# Configure logger
+logger = logging.getLogger(__name__)
+
 
 def create_dir_tree():
     """
     Create directory tree structure
     """
     dirs = paths.get_dirs()
+    created_dirs = []
     for d in dirs.values():
         if not os.path.isdir(d):
-            print("creating {}".format(d))
             os.makedirs(d)
-
-
-def remove_empty_dirs():
-    basedir = paths.get_base_dir()
-    dirs = os.listdir(basedir)
-    for d in dirs:
-        d_path = os.path.join(basedir, d)
-        if not os.listdir(d_path):
-            os.rmdir(d_path)
+            created_dirs.append(d)
+    
+    if created_dirs:
+        logger.info("▌ Created %d dataset directories", len(created_dirs))
 
 
 def backup_splits():
@@ -77,7 +76,7 @@ class LR_scheduler(callbacks.LearningRateScheduler):
         current_lr = K.eval(self.model.optimizer.learning_rate)
         if epoch in self.epoch_milestones:
             new_lr = current_lr * self.lr_decay
-            print("Decaying the learning rate to {}".format(new_lr))
+            logger.info("▌ Learning rate decayed to: %.2e", new_lr)
         else:
             new_lr = current_lr
         return new_lr
