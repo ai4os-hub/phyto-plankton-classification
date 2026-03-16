@@ -2,9 +2,10 @@
 Miscellaneous functions manage paths.
 
 Date: September 2018
-Author: Ignacio Heredia
-Email: iheredia@ifca.unican.es
-Github: ignacioheredia
+Original Author: Ignacio Heredia (CSIC)
+Maintainer: Wout Decrop (VLIZ)
+Contact: wout.decrop@vliz.be
+Github: woutdecrop / lifewatch
 """
 
 import os.path

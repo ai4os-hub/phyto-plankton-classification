@@ -1,4 +1,4 @@
-Phytoplankon classifier: PI10
+Phytoplankon classifier: ZooScan
 =========================================
 
 **Authors:** [Wout Decrop](https://github.com/woutdecrop) *(VLIZ)*, Jonas Mortelmans *(VLIZ)*, and [Ignacio Heredia](https://github.com/IgnacioHeredia)  
@@ -96,13 +96,5 @@ python train_runfile.py
 ```
 The new model will be saved under [phyto-plankton-classification/models](/models)
 
-# 2. Predict PI10
 
-Run [VLIZ-Pi-10_processing](/PI10/VLIZ-Pi-10_processing.py)
-More info here [readme.md](/PI10/readme.md)
-
-## Acknowledgements
-
-If you consider this project to be useful, please consider citing the DEEP Hybrid DataCloud project:
-
-> García, Álvaro López, et al. [A Cloud-Based Framework for Machine Learning Workloads and Applications.](https://ieeexplore.ieee.org/abstract/document/8950411/authors) IEEE Access 8 (2020): 18681-18692. 
+#

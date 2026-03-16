@@ -1,9 +1,10 @@
 # Configuration file for the image classification application
 #
 # Date: September 2018
-# Author: Ignacio Heredia
-# Email: iheredia@ifca.unican.es
-# Github: ignacioheredia
+# Original Author: Ignacio Heredia (CSIC)
+# Maintainer: Wout Decrop (VLIZ)
+# Contact: wout.decrop@vliz.be
+# Github: woutdecrop / lifewatch
 #
 # References
 # ----------
@@ -25,9 +26,12 @@ general:
           If path is relative it will be appended to the package path.
 
   images_directory:
-    value: "Z:/Max/LearningSet/ZOOSCAN_training_15-02-2026"
+    value: "./data/images"
+    #"/storage/Imagine_UC5/data/images_mini_version"
+    type: "str"
     help: >
-          Base directory for images. If the path is relative, it will be appended to the package path. "D:/USERS/wout.decrop/environments/PI10/phyto-plankton-classification/data/VLIZlearning-anasimyia","//fs/shared/onderzoek/6. Marine Observation Center/Projects/IMAGINE/UC5/data/training/images_exist"
+          Base directory for images. If the path is relative, it will be appended to the package path.
+
 
 #####################################################
 #  Options to customize the model
@@ -39,7 +43,7 @@ model:
       value: "EfficientNetV2B0"
       type: "str"
       choices: ["DenseNet121", "DenseNet169", "DenseNet201", "InceptionResNetV2", "InceptionV3", "MobileNet",
-               "NASNetMobile", "Xception", "ResNet50", "VGG16", "VGG19", "EfficientNetV2B0"]
+               "NASNetMobile", "Xception", "ResNet50", "VGG16", "VGG19", "EfficientNetV2B0", "Phytoplankton_EfficientNetV2B0"]
       help: >
             Model to train.
             A performance/size comparison can be found in: https://github.com/keras-team/keras-applications.
@@ -73,24 +77,25 @@ model:
 
 dataset:
   mean_RGB:
-    value:
+    value: 
     type: "list"
     help: >
           Mean RGB value of the image dataset. If not provided it will be automatically computed before the training
           starts. Computing it can be quite time consuming, so it is useful to provide it if one if wishing to try
           different training configurations with the same dataset.
-          Example: [158.33844060679408, 158.33844060679408, 158.33844060679408]? [170.79749673643784, 170.79749673643784, 170.79749673643784]
+          Example: [158.33844060679408, 158.33844060679408, 158.33844060679408]
 
-  std_RGB:
-    value:
+  std_RGB: 
+    value: 
     type: "list"
     help: >
           Standard deviation of the RGB value of the image dataset. It is actually not needed for training.
-          Example: [48.89589490647217, 48.89589490647217, 48.89589490647217]  [26.618377229938194, 26.618377229938194, 26.618377229938194]
+          Example: [48.89589490647217, 48.89589490647217, 48.89589490647217]
 
-  split_ratios:
+  split_ratios: 
     value: [0.8, 0.1, 0.1]
     type: "list"
+    item_type: float
     help: >
           Split the dataset in [training, validation, test]
 
@@ -125,7 +130,7 @@ training:
           your batchsize so that the model still fits in the GPU.
 
   epochs:
-    value: 35
+    value: 15
     type: "int"
     range: [0, None]
     help: >
@@ -154,7 +159,7 @@ training:
           Amount to decay the lr. Only relevant if lr_schedule_mode is set to 'step'
 
   lr_step_schedule:
-    value: [0.2, 0.5]
+    value: [0.7, 0.9]
     type: "list"
     item_type: float
     help: >
@@ -170,6 +175,7 @@ training:
   use_class_weights:
     value: False
     type: "bool"
+    choices: [true, false]
     help: >
           Whether to use or not class_weights for the loss function computation. It's sometimes useful when the dataset
           classes are very imbalanced although it can make training more unstable.
@@ -177,30 +183,28 @@ training:
   use_validation:
     value: True
     type: "bool"
+    choices: [true, false]
     help: >
           Whether to use or not validation. If True you have to provide a `val.txt` file in the `splits` directory.
 
   use_test:
     value: True
     type: "bool"
+    choices: [true, false]
     help: >
           Whether to use or not test. If True you have to provide a `test.txt` file in the `splits` directory.
-
+          
   use_early_stopping:
     value: False
     type: "bool"
+    choices: [true, false]
     help: >
           Whether to use or not early stopping. If True you have to provide a `val.txt` file in the `splits` directory.
-
-  early_stopping_patience_min:
-    value: 15
-    type: "int"
-    help: >
-          Minimum number of epochs without validation improvement before stopping. The effective patience is computed as max(early_stopping_patience_min, int(0.1 * epochs)) to avoid stopping too early for short training runs.
 
   use_multiprocessing:
     value: False
     type: "bool"
+    choices: [true, false]
     help: >
           Whether to use or not multiple workers to do preprocess data (ie. do data augmentation)
           faster during training. Disable it if your computing resources are scarce. Sometimes
@@ -215,14 +219,17 @@ monitor:
   use_tensorboard:
     value: False
     type: "bool"
+    choices: [true, false]
     help: >
           Use tensorboard to visualize the relevant metrics during the training process.
 
   use_remote:
     value: False
     type: "bool"
+    choices: [true, false]
     help: >
           Forward the logs through a defined port if executing in a remote machine.
+
 
 
 #####################################################
@@ -281,13 +288,6 @@ augmentation:
 
 
 testing:
-  # predict_this:
-  #   value: "no"
-  #   type: "str"
-  #   choices: ['yes', 'no']
-  #   help: >
-  #         Predict the images in this folder: /srv/phyto-plankton-classification/data/predict_these.
-
   timestamp:
     value: 
     type: "str"
@@ -305,17 +305,4 @@ testing:
     type: "str"
     help: >
       Location where to save the predictions. If empty, will save in mother folder of file_location folder.
-      
-  # file_location-bool:
-  #   value: False
-  #   type: "bool"
-  #   help: >
-  #         Use image augmentation during the training process.
-          
-      
-
-  # file_location:
-  #   value: 
-  #   type: "str"
-  #   help: >
-  #     Select the folder of the images you want to classify. For example: /storage/.../images_to_be_predicted -> "/srv/phyto-plankton-classification/data/demo-images/Actinoptychus"
+   

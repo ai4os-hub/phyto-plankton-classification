@@ -2,12 +2,14 @@
 Miscellaneous functions manage data.
 
 Date: April 2025
-Author: Ignacio Heredia (Updated for Albumentations 2.0)
-Email: iheredia@ifca.unican.es
-Github: ignacioheredia
+Original Author: Ignacio Heredia (CSIC)
+Updated and maintained by: Wout Decrop (VLIZ)
+Contact: wout.decrop@vliz.be
+Github: woutdecrop / lifewatch
 """
 
 import base64
+import logging
 import os
 import queue
 import random
@@ -16,6 +18,10 @@ import threading
 import warnings
 from multiprocessing import Pool
 
+# Configure warnings early
+from planktonclas import warnings_config
+warnings_config.configure_warnings()
+
 import albumentations as A
 import cv2
 import numpy as np
@@ -23,26 +29,26 @@ import requests
 from tensorflow.keras.utils import Sequence, to_categorical
 from tqdm import tqdm
 
+# Configure logger
+logger = logging.getLogger(__name__)
 
-def create_data_splits(
-    splits_dir, im_dir, split_ratios=[0.7, 0.15, 0.15]
-):
+
+def create_data_splits(splits_dir, im_dir, split_ratios=[0.7, 0.15, 0.15]):
     train_txt_file = os.path.join(splits_dir, "train.txt")
     test_txt_file = os.path.join(splits_dir, "test.txt")
     val_txt_file = os.path.join(splits_dir, "val.txt")
     class_txt_file = os.path.join(splits_dir, "classes.txt")
     file_paths = []
 
+    logger.info("[data] Scanning images in %s", im_dir.replace("\\", "/").split("/")[-3:])
     for root, _, files in tqdm(
-        os.walk(im_dir), desc="Searching files"
+        os.walk(im_dir), desc="Scanning folders", unit="folder"
     ):
-        for file in tqdm(files, desc=f"Processing {root}"):
-            if file.endswith(".db"):
-                continue  # skip .db files
-            if file.endswith(".DS_Store"):
-                continue  # skip .db files
+        for file in files:
             file_path = os.path.join(root, file)
             relative_path = os.path.relpath(file_path, im_dir)
+            if file.endswith((".db", ".DS_Store")):
+                continue
             file_paths.append(relative_path)
 
     # Get a list of folder names within the "im_dir" directory
@@ -58,60 +64,55 @@ def create_data_splits(
     folder_counts = {folder_name: 0 for folder_name in folder_names}
     for file_path in file_paths:
         # Assuming UNIX-like path separator
-        folder_name = file_path.split("/")[0].split("\\")[0]
+        file_path = file_path.replace("\\", "/")
+        folder_name = file_path.split("/")[0]
+        # folder_name = folder_name.replace("\\", "/")
         if folder_name in folder_counts:
             folder_counts[folder_name] += 1
 
     # Initialize lists to keep track of files added to each split for each
     # folder
-    train_files_by_folder = {
-        folder_name: [] for folder_name in folder_names
-    }
-    test_files_by_folder = {
-        folder_name: [] for folder_name in folder_names
-    }
-    val_files_by_folder = {
-        folder_name: [] for folder_name in folder_names
-    }
+    train_files_by_folder = {folder_name: [] for folder_name in folder_names}
+    test_files_by_folder = {folder_name: [] for folder_name in folder_names}
+    val_files_by_folder = {folder_name: [] for folder_name in folder_names}
 
     # Split the files into training, testing, and validation sets
     for folder_name in folder_names:
         folder_files = [
-            file_path
-            for file_path in file_paths
-            if file_path.startswith(folder_name + "/")
-               or file_path.startswith(folder_name + "\\")
+            file_path for file_path in file_paths
+            if file_path.startswith(folder_name+ "/") or file_path.startswith(folder_name + "\\")
         ]
         random.shuffle(folder_files)
         num_files = len(folder_files)
         train_cutoff = int(num_files * split_ratios[0])
         test_cutoff = train_cutoff + int(num_files * split_ratios[1])
 
-        train_files_by_folder[folder_name] = folder_files[
-            :train_cutoff
-        ]
+        train_files_by_folder[folder_name] = folder_files[:train_cutoff]
         test_files_by_folder[folder_name] = folder_files[
-            train_cutoff:test_cutoff
-        ]
+            train_cutoff:test_cutoff]
         val_files_by_folder[folder_name] = folder_files[test_cutoff:]
-
+    
     # Combine files from each folder into overall train, test, and validation
     # sets
     train_files = [
-        file
-        for folder_files in train_files_by_folder.values()
+        file for folder_files in train_files_by_folder.values()
         for file in folder_files
     ]
     test_files = [
-        file
-        for folder_files in test_files_by_folder.values()
+        file for folder_files in test_files_by_folder.values()
         for file in folder_files
     ]
     val_files = [
-        file
-        for folder_files in val_files_by_folder.values()
+        file for folder_files in val_files_by_folder.values()
         for file in folder_files
     ]
+
+    logger.info(
+        "[data] Split counts | train: %s | val: %s | test: %s",
+        len(train_files),
+        len(val_files),
+        len(test_files),
+    )
 
     # Write the file paths to text files for training, testing, and validation
     write_text_file(train_files, train_txt_file, folder_numbers)
@@ -120,24 +121,18 @@ def create_data_splits(
 
     # Write the class names to a text file
     with open(class_txt_file, "w") as f_class:
-        for label in tqdm(
-            folder_numbers, desc="Writing classes file"
-        ):
+        for label in tqdm(folder_numbers, desc="Writing classes", unit="class"):
             f_class.write(str(label) + "\n")
 
 
 def write_text_file(file_list, file_path, folder_numbers):
     with open(file_path, "w") as f:
-        for file in tqdm(file_list, desc=f"Writing {file_path}"):
-            file = file.replace(
-                "\\", "/"
-            )  # Assuming UNIX-like path separator
-            f.write(
-                file
-                + " "
-                + str(folder_numbers[file.split("/")[0]])
-                + "\n"
-            )
+        for file in tqdm(
+            file_list, desc=f"Writing {os.path.basename(file_path)}", unit="file"
+        ):
+            file = file.replace("\\", "/")  # Assuming UNIX-like path separator
+            f.write(file + " " + str(folder_numbers[file.split("/")[0]]) +
+                    "\n")
 
 
 def load_data_splits(splits_dir, im_dir, split_name="train"):
@@ -163,11 +158,10 @@ def load_data_splits(splits_dir, im_dir, split_name="train"):
     if "{}.txt".format(split_name) not in os.listdir(splits_dir):
         raise ValueError(
             "Invalid value for the split_name parameter: there is no `{}.txt` file in the `{}` "
-            "directory.".format(split_name, splits_dir)
-        )
+            "directory.".format(split_name, splits_dir))
 
     # Loading splits
-    print("Loading {} data...".format(split_name))
+    logger.info("[data] Loading %s split", split_name)
     split = np.genfromtxt(
         os.path.join(splits_dir, "{}.txt".format(split_name)),
         dtype="str",
@@ -184,22 +178,6 @@ def load_data_splits(splits_dir, im_dir, split_name="train"):
     return X, y
 
 
-def mount_nextcloud(frompath, topath):
-    """
-    Mount a NextCloud folder in your local machine or viceversa.
-    """
-    command = ["rclone", "copy", frompath, topath]
-    result = subprocess.Popen(
-        command, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-    )
-    output, error = result.communicate()
-    if error:
-        warnings.warn(
-            "Error while mounting NextCloud: {}".format(error)
-        )
-    return output, error
-
-
 def load_class_names(splits_dir):
     """
     Load list of class names
@@ -208,7 +186,7 @@ def load_class_names(splits_dir):
     -------
     Numpy array of shape (N) containing strs with class names
     """
-    # print("Loading class names...")
+    logger.info("[data] Loading class names")
     class_names = np.genfromtxt(
         os.path.join(splits_dir, "classes.txt"),
         dtype="str",
@@ -225,7 +203,7 @@ def load_aphia_ids(splits_dir):
     -------
     Numpy array of shape (N) containing strs with class names
     """
-    print("Loading aphia_ids...")
+    logger.info("[data] Loading aphia IDs")
     try:
         aphia_ids = np.genfromtxt(
             os.path.join(splits_dir, "aphia_ids.txt"),
@@ -246,7 +224,7 @@ def load_class_info(splits_dir):
     -------
     Numpy array of shape (N) containing strs with class names
     """
-    print("Loading class info...")
+    logger.info("[data] Loading class info")
     class_info = np.genfromtxt(
         os.path.join(splits_dir, "info.txt"),
         dtype="str",
@@ -275,16 +253,12 @@ def load_image(filename, filemode="local"):
         image = cv2.imread(filename, cv2.IMREAD_COLOR)
         if image is None:
             raise ValueError(
-                "The local path does not exist or does not correspond to an image: \n {}".format(
-                    filename
-                )
-            )
+                "The local path does not exist or does not correspond to an image: \n {}"
+                .format(filename))
 
     elif filemode == "url":
         try:
-            if filename.startswith(
-                "data:image"
-            ):  # base64 encoded string
+            if filename.startswith("data:image"):  # base64 encoded string
                 data = base64.b64decode(filename.split(";base64,")[1])
             else:  # normal url
                 data = requests.get(filename, timeout=10).content
@@ -293,9 +267,7 @@ def load_image(filename, filemode="local"):
             if image is None:
                 raise Exception
         except BaseException:
-            raise ValueError(
-                "Incorrect url path: \n {}".format(filename)
-            )
+            raise ValueError("Incorrect url path: \n {}".format(filename))
 
     else:
         raise ValueError("Invalid value for filemode.")
@@ -306,9 +278,11 @@ def load_image(filename, filemode="local"):
     return image
 
 
-def preprocess_batch(
-    batch, mean_RGB, std_RGB, mode="tf", channels_first=False
-):
+def preprocess_batch(batch,
+                     mean_RGB,
+                     std_RGB,
+                     mode="tf",
+                     channels_first=False):
     """
     Standardize batch to feed the net. Adapted from [1] to take replace the default imagenet mean and std.
     [1] https://github.com/keras-team/keras-applications/blob/master/keras_applications/imagenet_utils.py
@@ -327,9 +301,7 @@ def preprocess_batch(
     """
 
     mean_RGB, std_RGB = np.array(mean_RGB), np.array(std_RGB)
-    batch = (
-        np.array(batch) - mean_RGB[None, None, None, :]
-    )  # mean centering
+    batch = np.array(batch) - mean_RGB[None, None, None, :]  # mean centering
 
     if mode == "caffe":
         batch = batch[:, :, :, ::-1]  # switch from RGB to BGR
@@ -400,16 +372,12 @@ def augment(im, params=None):
     # Add random stretching
     if params["stretch"]:
         transform_list.append(
-            A.PerspectiveTransform(
-                scale=(0.05, 0.1), p=params["stretch"]
-            )
-        )
+            A.PerspectiveTransform(scale=(0.05, 0.1), p=params["stretch"]))
 
     # Add random rotation
     if params["rot"]:
         transform_list.append(
-            A.Rotate(limit=params["rot_lim"], p=params["rot"])
-        )
+            A.Rotate(limit=params["rot_lim"], p=params["rot"]))
 
     # Add horizontal flip
     if params["h_flip"]:
@@ -429,8 +397,7 @@ def augment(im, params=None):
                     A.Blur(blur_limit=7, p=1.0),
                 ],
                 p=params["blur"],
-            )
-        )
+            ))
 
     # Add pixel noise
     if params["pixel_noise"]:
@@ -440,24 +407,17 @@ def augment(im, params=None):
                     A.CLAHE(clip_limit=2, p=1.0),
                     A.Sharpen(p=1.0),
                     A.Emboss(p=1.0),
-                    A.RandomBrightnessContrast(
-                        contrast_limit=0, p=1.0
-                    ),
-                    A.RandomBrightnessContrast(
-                        brightness_limit=0, p=1.0
-                    ),
+                    A.RandomBrightnessContrast(contrast_limit=0, p=1.0),
+                    A.RandomBrightnessContrast(brightness_limit=0, p=1.0),
                     A.RGBShift(p=1.0),
                     A.RandomGamma(p=1.0),
                 ],
                 p=params["pixel_noise"],
-            )
-        )
+            ))
 
     # Add pixel saturation
     if params["pixel_sat"]:
-        transform_list.append(
-            A.HueSaturationValue(p=params["pixel_sat"])
-        )
+        transform_list.append(A.HueSaturationValue(p=params["pixel_sat"]))
 
     # Remove randomly remove some regions from the image
     if params["cutout"]:
@@ -469,13 +429,12 @@ def augment(im, params=None):
         scale = np.random.uniform(scale_low, scale_high)
         transform_list.append(
             A.CoarseDropout(
-                num_holes_range=(8, 8), 
-                hole_height_range=(int(scale * ly), int(scale * ly)), 
-                hole_width_range=(int(scale * lx), int(scale * lx)),  
-                fill=0, 
+                num_holes_range=(8, 8),
+                hole_height_range=(int(scale * ly), int(scale * ly)),
+                hole_width_range=(int(scale * lx), int(scale * lx)),
+                fill=0,
                 p=params["cutout"],
-            )
-        )
+            ))
 
     # Compose all image transformations and augment the image
     augmentation_fn = A.Compose(transform_list)
@@ -524,10 +483,8 @@ def data_generator(
     if shuffle:
         np.random.shuffle(idxs)
 
-    for start_idx in range(
-        0, len(inputs) - batch_size + 1, batch_size
-    ):
-        excerpt = idxs[start_idx : start_idx + batch_size]
+    for start_idx in range(0, len(inputs) - batch_size + 1, batch_size):
+        excerpt = idxs[start_idx:start_idx + batch_size]
         batch_X = []
         for i in excerpt:
             im = load_image(inputs[i], filemode="local")
@@ -540,9 +497,7 @@ def data_generator(
             std_RGB=std_RGB,
             mode=preprocess_mode,
         )
-        batch_y = to_categorical(
-            targets[excerpt], num_classes=num_classes
-        )
+        batch_y = to_categorical(targets[excerpt], num_classes=num_classes)
 
         yield batch_X, batch_y
 
@@ -565,6 +520,7 @@ def buffered_generator(source_gen, buffer_size=10):
         raise RuntimeError("Minimal buffer size is 2!")
 
     buffer = queue.Queue(maxsize=buffer_size - 1)
+
     # the effective buffer size is one less, because the generation process
     # will generate one extra element and block until there is room in the
     # buffer.
@@ -574,9 +530,8 @@ def buffered_generator(source_gen, buffer_size=10):
             buffer.put(data, block=True)
         buffer.put(None)  # sentinel: signal the end of the iterator
 
-    thread = threading.Thread(
-        target=_buffered_generation_thread, args=(source_gen, buffer)
-    )
+    thread = threading.Thread(target=_buffered_generation_thread,
+                              args=(source_gen, buffer))
     thread.daemon = True
     thread.start()
 
@@ -623,9 +578,8 @@ class data_sequence(Sequence):
         return int(np.ceil(len(self.inputs) / float(self.batch_size)))
 
     def __getitem__(self, idx):
-        batch_idxs = self.indexes[
-            idx * self.batch_size : (idx + 1) * self.batch_size
-        ]
+        batch_idxs = self.indexes[idx * self.batch_size:(idx + 1) *
+                                  self.batch_size]
         batch_X = []
         tmp_idxs = []
         for i in batch_idxs:
@@ -636,9 +590,7 @@ class data_sequence(Sequence):
                 continue
             if self.aug_params:
                 im = augment(im, params=self.aug_params)
-            im = resize_im(
-                im, height=self.im_size, width=self.im_size
-            )
+            im = resize_im(im, height=self.im_size, width=self.im_size)
             batch_X.append(im)  # shape (N, 224, 224, 3)
             tmp_idxs.append(i)
         batch_X = preprocess_batch(
@@ -647,9 +599,8 @@ class data_sequence(Sequence):
             std_RGB=self.std_RGB,
             mode=self.preprocess_mode,
         )
-        batch_y = to_categorical(
-            self.targets[tmp_idxs], num_classes=self.num_classes
-        )
+        batch_y = to_categorical(self.targets[tmp_idxs],
+                                 num_classes=self.num_classes)
         return batch_X, batch_y
 
     def on_epoch_end(self):
@@ -682,38 +633,24 @@ def standard_tencrop_batch(im, crop_prop=0.9):
     crop_size = int(crop_prop * min_side)
 
     # Crops
-    c1 = A.Crop(x_min=0, y_min=0, x_max=crop_size, y_max=crop_size)(
-        image=im
-    )[
-        "image"
-    ]  # top-left
+    c1 = A.Crop(x_min=0, y_min=0, x_max=crop_size,
+                y_max=crop_size)(image=im)["image"]  # top-left
 
-    c2 = A.Crop(
-        x_min=0, y_min=h - crop_size, x_max=crop_size, y_max=h
-    )(image=im)[
-        "image"
-    ]  # bottom-left
+    c2 = A.Crop(x_min=0, y_min=h - crop_size, x_max=crop_size,
+                y_max=h)(image=im)["image"]  # bottom-left
 
-    c3 = A.Crop(
-        x_min=w - crop_size, y_min=0, x_max=w, y_max=crop_size
-    )(image=im)[
-        "image"
-    ]  # top-right
+    c3 = A.Crop(x_min=w - crop_size, y_min=0, x_max=w,
+                y_max=crop_size)(image=im)["image"]  # top-right
 
-    c4 = A.Crop(
-        x_min=w - crop_size, y_min=h - crop_size, x_max=w, y_max=h
-    )(image=im)[
-        "image"
-    ]  # bottom-right
+    c4 = A.Crop(x_min=w - crop_size, y_min=h - crop_size, x_max=w,
+                y_max=h)(image=im)["image"]  # bottom-right
 
     c5 = A.Crop(
         x_min=np.round((w - crop_size) / 2).astype(int),
         y_min=np.round((h - crop_size) / 2).astype(int),
         x_max=np.round((w + crop_size) / 2).astype(int),
         y_max=np.round((h + crop_size) / 2).astype(int),
-    )(image=im)[
-        "image"
-    ]  # center
+    )(image=im)["image"]  # center
 
     # Save crop and its mirror
     lr_aug = A.HorizontalFlip(p=1)
@@ -779,9 +716,9 @@ class k_crop_data_sequence(Sequence):
                     im_aug = augment(im, params=self.aug_params)
                 else:
                     im_aug = np.copy(im)
-                im_aug = resize_im(
-                    im_aug, height=self.im_size, width=self.im_size
-                )
+                im_aug = resize_im(im_aug,
+                                   height=self.im_size,
+                                   width=self.im_size)
                 batch_X.append(im_aug)  # shape (N, 224, 224, 3)
 
         if self.crop_mode == "standard":
@@ -833,15 +770,14 @@ def compute_meanRGB(im_list, verbose=False, workers=4):
                 p.imap(im_stats, im_list),
                 total=len(im_list),
                 disable=verbose,
-            )
-        )
+            ))
 
     r = np.asarray(r)
     mean, std = r[:, 0], r[:, 1]
     mean, std = np.mean(mean, axis=0), np.mean(std, axis=0)
 
-    print("Mean RGB pixel: {}".format(mean.tolist()))
-    print("Standard deviation of RGB pixel: {}".format(std.tolist()))
+    logger.info("[data] Mean RGB pixel: %s", mean.tolist())
+    logger.info("[data] RGB standard deviation: %s", std.tolist())
 
     return mean.tolist(), std.tolist()
 
@@ -891,10 +827,7 @@ def compute_classweights(labels, max_dim=None, mode="balanced"):
         weights = np.log(weights)  # + 1
     else:
         raise ValueError(
-            '{} is not a valid option for parameter "mode"'.format(
-                mode
-            )
-        )
+            '{} is not a valid option for parameter "mode"'.format(mode))
 
     return weights.astype(np.float32)
 
@@ -914,3 +847,4 @@ def json_friendly(d):
                 v = np.array(v).tolist()
         new_d[k] = v
     return new_d
+
