@@ -14,6 +14,7 @@ import os
 import queue
 import random
 import subprocess
+import sys
 import threading
 import warnings
 from multiprocessing import Pool
@@ -26,11 +27,14 @@ import albumentations as A
 import cv2
 import numpy as np
 import requests
-from tensorflow.keras.utils import Sequence, to_categorical
 from tqdm import tqdm
+from tensorflow.keras.utils import Sequence, to_categorical
+from planktonclas import utils
 
 # Configure logger
 logger = logging.getLogger(__name__)
+
+
 def create_data_splits(splits_dir, im_dir, split_ratios=[0.7, 0.15, 0.15]):
     train_txt_file = os.path.join(splits_dir, "train.txt")
     test_txt_file = os.path.join(splits_dir, "test.txt")
@@ -38,12 +42,8 @@ def create_data_splits(splits_dir, im_dir, split_ratios=[0.7, 0.15, 0.15]):
     class_txt_file = os.path.join(splits_dir, "classes.txt")
     file_paths = []
 
-    # for root, _, files in tqdm(os.walk(im_dir), desc="Searching files"):
-        # for file in tqdm(files, desc=f"Processing {root}"):
     logger.info("[data] Scanning images in %s", im_dir.replace("\\", "/").split("/")[-3:])
-    for root, _, files in tqdm(
-        os.walk(im_dir), desc="Scanning folders", unit="folder"
-    ):
+    for root, _, files in os.walk(im_dir):
         for file in files:
             file_path = os.path.join(root, file)
             relative_path = os.path.relpath(file_path, im_dir)
@@ -121,15 +121,19 @@ def create_data_splits(splits_dir, im_dir, split_ratios=[0.7, 0.15, 0.15]):
 
     # Write the class names to a text file
     with open(class_txt_file, "w") as f_class:
-        for label in tqdm(folder_numbers, desc="Writing classes", unit="class"):
+        logger.info("[data] Writing %s class names", len(folder_numbers))
+        for label in folder_numbers:
             f_class.write(str(label) + "\n")
 
 
 def write_text_file(file_list, file_path, folder_numbers):
+    logger.info(
+        "[data] Writing %s entries to %s",
+        len(file_list),
+        os.path.basename(file_path),
+    )
     with open(file_path, "w") as f:
-        for file in tqdm(
-            file_list, desc=f"Writing {os.path.basename(file_path)}", unit="file"
-        ):
+        for file in file_list:
             file = file.replace("\\", "/")  # Assuming UNIX-like path separator
             f.write(file + " " + str(folder_numbers[file.split("/")[0]]) +
                     "\n")
@@ -665,22 +669,27 @@ def compute_meanRGB(im_list, verbose=False, workers=4):
     im_list : array of strings
         Array where the first column is image_path (or image_url). Shape (N,).
     verbose : bool
-        Show progress bar
+        Show progress bar.
     workers: int
         Numbers of parallel workers to perform the computation with.
 
-    References
-    ----------
-    https://stackoverflow.com/questions/41920124/multiprocessing-use-tqdm-to-display-a-progress-bar
     """
 
-    with Pool(workers) as p:
-        r = list(
-            tqdm(
-                p.imap(im_stats, im_list),
-                total=len(im_list),
-                disable=verbose,
-            ))
+    total = len(im_list)
+    logger.info("[data] Computing RGB statistics for %s images", total)
+    with utils.prefixed_stdout("planktonclas.data_utils", "[data]"):
+        with Pool(workers) as p:
+            r = list(
+                tqdm(
+                    p.imap(im_stats, im_list),
+                    total=total,
+                    disable=verbose,
+                    file=sys.stdout,
+                    dynamic_ncols=True,
+                    desc="Computing RGB statistics",
+                    unit="img",
+                )
+            )
 
     r = np.asarray(r)
     mean, std = r[:, 0], r[:, 1]

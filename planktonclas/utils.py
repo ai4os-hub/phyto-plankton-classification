@@ -13,7 +13,10 @@ import os
 import shutil
 import subprocess
 import logging
+import sys
 import time
+from contextlib import contextmanager
+from datetime import datetime
 from distutils.dir_util import copy_tree
 from multiprocessing import Process
 
@@ -39,6 +42,10 @@ def create_dir_tree():
         if not os.path.isdir(d):
             os.makedirs(d)
             created_dirs.append(d)
+
+    if created_dirs:
+        logger.info("[utils] Created %d dataset directories", len(created_dirs))
+        return
     
     if created_dirs:
         logger.info("▌ Created %d dataset directories", len(created_dirs))
@@ -49,6 +56,54 @@ def create_dir_tree():
 
     if created_dirs:
         logger.info("[utils] Created %d dataset directories", len(created_dirs))
+
+
+def progress_prefix(logger_name, tag):
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    return f"{timestamp} - {logger_name} - INFO - {tag} "
+
+
+class PrefixedProgressStream:
+    """Prefix stdout progress-bar lines so tqdm/Keras output aligns with logs."""
+
+    def __init__(self, logger_name, tag, stream):
+        self.logger_name = logger_name
+        self.tag = tag
+        self.stream = stream
+        self.at_line_start = True
+
+    def write(self, text):
+        if not text:
+            return 0
+
+        pieces = []
+        for char in text:
+            if self.at_line_start and char not in ("\n", "\r"):
+                pieces.append(progress_prefix(self.logger_name, self.tag))
+                self.at_line_start = False
+            pieces.append(char)
+            if char in ("\n", "\r"):
+                self.at_line_start = True
+
+        rendered = "".join(pieces)
+        self.stream.write(rendered)
+        return len(text)
+
+    def flush(self):
+        self.stream.flush()
+
+    def isatty(self):
+        return self.stream.isatty()
+
+
+@contextmanager
+def prefixed_stdout(logger_name, tag):
+    original_stdout = sys.stdout
+    try:
+        sys.stdout = PrefixedProgressStream(logger_name, tag, original_stdout)
+        yield sys.stdout
+    finally:
+        sys.stdout = original_stdout
 
 
 def backup_splits():
@@ -277,7 +332,7 @@ def get_callbacks(CONF, use_lr_decay=True):
                     paths.get_checkpoints_dir(),
                     "epoch-{epoch:02d}.hdf5",
                 ),
-                verbose=1,
+                verbose=0,
                 period=max(
                     1,
                     int(CONF["training"]["ckpt_freq"] *

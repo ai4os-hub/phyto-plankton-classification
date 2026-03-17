@@ -164,6 +164,13 @@ def _configure_app_logging():
         # Add console handler
         app_logger.addHandler(console_handler)
 
+    # Keep epoch metrics out of the console; they are written to file handlers only.
+    epoch_logger = logging.getLogger(EPOCH_LOGGER)
+    epoch_logger.setLevel(logging.DEBUG)
+    epoch_logger.propagate = False
+    epoch_logger.handlers.clear()
+    epoch_logger.addHandler(logging.NullHandler())
+
 
 def attach_file_handler(log_path, logger_names=None):
     """Attach a shared file handler to application loggers."""
