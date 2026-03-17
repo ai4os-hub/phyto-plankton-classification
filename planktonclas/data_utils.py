@@ -2,9 +2,10 @@
 Miscellaneous functions manage data.
 
 Date: April 2025
-Author: Ignacio Heredia (Updated for Albumentations 2.0)
-Email: iheredia@ifca.unican.es
-Github: ignacioheredia
+Original Author: Ignacio Heredia (CSIC)
+Updated and maintained by: Wout Decrop (VLIZ)
+Contact: wout.decrop@vliz.be
+Github: woutdecrop / lifewatch
 """
 
 import base64
@@ -39,8 +40,15 @@ def create_data_splits(splits_dir, im_dir, split_ratios=[0.7, 0.15, 0.15]):
 
     for root, _, files in tqdm(os.walk(im_dir), desc="Searching files"):
         for file in tqdm(files, desc=f"Processing {root}"):
+    logger.info("[data] Scanning images in %s", im_dir.replace("\\", "/").split("/")[-3:])
+    for root, _, files in tqdm(
+        os.walk(im_dir), desc="Scanning folders", unit="folder"
+    ):
+        for file in files:
             file_path = os.path.join(root, file)
             relative_path = os.path.relpath(file_path, im_dir)
+            if file.endswith((".db", ".DS_Store")):
+                continue
             file_paths.append(relative_path)
 
     # Get a list of folder names within the "im_dir" directory
@@ -56,7 +64,9 @@ def create_data_splits(splits_dir, im_dir, split_ratios=[0.7, 0.15, 0.15]):
     folder_counts = {folder_name: 0 for folder_name in folder_names}
     for file_path in file_paths:
         # Assuming UNIX-like path separator
+        file_path = file_path.replace("\\", "/")
         folder_name = file_path.split("/")[0]
+        # folder_name = folder_name.replace("\\", "/")
         if folder_name in folder_counts:
             folder_counts[folder_name] += 1
 
@@ -70,7 +80,7 @@ def create_data_splits(splits_dir, im_dir, split_ratios=[0.7, 0.15, 0.15]):
     for folder_name in folder_names:
         folder_files = [
             file_path for file_path in file_paths
-            if file_path.startswith(folder_name + "/")
+            if file_path.startswith(folder_name+ "/") or file_path.startswith(folder_name + "\\")
         ]
         random.shuffle(folder_files)
         num_files = len(folder_files)
@@ -81,7 +91,7 @@ def create_data_splits(splits_dir, im_dir, split_ratios=[0.7, 0.15, 0.15]):
         test_files_by_folder[folder_name] = folder_files[
             train_cutoff:test_cutoff]
         val_files_by_folder[folder_name] = folder_files[test_cutoff:]
-
+    
     # Combine files from each folder into overall train, test, and validation
     # sets
     train_files = [
@@ -97,6 +107,13 @@ def create_data_splits(splits_dir, im_dir, split_ratios=[0.7, 0.15, 0.15]):
         for file in folder_files
     ]
 
+    logger.info(
+        "[data] Split counts | train: %s | val: %s | test: %s",
+        len(train_files),
+        len(val_files),
+        len(test_files),
+    )
+
     # Write the file paths to text files for training, testing, and validation
     write_text_file(train_files, train_txt_file, folder_numbers)
     write_text_file(test_files, test_txt_file, folder_numbers)
@@ -104,13 +121,15 @@ def create_data_splits(splits_dir, im_dir, split_ratios=[0.7, 0.15, 0.15]):
 
     # Write the class names to a text file
     with open(class_txt_file, "w") as f_class:
-        for label in tqdm(folder_numbers, desc="Writing classes file"):
+        for label in tqdm(folder_numbers, desc="Writing classes", unit="class"):
             f_class.write(str(label) + "\n")
 
 
 def write_text_file(file_list, file_path, folder_numbers):
     with open(file_path, "w") as f:
-        for file in tqdm(file_list, desc=f"Writing {file_path}"):
+        for file in tqdm(
+            file_list, desc=f"Writing {os.path.basename(file_path)}", unit="file"
+        ):
             file = file.replace("\\", "/")  # Assuming UNIX-like path separator
             f.write(file + " " + str(folder_numbers[file.split("/")[0]]) +
                     "\n")
@@ -142,7 +161,7 @@ def load_data_splits(splits_dir, im_dir, split_name="train"):
             "directory.".format(split_name, splits_dir))
 
     # Loading splits
-    logger.info("▌ Loading %s data...", split_name)
+    logger.info("[data] Loading %s split", split_name)
     split = np.genfromtxt(
         os.path.join(splits_dir, "{}.txt".format(split_name)),
         dtype="str",
@@ -167,7 +186,7 @@ def load_class_names(splits_dir):
     -------
     Numpy array of shape (N) containing strs with class names
     """
-    logger.info("▌ Loading class names...")
+    logger.info("[data] Loading class names")
     class_names = np.genfromtxt(
         os.path.join(splits_dir, "classes.txt"),
         dtype="str",
@@ -184,7 +203,7 @@ def load_aphia_ids(splits_dir):
     -------
     Numpy array of shape (N) containing strs with class names
     """
-    logger.info("▌ Loading aphia_ids...")
+    logger.info("[data] Loading aphia IDs")
     try:
         aphia_ids = np.genfromtxt(
             os.path.join(splits_dir, "aphia_ids.txt"),
@@ -205,7 +224,7 @@ def load_class_info(splits_dir):
     -------
     Numpy array of shape (N) containing strs with class names
     """
-    logger.info("▌ Loading class info...")
+    logger.info("[data] Loading class info")
     class_info = np.genfromtxt(
         os.path.join(splits_dir, "info.txt"),
         dtype="str",
@@ -667,8 +686,8 @@ def compute_meanRGB(im_list, verbose=False, workers=4):
     mean, std = r[:, 0], r[:, 1]
     mean, std = np.mean(mean, axis=0), np.mean(std, axis=0)
 
-    logger.info("✓ Mean RGB pixel: %s", mean.tolist())
-    logger.info("✓ Standard deviation of RGB pixel: %s", std.tolist())
+    logger.info("[data] Mean RGB pixel: %s", mean.tolist())
+    logger.info("[data] RGB standard deviation: %s", std.tolist())
 
     return mean.tolist(), std.tolist()
 

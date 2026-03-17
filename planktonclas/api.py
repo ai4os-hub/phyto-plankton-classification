@@ -2,9 +2,10 @@
 API for the image classification package
 
 Date: September 2018
-Author: Ignacio Heredia
-Email: iheredia@ifca.unican.es
-Github: ignacioheredia
+Original Author: Ignacio Heredia (CSIC)
+Maintainer: Wout Decrop (VLIZ)
+Contact: wout.decrop@vliz.be
+Github: woutdecrop / lifewatch
 
 Notes: Based on https://github.com/indigo-dc/plant-classification-theano/blob/package/plant_classification/api.py
 

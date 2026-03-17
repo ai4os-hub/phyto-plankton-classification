@@ -2,9 +2,10 @@
 Miscellanous functions to handle models.
 
 Date: September 2018
-Author: Ignacio Heredia
-Email: iheredia@ifca.unican.es
-Github: ignacioheredia
+Original Author: Ignacio Heredia (CSIC)
+Maintainer: Wout Decrop (VLIZ)
+Contact: wout.decrop@vliz.be
+Github: woutdecrop / lifewatch
 """
 
 import json
@@ -153,6 +154,4 @@ def save_conf(conf):
                 key, g_key, str(g_val)))
         txt_file.write("-" * 75 + "\n")
     txt_file.close()
-
-
 

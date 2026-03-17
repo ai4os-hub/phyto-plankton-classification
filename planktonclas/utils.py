@@ -2,15 +2,18 @@
 Miscellaneous utils
 
 Date: September 2018
-Author: Ignacio Heredia
-Email: iheredia@ifca.unican.es
-Github: ignacioheredia
+Original Author: Ignacio Heredia (CSIC)
+Maintainer: Wout Decrop (VLIZ)
+Contact: wout.decrop@vliz.be
+Github: woutdecrop / lifewatch
 """
 
+import logging
 import os
 import shutil
 import subprocess
 import logging
+import time
 from distutils.dir_util import copy_tree
 from multiprocessing import Process
 
@@ -23,6 +26,7 @@ from planktonclas.optimizers import customAdam, customAdamW, customSGD
 
 # Configure logger
 logger = logging.getLogger(__name__)
+epoch_logger = logging.getLogger("planktonclas.epoch_metrics")
 
 
 def create_dir_tree():
@@ -38,6 +42,13 @@ def create_dir_tree():
     
     if created_dirs:
         logger.info("▌ Created %d dataset directories", len(created_dirs))
+    for directory in dirs.values():
+        if not os.path.isdir(directory):
+            os.makedirs(directory)
+            created_dirs.append(directory)
+
+    if created_dirs:
+        logger.info("[utils] Created %d dataset directories", len(created_dirs))
 
 
 def backup_splits():
@@ -77,6 +88,7 @@ class LR_scheduler(callbacks.LearningRateScheduler):
         if epoch in self.epoch_milestones:
             new_lr = current_lr * self.lr_decay
             logger.info("▌ Learning rate decayed to: %.2e", new_lr)
+            logger.info("[train] Learning rate decayed to: %.2e", new_lr)
         else:
             new_lr = current_lr
         return new_lr
@@ -91,15 +103,71 @@ class LRHistory(callbacks.Callback):
     https://stackoverflow.com/questions/49127214/keras-how-to-output-learning-rate-onto-tensorboard
     """
 
-    def __init__(self):  # add other arguments to __init__ if needed
+    def __init__(self):
         super().__init__()
 
     def on_epoch_end(self, epoch, logs=None):
-        logs.update({
-            "lr":
-            K.eval(self.model.optimizer.learning_rate).astype(np.float64)
-        })
+        logs.update(
+            {"lr": K.eval(self.model.optimizer.learning_rate).astype(np.float64)}
+        )
         super().on_epoch_end(epoch, logs)
+
+
+class EpochMetricsLogger(callbacks.Callback):
+    """Write a concise epoch summary to the application log."""
+
+    def __init__(self):
+        super().__init__()
+        self.epoch_start_time = None
+        self.best_monitor_name = None
+        self.best_monitor_value = None
+
+    def on_train_begin(self, logs=None):
+        logger.info("[train] Epoch metrics will be written to training.log and epoch_metrics.csv.")
+
+    def on_epoch_begin(self, epoch, logs=None):
+        self.epoch_start_time = time.time()
+
+    def on_epoch_end(self, epoch, logs=None):
+        logs = logs or {}
+        duration_s = None
+        if self.epoch_start_time is not None:
+            duration_s = time.time() - self.epoch_start_time
+
+        monitor_name = "val_accuracy" if "val_accuracy" in logs else "accuracy"
+        monitor_value = logs.get(monitor_name)
+        if monitor_value is not None and (
+            self.best_monitor_value is None or monitor_value > self.best_monitor_value
+        ):
+            self.best_monitor_name = monitor_name
+            self.best_monitor_value = monitor_value
+
+        metric_parts = [f"epoch {epoch + 1:03d}"]
+        for key in [
+            "loss",
+            "accuracy",
+            "val_loss",
+            "val_accuracy",
+            "lr",
+        ]:
+            value = logs.get(key)
+            if value is not None:
+                metric_parts.append(f"{key}={value:.5f}")
+        if duration_s is not None:
+            metric_parts.append(f"time={duration_s:.1f}s")
+        if self.best_monitor_name is not None:
+            metric_parts.append(
+                f"best_{self.best_monitor_name}={self.best_monitor_value:.5f}"
+            )
+        epoch_logger.info("[epoch] %s", " | ".join(metric_parts))
+
+    def on_train_end(self, logs=None):
+        if self.best_monitor_name is not None:
+            epoch_logger.info(
+                "[train] Best %s: %.5f",
+                self.best_monitor_name,
+                self.best_monitor_value,
+            )
 
 
 def launch_tensorboard(port, logdir, host="0.0.0.0"):  # nosec
@@ -134,14 +202,21 @@ def get_callbacks(CONF, use_lr_decay=True):
     """
     calls = []
 
-    # Add mandatory callbacks
     calls.append(callbacks.TerminateOnNaN())
     calls.append(LRHistory())
+    calls.append(EpochMetricsLogger())
+    calls.append(
+        callbacks.CSVLogger(
+            os.path.join(paths.get_logs_dir(), "epoch_metrics.csv"),
+            separator=",",
+            append=False,
+        )
+    )
 
-    # Add optional callbacks
     if use_lr_decay:
-        milestones = (np.array(CONF["training"]["lr_step_schedule"]) *
-                      CONF["training"]["epochs"])
+        milestones = (
+            np.array(CONF["training"]["lr_step_schedule"]) * CONF["training"]["epochs"]
+        )
         milestones = milestones.astype(np.int64)
         calls.append(
             LR_scheduler(
@@ -150,7 +225,6 @@ def get_callbacks(CONF, use_lr_decay=True):
             ))
 
     if CONF["monitor"]["use_tensorboard"]:
-        # https://github.com/tensorflow/tensorboard/issues/2084#issuecomment-483395808
         calls.append(
             callbacks.TensorBoard(
                 log_dir=paths.get_logs_dir(),
@@ -158,7 +232,6 @@ def get_callbacks(CONF, use_lr_decay=True):
                 profile_batch=0,
             ))
 
-        # # Let the user launch Tensorboard
         print(
             "Monitor your training in Tensorboard by executing the "
             "following comand on your console:"
@@ -170,7 +243,7 @@ def get_callbacks(CONF, use_lr_decay=True):
         port = os.getenv("monitorPORT", 6006)
         port = int(port) if len(str(port)) >= 4 else 6006
 
-        # Only try to kill existing TensorBoard on Linux/macOS
+
         try:
             if os.name != "nt":
                 fuser_path = shutil.which("fuser")
@@ -178,12 +251,13 @@ def get_callbacks(CONF, use_lr_decay=True):
                     subprocess.run([fuser_path, "-k", f"{port}/tcp"])
         except Exception as e:
             print(f"Warning: Could not kill existing TensorBoard on port {port}. {e}")
-        p = Process(
+
+        process = Process(
             target=launch_tensorboard,
             args=(port, paths.get_logs_dir()),
             daemon=True,
         )
-        p.start()
+        process.start()
 
 
 

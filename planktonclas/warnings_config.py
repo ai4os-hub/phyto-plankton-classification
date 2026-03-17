@@ -9,6 +9,17 @@ import os
 import warnings
 import logging
 
+
+APP_LOGGERS = [
+    "planktonclas",
+    "planktonclas.api",
+    "planktonclas.train_runfile",
+    "planktonclas.model_utils",
+    "planktonclas.data_utils",
+    "planktonclas.utils",
+]
+EPOCH_LOGGER = "planktonclas.epoch_metrics"
+
 class SuppressFilter(logging.Filter):
     """Filter to suppress specific log messages."""
     def filter(self, record):
@@ -31,6 +42,7 @@ def configure_warnings():
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # Suppress TF INFO and WARNING messages
     os.environ['CUDA_TF_LOG_LEVEL'] = 'OFF'
     os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
+    os.environ.setdefault('TQDM_DISABLE', '0')
     
     # Suppress all warnings globally with simplefilter (most aggressive)
     warnings.simplefilter('ignore')
@@ -92,6 +104,7 @@ def configure_warnings():
         logger.setLevel(logging.ERROR)
         # Remove existing handlers and add a null handler
         logger.handlers = []
+        logger.handlers.clear()
         logger.addHandler(logging.NullHandler())
         # Add suppression filter
         logger.addFilter(SuppressFilter())
@@ -111,6 +124,7 @@ def configure_warnings():
     
     # Add suppression filter to root logger
     root_logger.addFilter(SuppressFilter())
+    
     
     # Configure TensorFlow logging
     try:
@@ -141,12 +155,42 @@ def _configure_app_logging():
     console_handler.setFormatter(formatter)
     
     # Configure planktonclas loggers to show everything
-    for logger_name in ['planktonclas', 'planktonclas.api', 'planktonclas.train_runfile', 
-                       'planktonclas.model_utils', 'planktonclas.data_utils', 'planktonclas.utils']:
+    for logger_name in APP_LOGGERS:
         app_logger = logging.getLogger(logger_name)
         app_logger.setLevel(logging.DEBUG)
         app_logger.propagate = False  # Prevent propagation to root
         # Clear existing handlers
-        app_logger.handlers = []
+        app_logger.handlers.clear()
         # Add console handler
         app_logger.addHandler(console_handler)
+
+
+def attach_file_handler(log_path, logger_names=None):
+    """Attach a shared file handler to application loggers."""
+    os.makedirs(os.path.dirname(log_path), exist_ok=True)
+    logger_names = logger_names or (APP_LOGGERS + [EPOCH_LOGGER])
+
+    formatter = logging.Formatter(
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
+
+    for logger_name in logger_names:
+        app_logger = logging.getLogger(logger_name)
+        existing_handler = next(
+            (
+                handler
+                for handler in app_logger.handlers
+                if isinstance(handler, logging.FileHandler)
+                and getattr(handler, "baseFilename", None)
+                == os.path.abspath(log_path)
+            ),
+            None,
+        )
+        if existing_handler is not None:
+            continue
+
+        file_handler = logging.FileHandler(log_path, mode="a", encoding="utf-8")
+        file_handler.setLevel(logging.DEBUG)
+        file_handler.setFormatter(formatter)
+        app_logger.addHandler(file_handler)
