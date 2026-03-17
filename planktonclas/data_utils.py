@@ -38,8 +38,8 @@ def create_data_splits(splits_dir, im_dir, split_ratios=[0.7, 0.15, 0.15]):
     class_txt_file = os.path.join(splits_dir, "classes.txt")
     file_paths = []
 
-    for root, _, files in tqdm(os.walk(im_dir), desc="Searching files"):
-        for file in tqdm(files, desc=f"Processing {root}"):
+    # for root, _, files in tqdm(os.walk(im_dir), desc="Searching files"):
+        # for file in tqdm(files, desc=f"Processing {root}"):
     logger.info("[data] Scanning images in %s", im_dir.replace("\\", "/").split("/")[-3:])
     for root, _, files in tqdm(
         os.walk(im_dir), desc="Scanning folders", unit="folder"
