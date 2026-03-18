@@ -2,26 +2,37 @@
 Miscellaneous functions manage data.
 
 Date: April 2025
-Author: Ignacio Heredia (Updated for Albumentations 2.0)
-Email: iheredia@ifca.unican.es
-Github: ignacioheredia
+Original Author: Ignacio Heredia (CSIC)
+Updated and maintained by: Wout Decrop (VLIZ)
+Contact: wout.decrop@vliz.be
+Github: woutdecrop / lifewatch
 """
 
 import base64
+import logging
 import os
 import queue
 import random
 import subprocess
+import sys
 import threading
 import warnings
 from multiprocessing import Pool
+
+# Configure warnings early
+from planktonclas import warnings_config
+warnings_config.configure_warnings()
 
 import albumentations as A
 import cv2
 import numpy as np
 import requests
-from tensorflow.keras.utils import Sequence, to_categorical
 from tqdm import tqdm
+from tensorflow.keras.utils import Sequence, to_categorical
+from planktonclas import utils
+
+# Configure logger
+logger = logging.getLogger(__name__)
 
 
 def create_data_splits(splits_dir, im_dir, split_ratios=[0.7, 0.15, 0.15]):
@@ -31,10 +42,13 @@ def create_data_splits(splits_dir, im_dir, split_ratios=[0.7, 0.15, 0.15]):
     class_txt_file = os.path.join(splits_dir, "classes.txt")
     file_paths = []
 
-    for root, _, files in tqdm(os.walk(im_dir), desc="Searching files"):
-        for file in tqdm(files, desc=f"Processing {root}"):
+    logger.info("[data] Scanning images in %s", im_dir.replace("\\", "/").split("/")[-3:])
+    for root, _, files in os.walk(im_dir):
+        for file in files:
             file_path = os.path.join(root, file)
             relative_path = os.path.relpath(file_path, im_dir)
+            if file.endswith((".db", ".DS_Store")):
+                continue
             file_paths.append(relative_path)
 
     # Get a list of folder names within the "im_dir" directory
@@ -50,7 +64,9 @@ def create_data_splits(splits_dir, im_dir, split_ratios=[0.7, 0.15, 0.15]):
     folder_counts = {folder_name: 0 for folder_name in folder_names}
     for file_path in file_paths:
         # Assuming UNIX-like path separator
+        file_path = file_path.replace("\\", "/")
         folder_name = file_path.split("/")[0]
+        # folder_name = folder_name.replace("\\", "/")
         if folder_name in folder_counts:
             folder_counts[folder_name] += 1
 
@@ -64,7 +80,7 @@ def create_data_splits(splits_dir, im_dir, split_ratios=[0.7, 0.15, 0.15]):
     for folder_name in folder_names:
         folder_files = [
             file_path for file_path in file_paths
-            if file_path.startswith(folder_name + "/")
+            if file_path.startswith(folder_name+ "/") or file_path.startswith(folder_name + "\\")
         ]
         random.shuffle(folder_files)
         num_files = len(folder_files)
@@ -75,7 +91,7 @@ def create_data_splits(splits_dir, im_dir, split_ratios=[0.7, 0.15, 0.15]):
         test_files_by_folder[folder_name] = folder_files[
             train_cutoff:test_cutoff]
         val_files_by_folder[folder_name] = folder_files[test_cutoff:]
-
+    
     # Combine files from each folder into overall train, test, and validation
     # sets
     train_files = [
@@ -91,6 +107,13 @@ def create_data_splits(splits_dir, im_dir, split_ratios=[0.7, 0.15, 0.15]):
         for file in folder_files
     ]
 
+    logger.info(
+        "[data] Split counts | train: %s | val: %s | test: %s",
+        len(train_files),
+        len(val_files),
+        len(test_files),
+    )
+
     # Write the file paths to text files for training, testing, and validation
     write_text_file(train_files, train_txt_file, folder_numbers)
     write_text_file(test_files, test_txt_file, folder_numbers)
@@ -98,13 +121,19 @@ def create_data_splits(splits_dir, im_dir, split_ratios=[0.7, 0.15, 0.15]):
 
     # Write the class names to a text file
     with open(class_txt_file, "w") as f_class:
-        for label in tqdm(folder_numbers, desc="Writing classes file"):
+        logger.info("[data] Writing %s class names", len(folder_numbers))
+        for label in folder_numbers:
             f_class.write(str(label) + "\n")
 
 
 def write_text_file(file_list, file_path, folder_numbers):
+    logger.info(
+        "[data] Writing %s entries to %s",
+        len(file_list),
+        os.path.basename(file_path),
+    )
     with open(file_path, "w") as f:
-        for file in tqdm(file_list, desc=f"Writing {file_path}"):
+        for file in file_list:
             file = file.replace("\\", "/")  # Assuming UNIX-like path separator
             f.write(file + " " + str(folder_numbers[file.split("/")[0]]) +
                     "\n")
@@ -136,7 +165,7 @@ def load_data_splits(splits_dir, im_dir, split_name="train"):
             "directory.".format(split_name, splits_dir))
 
     # Loading splits
-    print("Loading {} data...".format(split_name))
+    logger.info("[data] Loading %s split", split_name)
     split = np.genfromtxt(
         os.path.join(splits_dir, "{}.txt".format(split_name)),
         dtype="str",
@@ -153,20 +182,6 @@ def load_data_splits(splits_dir, im_dir, split_name="train"):
     return X, y
 
 
-def mount_nextcloud(frompath, topath):
-    """
-    Mount a NextCloud folder in your local machine or viceversa.
-    """
-    command = ["rclone", "copy", frompath, topath]
-    result = subprocess.Popen(command,
-                              stdout=subprocess.PIPE,
-                              stderr=subprocess.PIPE)
-    output, error = result.communicate()
-    if error:
-        warnings.warn("Error while mounting NextCloud: {}".format(error))
-    return output, error
-
-
 def load_class_names(splits_dir):
     """
     Load list of class names
@@ -175,7 +190,7 @@ def load_class_names(splits_dir):
     -------
     Numpy array of shape (N) containing strs with class names
     """
-    print("Loading class names...")
+    logger.info("[data] Loading class names")
     class_names = np.genfromtxt(
         os.path.join(splits_dir, "classes.txt"),
         dtype="str",
@@ -192,7 +207,7 @@ def load_aphia_ids(splits_dir):
     -------
     Numpy array of shape (N) containing strs with class names
     """
-    print("Loading aphia_ids...")
+    logger.info("[data] Loading aphia IDs")
     try:
         aphia_ids = np.genfromtxt(
             os.path.join(splits_dir, "aphia_ids.txt"),
@@ -213,7 +228,7 @@ def load_class_info(splits_dir):
     -------
     Numpy array of shape (N) containing strs with class names
     """
-    print("Loading class info...")
+    logger.info("[data] Loading class info")
     class_info = np.genfromtxt(
         os.path.join(splits_dir, "info.txt"),
         dtype="str",
@@ -437,96 +452,6 @@ def resize_im(im, height, width):
     return resize_fn(image=im)["image"]
 
 
-def data_generator(
-    inputs,
-    targets,
-    batch_size,
-    mean_RGB,
-    std_RGB,
-    preprocess_mode,
-    aug_params,
-    num_classes,
-    im_size=224,
-    shuffle=True,
-):
-    """
-    Generator to feed Keras fit function
-
-    Parameters
-    ----------
-    inputs : Numpy array, shape (N, H, W, C)
-    targets : Numpy array, shape (N)
-    batch_size : int
-    shuffle : bool
-    aug_params : dict
-    im_size : int
-        Final image size to feed the net's input (eg. 224 for Resnet).
-
-    Returns
-    -------
-    Generator of inputs and labels
-    """
-
-    # Create list of indices
-    idxs = np.arange(len(inputs))
-    if shuffle:
-        np.random.shuffle(idxs)
-
-    for start_idx in range(0, len(inputs) - batch_size + 1, batch_size):
-        excerpt = idxs[start_idx:start_idx + batch_size]
-        batch_X = []
-        for i in excerpt:
-            im = load_image(inputs[i], filemode="local")
-            im = augment(im, params=aug_params)
-            im = resize_im(im, height=im_size, width=im_size)
-            batch_X.append(im)  # shape (N, 224, 224, 3)
-        batch_X = preprocess_batch(
-            batch=batch_X,
-            mean_RGB=mean_RGB,
-            std_RGB=std_RGB,
-            mode=preprocess_mode,
-        )
-        batch_y = to_categorical(targets[excerpt], num_classes=num_classes)
-
-        yield batch_X, batch_y
-
-
-def buffered_generator(source_gen, buffer_size=10):
-    """
-    Generator that runs a slow source generator in a separate thread. Beware of the GIL!
-    Author: Benanne (github-kaggle/benanne/ndsb)
-
-    Parameters
-    ----------
-    source_gen : generator
-    buffer_size: the maximal number of items to pre-generate (length of the buffer)
-
-    Returns
-    -------
-    Buffered generator
-    """
-    if buffer_size < 2:
-        raise RuntimeError("Minimal buffer size is 2!")
-
-    buffer = queue.Queue(maxsize=buffer_size - 1)
-
-    # the effective buffer size is one less, because the generation process
-    # will generate one extra element and block until there is room in the
-    # buffer.
-
-    def _buffered_generation_thread(source_gen, buffer):
-        for data in source_gen:
-            buffer.put(data, block=True)
-        buffer.put(None)  # sentinel: signal the end of the iterator
-
-    thread = threading.Thread(target=_buffered_generation_thread,
-                              args=(source_gen, buffer))
-    thread.daemon = True
-    thread.start()
-
-    for data in iter(buffer.get, None):
-        yield data
-
 
 class data_sequence(Sequence):
     """
@@ -744,29 +669,34 @@ def compute_meanRGB(im_list, verbose=False, workers=4):
     im_list : array of strings
         Array where the first column is image_path (or image_url). Shape (N,).
     verbose : bool
-        Show progress bar
+        Show progress bar.
     workers: int
         Numbers of parallel workers to perform the computation with.
 
-    References
-    ----------
-    https://stackoverflow.com/questions/41920124/multiprocessing-use-tqdm-to-display-a-progress-bar
     """
 
-    with Pool(workers) as p:
-        r = list(
-            tqdm(
-                p.imap(im_stats, im_list),
-                total=len(im_list),
-                disable=verbose,
-            ))
+    total = len(im_list)
+    logger.info("[data] Computing RGB statistics for %s images", total)
+    with utils.prefixed_stdout("planktonclas.data_utils", "[data]"):
+        with Pool(workers) as p:
+            r = list(
+                tqdm(
+                    p.imap(im_stats, im_list),
+                    total=total,
+                    disable=verbose,
+                    file=sys.stdout,
+                    dynamic_ncols=True,
+                    desc="Computing RGB statistics",
+                    unit="img",
+                )
+            )
 
     r = np.asarray(r)
     mean, std = r[:, 0], r[:, 1]
     mean, std = np.mean(mean, axis=0), np.mean(std, axis=0)
 
-    print("Mean RGB pixel: {}".format(mean.tolist()))
-    print("Standard deviation of RGB pixel: {}".format(std.tolist()))
+    logger.info("[data] Mean RGB pixel: %s", mean.tolist())
+    logger.info("[data] RGB standard deviation: %s", std.tolist())
 
     return mean.tolist(), std.tolist()
 

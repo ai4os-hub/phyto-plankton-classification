@@ -2,9 +2,10 @@
 Miscellaneous functions to plot.
 
 Date: September 2018
-Author: Ignacio Heredia
-Email: iheredia@ifca.unican.es
-Github: ignacioheredia
+Original Author: Ignacio Heredia (CSIC)
+Maintainer: Wout Decrop (VLIZ)
+Contact: wout.decrop@vliz.be
+Github: woutdecrop / lifewatch
 """
 
 import json
@@ -15,11 +16,6 @@ import numpy as np
 import seaborn
 
 from planktonclas import paths
-
-# def create_pred_path(save_path, *sub_dirs):
-#     pred_path = save_path or os.path.join(paths.get_timestamped_dir(), *sub_dirs)
-#     os.makedirs(pred_path, exist_ok=True)
-#     return pred_path
 
 
 def create_pred_path(save_path, dir="", weighted=False, **kwargs):

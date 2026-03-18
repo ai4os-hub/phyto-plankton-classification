@@ -14,7 +14,7 @@ print("start")
 endpoint = "https://inference-walton.cloud.imagine-ai.eu/run/phyto-plankton-classification"
 token = "************************************************"
 
-image_path = Path(r"C:\Users\wout.decrop\Documents\environments\phytoplankton_classifier\phyto-plankton-classification\oscar\plankton.jpg")
+image_path = Path(r"plankton.jpg")
 out_dir = Path("oscar_response")
 out_dir.mkdir(parents=True, exist_ok=True)
 
