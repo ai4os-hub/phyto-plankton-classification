@@ -270,6 +270,19 @@ def load_inference_model(timestamp=None, ckpt_name=None):
         conf = json.load(f)
         update_with_saved_conf(conf)
 
+    best_model_name = "best_model.keras"
+    best_model_path = os.path.join(paths.get_checkpoints_dir(), best_model_name)
+    if (
+        conf.get("training", {}).get("use_best_model", False)
+        and ckpt_name == "final_model.h5"
+        and os.path.exists(best_model_path)
+    ):
+        logger.info(
+            "Switching inference checkpoint from final_model.h5 to %s because training.use_best_model=true.",
+            best_model_name,
+        )
+        ckpt_name = best_model_name
+
     logger.info("Loading model weights...")
     loader = LoadingBar("✓ Loading model weights...")
     loader.start()
