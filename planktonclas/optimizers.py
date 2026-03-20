@@ -4,6 +4,9 @@ Custom optimizers to implement lr_mult as in caffe
 Date: April 2025
 Original Author: Ignacio Heredia
 Updated for TensorFlow 2.10
+Maintainer: Wout Decrop (VLIZ)
+Contact: wout.decrop@vliz.be
+Github: woutdecrop / lifewatch
 
 References
 ----------

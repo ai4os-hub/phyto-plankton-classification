@@ -7,21 +7,31 @@ Email: wout.decrop@VLIZ.be
 Github: lifewatch
 
 Description:
-This file contains the commands for training a convolutional net for image classification for phytoplankton.
+This file contains the commands for training a convolutional net for image
+classification for phytoplankton.
 
 Additional notes:
-* On the training routine: Preliminary tests show that using a custom lr multiplier for the lower layers yield to better
-results than freezing them at the beginning and unfreezing them after a few epochs like it is suggested in the Keras
-tutorials.
+* On the training routine: Preliminary tests show that using a custom lr
+  multiplier for the lower layers yield to better results than freezing them at
+  the beginning and unfreezing them after a few epochs like it is suggested in
+  the Keras tutorials.
 """
 
+import io
 import json
 import logging
 import os
+import sys
 import time
 from datetime import datetime
-
+import argparse
 import numpy as np
+
+# Configure warnings before importing TensorFlow/Keras.
+from planktonclas import warnings_config
+
+warnings_config.configure_warnings()
+
 import tensorflow as tf
 
 from planktonclas import config, model_utils, paths, utils
@@ -42,8 +52,12 @@ from planktonclas.optimizers import customAdam
 
 # from planktonclas.api import load_inference_model
 
-# Set Tensorflow verbosity logs
+# Set TensorFlow verbosity logs
 tf.get_logger().setLevel(logging.ERROR)
+
+# Configure logger for training
+logger = logging.getLogger("planktonclas.train_runfile")
+logger.setLevel(logging.INFO)
 
 # Allow GPU memory growth
 gpus = tf.config.experimental.list_physical_devices("GPU")
@@ -52,76 +66,120 @@ if gpus:
         tf.config.experimental.set_memory_growth(gpu, True)
 
 
+def log_section(title):
+    # line = "=" * 70
+    # logger.info(line)
+    logger.info("[train] %s", title)
+    # logger.info(line)
+
+
+def log_step(message, *args):
+    logger.info("[train] " + message, *args)
+
+
+def display_path(path):
+    try:
+        return os.path.relpath(path, os.getcwd()).replace("\\", "/")
+    except ValueError:
+        return path
+
+
+def get_preferred_testing_checkpoint(conf):
+    """Return the checkpoint that should be used for testing/inference outputs."""
+    use_best_model = conf["training"].get("use_best_model", True)
+    use_validation = conf["training"]["use_validation"]
+    best_model_name = "best_model.keras"
+    best_model_path = os.path.join(paths.get_checkpoints_dir(), best_model_name)
+
+    if use_best_model and use_validation and os.path.exists(best_model_path):
+        return best_model_name
+    return "final_model.keras"
+
+
 def train_fn(TIMESTAMP, CONF):
 
     paths.timestamp = TIMESTAMP
     paths.CONF = CONF
 
     utils.create_dir_tree()
+    run_log_path = os.path.join(paths.get_logs_dir(), "training.log")
+    warnings_config.attach_file_handler(run_log_path)
     utils.backup_splits()
+    log_step("Writing run log to: %s", display_path(run_log_path))
 
     if "train.txt" not in os.listdir(paths.get_ts_splits_dir()):
-        if not (CONF["dataset"]["split_ratios"]):
-            if (CONF["training"]["use_validation"]) & (
-                    CONF["training"]["use_test"]):
+        if not CONF["dataset"]["split_ratios"]:
+            if CONF["training"]["use_validation"] & CONF["training"]["use_test"]:
                 split_ratios = [0.8, 0.1, 0.1]
-            elif (CONF["training"]["use_validation"]) & (
-                    ~CONF["training"]["use_test"]):
+            elif CONF["training"]["use_validation"] & ~CONF["training"]["use_test"]:
                 split_ratios = [0.9, 0.1, 0]
             else:
                 split_ratios = [1, 0, 0]
         else:
             split_ratios = CONF["dataset"]["split_ratios"]
+
+        log_section("Preparing dataset splits")
+        log_step("Split ratios: %s", split_ratios)
         create_data_splits(
             splits_dir=paths.get_ts_splits_dir(),
             im_dir=paths.get_images_dir(),
             split_ratios=split_ratios,
         )
-    # Load the training data
+    else:
+        log_section("Using existing dataset splits")
+
+    log_section("Loading training data")
+    log_step("Splits directory: %s", display_path(paths.get_ts_splits_dir()))
+    log_step("Images directory: %s", display_path(paths.get_images_dir()))
     X_train, y_train = load_data_splits(
         splits_dir=paths.get_ts_splits_dir(),
         im_dir=paths.get_images_dir(),
         split_name="train",
     )
 
-    # Load the validation data
-    if (CONF["training"]["use_validation"]) and ("val.txt" in os.listdir(
-            paths.get_ts_splits_dir())):
+    if (
+        CONF["training"]["use_validation"]
+        and "val.txt" in os.listdir(paths.get_ts_splits_dir())
+    ):
         X_val, y_val = load_data_splits(
             splits_dir=paths.get_ts_splits_dir(),
             im_dir=paths.get_images_dir(),
             split_name="val",
         )
     else:
-        print("No validation data.")
+        logger.warning(
+            "[train] No validation split found; continuing without validation."
+        )
         X_val, y_val = None, None
         CONF["training"]["use_validation"] = False
 
-    # Load the class names
     class_names = load_class_names(splits_dir=paths.get_ts_splits_dir())
     aphia_ids = load_aphia_ids(splits_dir=paths.get_ts_splits_dir())
-    # Update the configuration
-    CONF["model"]["preprocess_mode"] = model_utils.model_modes[CONF["model"]
-                                                               ["modelname"]]
-    CONF["training"]["batch_size"] = min(CONF["training"]["batch_size"],
-                                         len(X_train))
+
+    CONF["model"]["preprocess_mode"] = model_utils.model_modes[
+        CONF["model"]["modelname"]
+    ]
+    CONF["training"]["batch_size"] = min(
+        CONF["training"]["batch_size"], len(X_train)
+    )
 
     if CONF["model"]["num_classes"] is None:
         CONF["model"]["num_classes"] = len(class_names)
 
-    # Compute the class weights
     if CONF["training"]["use_class_weights"]:
+        log_section("Computing class weights")
         class_weights = compute_classweights(
             y_train, max_dim=CONF["model"]["num_classes"])
     else:
         class_weights = None
 
-    # Compute the mean and std RGB values
     if CONF["dataset"]["mean_RGB"] is None:
-        CONF["dataset"]["mean_RGB"], CONF["dataset"]["std_RGB"] = (
-            compute_meanRGB(X_train))
+        log_section("Computing dataset statistics")
+        CONF["dataset"]["mean_RGB"], CONF["dataset"]["std_RGB"] = compute_meanRGB(
+            X_train,
+            workers=CONF.get("dataset", {}).get("num_workers", 4)
+        )
 
-    # Create data generator for train and val sets
     train_gen = data_sequence(
         X_train,
         y_train,
@@ -152,20 +210,15 @@ def train_fn(TIMESTAMP, CONF):
         val_gen = None
         val_steps = None
 
-    # Launch the training
     t0 = time.time()
 
-    # Create the model and compile it
+    log_section("Building model")
     model, base_model = model_utils.create_model(CONF)
 
-    # Get a list of the top layer variables that should not be applied a
-    # lr_multiplier
     base_vars = [var.name for var in base_model.trainable_variables]
     all_vars = [var.name for var in model.trainable_variables]
-    top_vars = set(all_vars) - set(base_vars)
-    top_vars = list(top_vars)
+    top_vars = list(set(all_vars) - set(base_vars))
 
-    # Set trainable layers
     if CONF["training"]["mode"] == "fast":
         for layer in base_model.layers:
             layer.trainable = False
@@ -181,21 +234,30 @@ def train_fn(TIMESTAMP, CONF):
         metrics=["accuracy"],
     )
 
-    history = model.fit(
-        x=train_gen,
-        steps_per_epoch=train_steps,
-        epochs=CONF["training"]["epochs"],
-        class_weight=class_weights,
-        validation_data=val_gen,
-        validation_steps=val_steps,
-        callbacks=utils.get_callbacks(CONF),
-        verbose=1,
-        initial_epoch=0,
+    log_section("Starting training")
+    log_step(
+        "Epochs: %s | Batch size: %s | Training samples: %s | Validation samples: %s",
+        CONF["training"]["epochs"],
+        CONF["training"]["batch_size"],
+        len(X_train),
+        0 if X_val is None else len(X_val),
     )
+    with utils.prefixed_stdout("planktonclas.train_runfile", "[train]"):
+        history = model.fit(
+            x=train_gen,
+            steps_per_epoch=train_steps,
+            epochs=CONF["training"]["epochs"],
+            class_weight=class_weights,
+            validation_data=val_gen,
+            validation_steps=val_steps,
+            callbacks=utils.get_callbacks(CONF),
+            verbose=1,
+            initial_epoch=0,
+        )
 
-    # Saving everything
-    print("Saving data to {} folder.".format(paths.get_timestamped_dir()))
-    print("Saving training stats ...")
+    log_section("Training complete")
+    log_step("Saving to: %s", display_path(paths.get_timestamped_dir()))
+    log_step("Saving training statistics")
     stats = {
         "epoch": history.epoch,
         "training time (s)": round(time.time() - t0, 2),
@@ -207,17 +269,42 @@ def train_fn(TIMESTAMP, CONF):
     with open(os.path.join(stats_dir, "stats.json"), "w") as outfile:
         json.dump(stats, outfile, sort_keys=True, indent=4)
 
-    print("Saving the configuration ...")
-    model_utils.save_conf(CONF)
-
-    print("Saving the model to h5...")
+    log_step("Saving model in HDF5 format")
     fpath = os.path.join(paths.get_checkpoints_dir(), "final_model.h5")
-    model.save(fpath, include_optimizer=False)
 
-    print("Finished training")
+    stderr_backup = sys.stderr
+    sys.stderr = io.StringIO()
+    try:
+        model.save(fpath, include_optimizer=False)
+    finally:
+        sys.stderr = stderr_backup
+
+    preferred_ckpt_name = get_preferred_testing_checkpoint(CONF)
+    CONF["testing"]["timestamp"] = TIMESTAMP
+    CONF["testing"]["ckpt_name"] = preferred_ckpt_name
+
+    log_step("Saving configuration")
+    model_utils.save_conf(CONF)
+    log_step("Default testing checkpoint: %s", preferred_ckpt_name)
+
+    logger.info("[train] Training finished successfully.")
 
     if CONF["training"]["use_test"]:
-        print("Start testing")
+        log_section("Evaluating test split")
+        if preferred_ckpt_name != "final_model.h5":
+            preferred_ckpt_path = os.path.join(
+                paths.get_checkpoints_dir(), preferred_ckpt_name
+            )
+            log_step(
+                "Reloading preferred checkpoint for test evaluation: %s",
+                display_path(preferred_ckpt_path),
+            )
+            model = tf.keras.models.load_model(
+                preferred_ckpt_path,
+                custom_objects=utils.get_custom_objects(),
+                compile=False,
+            )
+
         X_test, y_test = load_data_splits(
             splits_dir=paths.get_ts_splits_dir(),
             im_dir=paths.get_images_dir(),
@@ -238,25 +325,24 @@ def train_fn(TIMESTAMP, CONF):
         )
         top_K = 5
 
-        output = model.predict(
-            test_gen,
-            verbose=1,
-            # max_queue_size=10,
-            # workers=16,
-            # use_multiprocessing=CONF["training"]["use_multiprocessing"],
-        )
+        with utils.prefixed_stdout("planktonclas.train_runfile", "[train]"):
+            output = model.predict(
+                test_gen,
+                verbose=1,
+                # max_queue_size=10,
+                # workers=16,
+                # use_multiprocessing=CONF["training"]["use_multiprocessing"],
+            )
 
-        # reshape to (N, crop_number, num_classes)
         output = output.reshape(len(X_test), -1, output.shape[-1])
-        output = np.mean(output, axis=1)  # take the mean across the crops
+        output = np.mean(output, axis=1)
 
-        # sort labels in descending prob
         lab = np.argsort(output, axis=1)[:, ::-1]
-        lab = lab[:, :top_K]  # keep only top_K labels
+        lab = lab[:, :top_K]
         prob = output[
             np.repeat(np.arange(len(lab)), lab.shape[1]),
             lab.flatten(),
-        ].reshape(lab.shape)  # retrieve corresponding probabilities
+        ].reshape(lab.shape)
 
         pred_lab, pred_prob = lab, prob
 
@@ -267,16 +353,14 @@ def train_fn(TIMESTAMP, CONF):
             pred_aphia_ids = aphia_ids
 
         class_index_map = {
-            index: class_name
-            for index, class_name in enumerate(class_names)
+            index: class_name for index, class_name in enumerate(class_names)
         }
 
-        # Convert arrays of strings to lists of integers
-        pred_lab_names = [[class_index_map[label] for label in labels]
-                          for labels in pred_lab]
+        pred_lab_names = [
+            [class_index_map[label] for label in labels] for labels in pred_lab
+        ]
         y_test_names = [class_index_map.get(index) for index in y_test]
 
-        # Save the predictions
         pred_dict = {
             "filenames": list(X_test),
             "pred_lab": pred_lab.tolist(),
@@ -290,17 +374,25 @@ def train_fn(TIMESTAMP, CONF):
 
         pred_path = os.path.join(
             paths.get_predictions_dir(),
-            "{}+{}+top{}.json".format("final_model.h5", "DS_split", top_K),
+            "{}+{}+top{}.json".format(preferred_ckpt_name, "DS_split", top_K),
         )
         with open(pred_path, "w") as outfile:
             json.dump(pred_dict, outfile, sort_keys=True)
-        print(f"Predictions file saved in: {pred_path}")
-    print("finished testing")
+        logger.info("[train] Predictions saved to: %s", display_path(pred_path))
+        logger.info("[train] Test set evaluation completed.")
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Train Phytoplankton CNN")
+    parser.add_argument(
+        "--workers",
+        type=int,
+        default=4,
+        help="Number of multiprocessing workers (use 1 for Jupyter)"
+    )
+    args = parser.parse_args()
 
     CONF = config.get_conf_dict()
+    CONF["dataset"]["num_workers"] = args.workers  # store in CONF
     timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
-
     train_fn(TIMESTAMP=timestamp, CONF=CONF)

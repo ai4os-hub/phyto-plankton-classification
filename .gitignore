@@ -170,3 +170,5 @@ notebooks/3.2-Saliency_maps copy.ipynb
 notebooks/test copy 2.ipynb
 planktonclas/train_iter.py
 planktonclas/testing.ipynb
+
+data/images/*

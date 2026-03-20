@@ -2,71 +2,112 @@
 API for the image classification package
 
 Date: September 2018
-Author: Ignacio Heredia
-Email: iheredia@ifca.unican.es
-Github: ignacioheredia
+Original Author: Ignacio Heredia (CSIC)
+Maintainer: Wout Decrop (VLIZ)
+Contact: wout.decrop@vliz.be
+Github: woutdecrop / lifewatch
 
-Notes: Based on
-https://github.com/indigo-dc/plant-classification-theano/
-blob/package/plant_classification/api.py
+Notes: Based on https://github.com/indigo-dc/plant-classification-theano/blob/package/plant_classification/api.py
 
 Descriptions:
-The API will use the model files inside ../models/api.
-If not found it will use the model files of the last trained model.
-If several checkpoints are found inside ../models/api/ckpts we
-will use the last checkpoint.
+The API will use the model files inside ../models/api. If not found it will use the model files of the last trained model.
+If several checkpoints are found inside ../models/api/ckpts we will use the last checkpoint.
 
 Warnings:
-There is an issue of using Flask with Keras:
-https://github.com/jrosebr1/simple-keras-rest-api/issues/1
-The fix done (using tf.get_default_graph()) will probably not be
-valid for standalone wsgi container e.g. gunicorn,
+There is an issue of using Flask with Keras: https://github.com/jrosebr1/simple-keras-rest-api/issues/1
+The fix done (using tf.get_default_graph()) will probably not be valid for standalone wsgi container e.g. gunicorn,
 gevent, uwsgi.
 """
 
-from pathlib import Path
-from marshmallow import ValidationError, validate
 import builtins
 import glob
 import json
 import os
+import re
+import sys
 import tempfile
-import warnings
+import threading
+import time
 import zipfile
 from collections import OrderedDict
 from datetime import datetime
 from functools import wraps
 from aiohttp.web import HTTPException
 
-import numpy as np
-import tensorflow as tf
-from deepaas.model.v2.wrapper import UploadedFile
-from tensorflow.keras import backend as K
-from tensorflow.keras.models import load_model
-from webargs import fields
-import logging
+# Configure warnings early
+from planktonclas import warnings_config
+warnings_config.configure_warnings()
+
+class LoadingBar:
+    def __init__(self, message="Loading"):
+        self.message = message
+        self.loading = False
+        self.thread = None
+
+    def animate(self):
+        spinner_chars = ['|', '/', '-', '\\']
+        idx = 0
+        while self.loading:
+            sys.stdout.write(f'\r{self.message} {spinner_chars[idx]}')
+            sys.stdout.flush()
+            idx = (idx + 1) % len(spinner_chars)
+            time.sleep(0.1)
+            
+    def start(self):
+        self.loading = True
+        self.thread = threading.Thread(target=self.animate)
+        self.thread.daemon = True
+        self.thread.start()
+
+    def stop(self):
+        self.loading = False
+        if self.thread:
+            self.thread.join()
+        sys.stdout.write('\r' + ' ' * (len(self.message) + 10) + '\r')
+        sys.stdout.flush()
 
 
-import json
+_import_loader = LoadingBar("Initializing Phytoplankton Classifier...")
+_import_loader.start()
+
+try:
+    import numpy as np
+    import pkg_resources
+    import requests
+    import tensorflow as tf
+    from deepaas.model.v2.wrapper import UploadedFile
+    from tensorflow.keras import backend as K
+    from tensorflow.keras.models import load_model
+    from webargs import fields
+    import logging
 
 
-from planktonclas import config, paths, test_utils, utils
-from planktonclas.data_utils import (
-    load_aphia_ids,
-    load_class_info,
-    load_class_names,
-)
-from planktonclas.train_runfile import train_fn
+    from planktonclas import config, paths, test_utils, utils, model_utils
+    from planktonclas.data_utils import (
+        load_aphia_ids,
+        load_class_info,
+        load_class_names,
+    )
+    from planktonclas.train_runfile import train_fn
+finally:
+    _import_loader.stop()
+
+
 
 logger = logging.getLogger(__name__)
 ENV_LOG_LEVEL = os.getenv("API_LOG_LEVEL", default="INFO")
 LOG_LEVEL = getattr(logging, ENV_LOG_LEVEL.upper())
 logger.setLevel(LOG_LEVEL)
 
+
 NOW = str("{:%Y_%m_%d_%H_%M_%S}".format(datetime.now()))
 
+from marshmallow import fields, ValidationError
+from pathlib import Path
+
 loaded_ts, loaded_ckpt = None, None
-model, conf, class_names, class_info, aphia_ids = (
+graph, model, conf, class_names, class_info, aphia_ids = (
+    None,
     None,
     None,
     None,
@@ -75,9 +116,81 @@ model, conf, class_names, class_info, aphia_ids = (
 )
 
 # Additional parameters
-allowed_extensions = set(["png", "jpg", "jpeg", "PNG", "JPG",
-                          "JPEG"])  # allow only certain file extensions
+allowed_extensions = set(
+    ["png", "jpg", "jpeg", "PNG", "JPG", "JPEG"]
+)  # allow only certain file extensions
 top_K = 5  # number of top classes predictions to return
+
+
+def _list_inference_checkpoints(ckpt_dir):
+    """Return inference checkpoints supported by the API."""
+    supported_exts = (".keras", ".h5")
+    return sorted(
+        [name for name in os.listdir(ckpt_dir) if name.endswith(supported_exts)]
+    )
+
+
+def _get_default_checkpoint_name(ckpt_list):
+    """Prefer .keras checkpoints when multiple formats are available."""
+    keras_ckpts = [name for name in ckpt_list if name.endswith(".keras")]
+    if keras_ckpts:
+        return keras_ckpts[-1]
+    return ckpt_list[-1]
+
+
+def _list_all_inference_checkpoints(models_dir):
+    """Return the unique set of supported checkpoint names across all timestamps."""
+    ckpt_names = set()
+    timestamp_list = next(os.walk(models_dir))[1]
+    current_timestamp = paths.timestamp
+    try:
+        for timestamp in sorted(timestamp_list):
+            paths.timestamp = timestamp
+            ckpt_dir = paths.get_checkpoints_dir()
+            if not os.path.isdir(ckpt_dir):
+                continue
+            ckpt_names.update(_list_inference_checkpoints(ckpt_dir))
+    finally:
+        paths.timestamp = current_timestamp
+    return sorted(ckpt_names)
+
+
+def display_banner():
+    """Display ASCII art banner when model is ready."""
+    banner = r"""                                                                                                                              
+                                     +.                              
+                                   +:       :==.                     
+                                  %       .#.                        
+                                 #:*==*  *=                          
+                               -+**+*####.                           
+                              +********%%.                           
+                             +*******#**#+                           
+                          ********#%%####+                           
+                            .*====+==::=#%%*                         
+                            -%**   --::=-:.                          
+                            +=#.   -:::+.                            
+                    -+*++:  +.     +:::*                 
+                   :+.  .+- ==:   +::::*                        
+                   =-    == ::-+*+:::::*##-               
+                   .+.  :+-.-====-:::::+%#.                      
+                     ===*: :++::::-=:++*#=               
+                      -#. -+**:::=*++**%##+                          
+                     .=+-=   ##*:**#*%******=                        
+                     .=**+  =*++#************#-                      
+                       %@#*++****#********#+***#.                    
+                       .%*****. +*********##++*=                     
+                        .-##*    *%##%%%%%%#+##:                     
+                                +*###%##**+*###                      
+                               =++*#+**+++++*###-                    
+                             .++*****++++++++*##+                    
+                              :+*+#%++++++++*+.                ____________________________
+                                  ***  :###-                   |PHYTOPLANKTON CLASSIFIER   |        
+                                ::#**.  +**+                   |🔬 Model fully loaded      |       
+                               .%@+.: --@@@%                   |🚀 Listening on port 5000  |      
+                                       :.                      |___________________________|     
+                                                                     
+    """
+    logger.info(banner)
 
 
 def load_inference_model(timestamp=None, ckpt_name=None):
@@ -92,7 +205,7 @@ def load_inference_model(timestamp=None, ckpt_name=None):
         Name of the checkpoint to use. The default is the last checkpoint in `./models/[timestamp]/ckpts`.
     """
     global loaded_ts, loaded_ckpt
-    global model, conf, class_names, class_info, aphia_ids
+    global graph, model, conf, class_names, class_info, aphia_ids
 
     # Set the timestamp
     timestamp_list = next(os.walk(paths.get_models_dir()))[1]
@@ -100,31 +213,37 @@ def load_inference_model(timestamp=None, ckpt_name=None):
     if not timestamp_list:
         raise Exception(
             "You have no models in your `./models` folder to be used for inference. "
-            "Therefore the API can only be used for training.")
+            "Therefore the API can only be used for training."
+        )
     elif timestamp is None:
         timestamp = timestamp_list[-1]
     elif timestamp not in timestamp_list:
         raise ValueError(
-            "Invalid timestamp name: {}. Available timestamp names are: {}".
-            format(timestamp, timestamp_list))
+            "Invalid timestamp name: {}. Available timestamp names are: {}".format(
+                timestamp, timestamp_list
+            )
+        )
     paths.timestamp = timestamp
-    print("Using TIMESTAMP={}".format(timestamp))
+    logger.info("✓ Loaded model timestamp: %s", timestamp)
 
     # Set the checkpoint model to use to make the prediction
-    ckpt_list = os.listdir(paths.get_checkpoints_dir())
-    ckpt_list = sorted([name for name in ckpt_list if name.endswith(".h5")])
+    ckpt_list = _list_inference_checkpoints(paths.get_checkpoints_dir())
     if not ckpt_list:
         raise Exception(
-            "You have no checkpoints in your `./models/{}/ckpts` folder to be used for inference. "
-            .format(timestamp) +
-            "Therefore the API can only be used for training.")
+            "You have no checkpoints in your `./models/{}/ckpts` folder to be used for inference. ".format(
+                timestamp
+            )
+            + "Therefore the API can only be used for training."
+        )
     elif ckpt_name is None:
-        ckpt_name = ckpt_list[-1]
+        ckpt_name = _get_default_checkpoint_name(ckpt_list)
     elif ckpt_name not in ckpt_list:
         raise ValueError(
-            "Invalid checkpoint name: {}. Available checkpoint names are: {}".
-            format(ckpt_name, ckpt_list))
-    print("Using CKPT_NAME={}".format(ckpt_name))
+            "Invalid checkpoint name: {}. Available checkpoint names are: {}".format(
+                ckpt_name, ckpt_list
+            )
+        )
+    logger.info("✓ Loaded checkpoint: %s", ckpt_name)
 
     # Clear the previous loaded model
     tf.keras.backend.clear_session()
@@ -139,7 +258,8 @@ def load_inference_model(timestamp=None, ckpt_name=None):
             warnings.warn(
                 """The 'classes.txt' file has a different length than the 'info.txt' file.
             If a class has no information whatsoever you should leave that classes row empty or put a '-' symbol.
-            The API will run with no info until this is solved.""")
+            The API will run with no info until this is solved."""
+            )
             class_info = None
     if class_info is None:
         class_info = ["" for _ in range(len(class_names))]
@@ -150,16 +270,37 @@ def load_inference_model(timestamp=None, ckpt_name=None):
         conf = json.load(f)
         update_with_saved_conf(conf)
 
-    # Load the model
-    model = load_model(
-        os.path.join(paths.get_checkpoints_dir(), ckpt_name),
-        custom_objects=utils.get_custom_objects(),
-        compile=False,
-        # Disable deserialization of training config
-    )
+    best_model_name = "best_model.keras"
+    best_model_path = os.path.join(paths.get_checkpoints_dir(), best_model_name)
+    if (
+        conf.get("training", {}).get("use_best_model", False)
+        and ckpt_name == "final_model.h5"
+        and os.path.exists(best_model_path)
+    ):
+        logger.info(
+            "Switching inference checkpoint from final_model.h5 to %s because training.use_best_model=true.",
+            best_model_name,
+        )
+        ckpt_name = best_model_name
+
+    logger.info("Loading model weights...")
+    loader = LoadingBar("✓ Loading model weights...")
+    loader.start()
+    try:
+        # Load the model
+        model = load_model(
+            os.path.join(paths.get_checkpoints_dir(), ckpt_name),
+            custom_objects=utils.get_custom_objects(),
+            compile=False,
+            # Disable deserialization of training config
+        )
+    finally:
+        loader.stop()
 
     loaded_ts = timestamp
     loaded_ckpt = ckpt_name
+    logger.info("✓ Model fully loaded and ready for inference")
+    display_banner()
 
 
 def update_with_saved_conf(saved_conf):
@@ -181,33 +322,42 @@ def update_with_saved_conf(saved_conf):
 
 def update_with_query_conf(user_args):
     """
-    Update the default YAML configuration with the user's input args from the API query.
-    Safely handles strings, lists, dicts, None, and avoids TypeError.
-    Skips UploadedFile objects (images/zips) automatically.
+    Update the default YAML configuration with the user's input args from the API query
     """
+    # Update the default conf with the user input
     CONF = config.CONF
-    for group, val in CONF.items():
-        for g_key, g_val in val.items():
-            if g_key not in user_args:
-                continue
-            raw_value = user_args[g_key]
-            if raw_value is None:
-                continue  # skip empty values
-
-            # Skip files
-            if hasattr(raw_value, "filename") and hasattr(raw_value, "content_type"):
-                continue
-
-            # Only handle basic types: str, int, float, bool, list, dict
-            if isinstance(raw_value, (str, int, float, bool, list, dict)):
+    for group, val in sorted(CONF.items()):
+        for g_key, g_val in sorted(val.items()):
+            if g_key in user_args:
+                raw_value = user_args[g_key]
+                if not raw_value:
+                    continue  # skip if the value is empty
                 try:
-                    if not isinstance(raw_value, str):
-                        raw_value = json.dumps(raw_value)
+                    # Try parsing as JSON
                     g_val["value"] = json.loads(raw_value)
-                except (json.JSONDecodeError, TypeError):
-                    g_val["value"] = str(raw_value)
-            else:
-                g_val["value"] = str(raw_value)
+                except json.JSONDecodeError:
+                    # Fall back to treating it as a plain string
+                    g_val["value"] = raw_value
+    # Check and save the configuration
+    config.check_conf(conf=CONF)
+    config.conf_dict = config.get_conf_dict(conf=CONF)
+
+
+def get_image_files_recursive(directory):
+    """
+    Recursively find all image files in a directory.
+    Returns list of tuples: (full_path, original_filename)
+    """
+    image_extensions = {'.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', '.webp'}
+    image_files = []
+    
+    for root, dirs, files in os.walk(directory):
+        for file in files:
+            if os.path.splitext(file)[1].lower() in image_extensions:
+                full_path = os.path.join(root, file)
+                image_files.append((full_path, file))
+    
+    return image_files
 
 
 def catch_error(f):
@@ -223,9 +373,11 @@ def catch_error(f):
 
 
 def catch_localfile_error(file_list):
+    # Error catch: Empty query
     if not file_list:
         raise ValueError("Empty query")
 
+    # Error catch: Image format error
     for f in file_list:
         extension = os.path.basename(f.content_type).split("/")[-1]
         # extension = mimetypes.guess_extension(f.content_type)
@@ -242,7 +394,7 @@ def warm():
     try:
         load_inference_model()
     except Exception as e:
-        print(e)
+        logger.debug("Model warm-up: %s", str(e))
 
 
 def prepare_files(directory):
@@ -278,13 +430,14 @@ def prepare_files(directory):
 def predict(**args):
     logger.debug("Predict with args: %s", args)
     try:
-        if not any([args["image"], args["zip"]]):
+        if not any([args.get("image"), args.get("zip")]):
             raise Exception(
-                "You must provide either 'image' or 'file_location' or 'zip' in the payload"
+                "You must provide either 'image' or 'zip' in the payload"
             )
 
-        if args["zip"]:
+        if args.get("zip"):
             # Check if zip file is provided
+            logger.info("▌ Processing ZIP file")
             zip_file = args["zip"]
 
             # Create a temporary directory to extract the files
@@ -295,37 +448,42 @@ def predict(**args):
                 ) as zip_ref:
                     zip_ref.extractall(temp_dir)
 
-                # Get the list of files extracted from the zip
-                folder_files = os.listdir(temp_dir)
+                # Recursively find all image files in extracted zip
+                image_files = get_image_files_recursive(temp_dir)
+                
+                if not image_files:
+                    raise ValueError("No image files found in the zip archive. "
+                                   "Supported formats: jpg, jpeg, png, gif, bmp, tiff, webp")
 
-                # Assign the list of files to args["files"]
-
+                # Create UploadedFile objects for each image
                 uploaded_files = []
-                for file in folder_files:
-                    file_path = os.path.join(temp_dir, file)
+                for file_path, original_filename in image_files:
                     uploaded_files.append(
                         UploadedFile(
                             name="data",
                             filename=file_path,
                             content_type="image/jpeg",
-                            original_filename=file,
+                            original_filename=original_filename,
                         )
                     )
 
                 # Assign the list of files to args["files"]
                 args["files"] = uploaded_files
+                logger.debug("Found %d image files in zip archive", len(image_files))
 
                 return predict_data(args)
-        elif args["image"]:
+        elif args.get("image"):
+            logger.info("▌ Processing single image")
             args["files"] = [
                 args["image"]
             ]  # patch until list is available
-            # raise RuntimeError("args files ", args["files"])
-            print(args["files"])
             return predict_data(args)
 
     except Exception as err:
-        raise HTTPException(reason=err) from err
+        logger.exception("Error in predict endpoint")
+        # Sanitize error message for HTTPException (cannot contain newlines)
+        error_msg = str(err).replace('\n', ' ').replace('\r', ' ')
+        raise HTTPException(reason=error_msg) from err
 
 
 def predict_data(args):
@@ -351,9 +509,15 @@ def predict_data(args):
                 ckpt_name=conf["testing"]["ckpt_name"],
             )
             conf = config.conf_dict
+        
+        # Ensure preprocess_mode is set based on model name
+        if "preprocess_mode" not in conf["model"]:
+            modelname = conf["model"].get("modelname", "Phytoplankton_EfficientNetV2B0")
+            conf["model"]["preprocess_mode"] = model_utils.model_modes.get(modelname, "tf")
+            logger.debug("Set preprocess_mode to: %s for model: %s", conf["model"]["preprocess_mode"], modelname)
+        
         # Create a list with the path to the images
         filenames = [f.filename for f in args["files"]]
-        print(filenames)
         original_filenames = [
             f.original_filename for f in args["files"]
         ]
@@ -373,13 +537,16 @@ def predict_data(args):
             pred_lab, pred_prob = np.squeeze(pred_lab), np.squeeze(
                 pred_prob
             )
-            print(pred_lab.shape, pred_prob.shape)
 
         return format_prediction(
             pred_lab, pred_prob, original_filenames
         )
     except Exception as err:
-        raise HTTPException(reason=err) from err
+        logger.exception("Error in predict_data function")
+        # Sanitize error message for HTTPException (cannot contain newlines)
+        error_msg = str(err).replace('\n', ' ').replace('\r', ' ')
+        raise HTTPException(reason=error_msg) from err
+
 
 def get_predictions_dir(CONF):
     file_location = CONF.get("testing", {}).get("file_location", None)
@@ -388,71 +555,88 @@ def get_predictions_dir(CONF):
     if file_location is not None:
         if os.path.exists(file_location):
             os.makedirs(
-                os.path.join(os.path.dirname(file_location), "predictions"),
+                os.path.join(
+                    os.path.dirname(file_location), "predictions"
+                ),
                 exist_ok=True,
             )
-            return os.path.join(os.path.dirname(file_location), "predictions")
+            return os.path.join(
+                os.path.dirname(file_location), "predictions"
+            )
     else:
         if output_directory is None:
             # Define your get_timestamped_dir() function accordingly
-            return os.path.join(paths.get_timestamped_dir(), "predictions")
+            return os.path.join(
+                paths.get_timestamped_dir(), "predictions"
+            )
         else:
             return os.path.join(output_directory)
 
+
 def format_prediction(labels, probabilities, original_filenames):
-    if aphia_ids is not None:
-        pred_aphia_ids = [aphia_ids[i] for i in labels]
-        pred_aphia_ids = [
-            aphia_id.tolist() for aphia_id in pred_aphia_ids
-        ]
-    else:
-        pred_aphia_ids = aphia_ids
-    class_index_map = {
-        index: class_name
-        for index, class_name in enumerate(class_names)
-    }
-    pred_lab_names = [
-        [class_index_map[label] for label in labels]
-        for labels in labels
-    ]
-    # pred_labels=[class_names[i] for i in labels]
-    pred_prob = probabilities
+    try:
+        if aphia_ids is not None:
+            pred_aphia_ids = [aphia_ids[i] for i in labels.flatten()]
+            pred_aphia_ids = [
+                aphia_id.tolist() for aphia_id in pred_aphia_ids
+            ]
+        else:
+            pred_aphia_ids = aphia_ids
+        class_index_map = {
+            index: class_name
+            for index, class_name in enumerate(class_names)
+        }
+        logger.debug("Labels shape: %s, Class index map size: %s", labels.shape, len(class_index_map))
+        
+        # Handle 2D array of predictions (N images × top_K predictions)
+        pred_lab_names = [[class_index_map[int(label)] for label in row] for row in labels]
+        
+        pred_prob = probabilities
 
-    pred_dict = {
-        "filenames": list(original_filenames),
-        "pred_lab": pred_lab_names,  # Use converted list
-        "pred_prob": pred_prob.tolist(),
-        "aphia_ids": pred_aphia_ids,
-    }
-    conf = config.conf_dict
-    ckpt_name = conf["testing"]["ckpt_name"]
-    split_name = "test"
-    pred_path = os.path.join(
-        get_predictions_dir(conf),
-        "{}+{}+top{}.json".format(ckpt_name, split_name, top_K),
-    )
-    with open(pred_path, "w") as outfile:
-        json.dump(pred_dict, outfile, sort_keys=True)
+        pred_dict = {
+            "filenames": list(original_filenames),
+            "pred_lab": pred_lab_names,
+            "pred_prob": pred_prob.tolist(),
+            "aphia_ids": pred_aphia_ids,
+        }
+        conf = config.conf_dict
+        ckpt_name = conf["testing"]["ckpt_name"]
+        split_name = "test"
+        pred_path = os.path.join(
+            get_predictions_dir(conf),
+            "{}+{}+top{}.json".format(ckpt_name, split_name, top_K),
+        )
+        with open(pred_path, "w") as outfile:
+            json.dump(pred_dict, outfile, sort_keys=True)
 
-    return pred_dict
+        return pred_dict
+    except Exception as e:
+        logger.exception("Error in format_prediction. labels shape=%s, probabilities shape=%s", 
+                        labels.shape if hasattr(labels, 'shape') else 'N/A',
+                        probabilities.shape if hasattr(probabilities, 'shape') else 'N/A')
+        raise
+
 
 def get_directory_choices(base_path="/srv/data/"):
     # Get a list of all directories in the base_path
     try:
         directories = [
-            d for d in os.listdir(base_path)
+            d
+            for d in os.listdir(base_path)
             if os.path.isdir(os.path.join(base_path, d))
         ]
         return directories
     except Exception as e:
-        print(f"Error accessing directories: {e}")
+        logger.warning("Error accessing directories: %s", str(e))
         return []
 
 
 def validate_directory(path):
     # Convert the input to a Path object if it's a string
     if isinstance(path, str):
-        path = Path(path.strip("'\""))  # Remove any leading/trailing quotes
+        path = Path(
+            path.strip("'\"")
+        )  # Remove any leading/trailing quotes
 
     # Check if the path is a valid directory
     if not path.is_dir():
@@ -461,36 +645,55 @@ def validate_directory(path):
     return path
 
 
+from pathlib import Path
+
+
 def train(**args):
     """
     Train an image classifier
     """
     try:
-        logger.info("Training model...")
-        logger.debug("Train with args: %s", args)
-
         update_with_query_conf(user_args=args)
         CONF = config.conf_dict
         timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
-        config.print_conf_table(CONF)
-        K.clear_session()  # remove the model loaded for prediction
-
+        
+        # Print training startup banner
+        logger.info("="*70)
+        logger.info("🚀 Starting Phytoplankton Model Training")
+        logger.info("="*70)
+        logger.info("▌ Training timestamp: %s", timestamp)
+        logger.info("▌ Configuration Parameters:")
+        
+        # Clear session and validate
+        K.clear_session()
         validate_directory(args["images_directory"])
+        
+        # Print config table
+        config.print_conf_table(CONF)
+        
+        logger.info("")
+        logger.info("="*70)
+        logger.info("▌ Initializing training process...")
+        logger.info("="*70)
 
         train_fn(TIMESTAMP=timestamp, CONF=CONF)
 
+        logger.info("="*70)
+        logger.info("✓ Training completed successfully!")
+        logger.info("=" *70)
         return {"modelname": timestamp}
 
     except Exception as err:
-        logger.critical(err, exc_info=True)
-        raise HTTPException(reason=err) from err
+        logger.critical("✗ Training failed: %s", str(err), exc_info=True)
+        # Sanitize error message for HTTPException (cannot contain newlines)
+        error_msg = str(err).replace('\n', ' ').replace('\r', ' ')
+        raise HTTPException(reason=error_msg) from err
 
 
 def populate_parser(parser, default_conf):
     """
     Returns a arg-parse like parser.
     """
-    print("popu parser")
     for group, val in default_conf.items():
         for g_key, g_val in val.items():
             gg_keys = g_val.keys()
@@ -567,6 +770,29 @@ def get_predict_args():
     else:
         timestamp["value"] = timestamp_list[-1]
         timestamp["choices"] = timestamp_list
+
+    # Add options for checkpoint names across all available timestamps.
+    # The selected timestamp still determines whether a given checkpoint is valid at runtime.
+    ckpt_name = default_conf["testing"]["ckpt_name"]
+    ckpt_choices = _list_all_inference_checkpoints(paths.get_models_dir())
+    if ckpt_choices:
+        if timestamp["value"]:
+            current_timestamp = paths.timestamp
+            try:
+                paths.timestamp = timestamp["value"]
+                current_ckpts = _list_inference_checkpoints(paths.get_checkpoints_dir())
+            finally:
+                paths.timestamp = current_timestamp
+        else:
+            current_ckpts = []
+
+        if current_ckpts:
+            ckpt_name["value"] = _get_default_checkpoint_name(current_ckpts)
+        else:
+            ckpt_name["value"] = ckpt_choices[0]
+        ckpt_name["choices"] = ckpt_choices
+    else:
+        ckpt_name["value"] = ""
 
     parser["image"] = fields.Field(
         required=False,
