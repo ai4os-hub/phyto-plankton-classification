@@ -82,7 +82,9 @@ RUN git clone -b $branch --depth 1 https://github.com/ai4os-hub/phyto-plankton-c
     cd ..
    # pip uninstall -y numpy && \
   # pip install numpy~=1.24
-
+RUN pip install --no-cache-dir \
+    keras==3.13.0 
+    
 # Set environment variables
 ENV MODEL_TAR=Phytoplankton_EfficientNetV2B0.tar.gz
 ENV MODEL_DIR=./phyto-plankton-classification/models

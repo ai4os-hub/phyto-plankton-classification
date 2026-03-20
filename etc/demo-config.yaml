@@ -307,10 +307,11 @@ testing:
       Model timestamp to use for prediction.
       
   ckpt_name:
-    value: "final_model.h5"
+    value: ""
     type: "str"
     help: >
-      Checkpoint inside the timestamp to use for prediction.
+      Checkpoint inside the timestamp to use for prediction. If empty, the API prefers `best_model.keras` when available,
+      otherwise it falls back to the latest supported checkpoint such as `final_model.h5`.
 
   output_directory:
     value: null
