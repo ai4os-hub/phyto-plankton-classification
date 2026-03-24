@@ -4,14 +4,14 @@ functions:
       name: phyto-plankton-classifier
       memory: 4Gi
       cpu: "1.0"
-      log_level: INFO
-      vo: vo.imagine-ai.eu
+      log_level: CRITICAL
+      vo: vo.ai4eosc.eu
       allowed_users: []
       image: ai4oshub/phyto-plankton-classification
       script: script.sh
       input:
       - storage_provider: minio.default
-        path: phytoplankton-classifier/input
+        path: phyto-plankton-classifier/input
       output:
       - storage_provider: minio.default
-        path: phytoplankton-classifier/output
+        path: phyto-plankton-classifier/output
