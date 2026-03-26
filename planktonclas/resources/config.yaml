@@ -54,20 +54,6 @@ model:
     help: >
           Image size to feed the model. If not provided, we will use the default image size of each model.
 
-  num_classes:
-    value:
-    type: "int"
-    range: [1, None]
-    help: >
-          Total number of possible output classes. If not provided, we will use the max label number from y_train.
-
-  preprocess_mode:
-    value:
-    type: "str"
-    help: >
-          Mode of image preprocessing. It's value will depend on the model you select, therefore you don't need to set
-          it.
-
 
 #####################################################
 #  Options about your dataset
@@ -142,19 +128,12 @@ training:
           Frequency of the checkpoints (Float between 0 and 1). If None there will be no checkpoints saved. If 0.0 there
           will be 1 checkpoint per epoch. For example 0.1 means there will be 10 ckpts during the training.
 
-  lr_schedule_mode:
-    value: "step"
-    type: "str"
-    choices: ['step']
-    help: >
-          Mode for the learning rate schedule computation.
-
   lr_step_decay:
     value: 0.1
     type: "float"
     range: [0, 1]
     help: >
-          Amount to decay the lr. Only relevant if lr_schedule_mode is set to 'step'
+          Amount to decay the learning rate.
 
   lr_step_schedule:
     value: [0.7, 0.9]
@@ -258,7 +237,7 @@ augmentation:
       rot: 0.7
       rot_lim: 90
       stretch: 0.0
-      crop: 1.
+      crop: 1.0
       zoom: 0.2
       blur: 0.3
       pixel_noise: 0.3
@@ -290,17 +269,17 @@ augmentation:
 
   val_mode:
     value:
-      h_flip: 0.5
-      v_flip: 0.
-      rot: 0.5
-      rot_lim: 30
-      stretch: 0.
-      crop: 0.9
-      zoom: 0.1
-      blur: 0.1
-      pixel_noise: 0.1
-      pixel_sat: 0.1
-      cutout: 0.
+      h_flip: 0.0
+      v_flip: 0.0
+      rot: 0.0
+      rot_lim: 0
+      stretch: 0.0
+      crop: 1.0
+      zoom: 0.0
+      blur: 0.0
+      pixel_noise: 0.0
+      pixel_sat: 0.0
+      cutout: 0.0
     help: >
           Augmentation parameters to use during the validation/testing phase. The augmentation is smaller than in the
           case of training parameters. The meaning of the parameters is the same as in the train_mode option.

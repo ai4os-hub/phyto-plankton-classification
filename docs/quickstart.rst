@@ -1,22 +1,24 @@
 Quickstart
 ==========
 
-Minimal CLI workflow
---------------------
+Choose your path
+----------------
 
-1. Install the package in a virtual environment.
-2. Create a project directory with ``planktonclas init``.
-3. Edit the generated ``config.yaml``.
-4. Add your images under ``data/images/`` and split files under ``data/dataset_files/``.
-5. Run training or start the API.
-6. Generate a report with plots in the run's ``results/`` folder.
+Most users should choose one of these workflows:
 
-Create a new project
---------------------
+1. local training
+2. local API
+3. notebooks
+
+These are alternative entry points. You do not need to use all of them.
+
+Minimal project setup
+---------------------
 
 .. code-block:: bash
 
    planktonclas init my_project
+   planktonclas validate-config --config ./my_project/config.yaml
 
 For a runnable demo project:
 
@@ -24,15 +26,8 @@ For a runnable demo project:
 
    planktonclas init my_project --demo
 
-Validate the configuration
---------------------------
-
-.. code-block:: bash
-
-   planktonclas validate-config --config ./my_project/config.yaml
-
-Run training
-------------
+Local training
+--------------
 
 .. code-block:: bash
 
@@ -49,19 +44,19 @@ Generate a report
 
 This writes evaluation images and metric files under ``my_project/models/<timestamp>/results/``.
 
-Start the API
--------------
+Local API
+---------
 
 .. code-block:: bash
 
    planktonclas api --config ./my_project/config.yaml
 
-Then open one of:
+Then open:
 
 * ``http://127.0.0.1:5000/ui``
-* ``http://127.0.0.1:5000/api``
+* ``http://127.0.0.1:5000/api#/``
 
-You can also start DEEPaaS directly after cloning and installing the repository:
+You can also start DEEPaaS directly after a repository install:
 
 .. code-block:: powershell
 
@@ -69,33 +64,30 @@ You can also start DEEPaaS directly after cloning and installing the repository:
    $env:DEEPAAS_V2_MODEL = "planktonclas"
    deepaas-run --listen-ip 0.0.0.0
 
-Then use:
-
-* ``http://127.0.0.1:5000/ui``
-* ``http://127.0.0.1:5000/api#/``
-
-List trained models
--------------------
-
-.. code-block:: bash
-
-   planktonclas list-models --config ./my_project/config.yaml
-
-Open notebooks
---------------
+Notebook workflow
+-----------------
 
 .. code-block:: bash
 
    planktonclas notebooks
 
-Dataset files
+This prints the notebook directory packaged with the project.
+
+Useful commands
+---------------
+
+.. code-block:: bash
+
+   planktonclas list-models --config ./my_project/config.yaml
+
+Dataset notes
 -------------
 
 The only mandatory input is the image directory.
 
-If ``data/dataset_files/`` is empty, training can create the split files automatically from the image-folder structure.
+If ``data/dataset_files/`` is empty, training can create split files automatically.
 
-If you provide your own dataset metadata files, the expected files under ``data/dataset_files/`` are:
+If you provide your own metadata files, the expected files are:
 
 * custom-split required: ``classes.txt``, ``train.txt``
 * optional: ``val.txt``, ``test.txt``, ``info.txt``, ``aphia_ids.txt``

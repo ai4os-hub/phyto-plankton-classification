@@ -36,6 +36,42 @@ CONF_PATH = None
 CONFIG_ROOT = homedir
 CONF = None
 
+MODEL_PREPROCESS_MODES = {
+    "DenseNet121": "torch",
+    "DenseNet169": "torch",
+    "DenseNet201": "torch",
+    "InceptionResNetV2": "tf",
+    "EfficientNetV2B0": "tf",
+    "InceptionV3": "tf",
+    "MobileNet": "tf",
+    "NASNetLarge": "tf",
+    "NASNetMobile": "tf",
+    "Xception": "tf",
+    "ResNet50": "caffe",
+    "VGG16": "caffe",
+    "VGG19": "caffe",
+    "Phytoplankton_EfficientNetV2B0": "TF",
+}
+
+
+def apply_internal_defaults(conf_d):
+    """
+    Apply runtime-only defaults that should not be exposed in the user config.
+    """
+    model_conf = conf_d.setdefault("model", {})
+    training_conf = conf_d.setdefault("training", {})
+
+    modelname = model_conf.get("modelname")
+    if "preprocess_mode" not in model_conf:
+        if modelname is not None:
+            model_conf["preprocess_mode"] = MODEL_PREPROCESS_MODES.get(modelname, "tf")
+        else:
+            model_conf["preprocess_mode"] = "tf"
+
+    model_conf.setdefault("num_classes", None)
+    training_conf.setdefault("lr_schedule_mode", "step")
+    return conf_d
+
 
 def check_conf(conf=None):
     """
@@ -151,7 +187,7 @@ def get_conf_dict(conf=None):
     if not conf_d["augmentation"]["use_augmentation"]:
         conf_d["augmentation"]["train_mode"] = None
         conf_d["augmentation"]["val_mode"] = None
-    return conf_d
+    return apply_internal_defaults(conf_d)
 
 
 set_config_path()

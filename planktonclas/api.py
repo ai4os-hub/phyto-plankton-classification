@@ -317,6 +317,11 @@ def update_with_saved_conf(saved_conf):
     # Check and save the configuration
     config.check_conf(conf=CONF)
     config.conf_dict = config.get_conf_dict(conf=CONF)
+    for group, values in saved_conf.items():
+        if group not in config.conf_dict:
+            config.conf_dict[group] = {}
+        for key, value in values.items():
+            config.conf_dict[group].setdefault(key, value)
 
 
 def update_with_query_conf(user_args):

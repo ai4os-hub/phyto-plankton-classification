@@ -8,15 +8,22 @@ import shutil
 import subprocess
 import sys
 from datetime import datetime
+from importlib.resources import files
 
 from planktonclas import config, paths
 
 
 PACKAGE_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DEFAULT_PROJECT_CONFIG_NAME = "config.yaml"
-DEFAULT_NOTEBOOKS_DIR = os.path.join(PACKAGE_ROOT, "notebooks")
-DEFAULT_DEMO_IMAGES_DIR = os.path.join(PACKAGE_ROOT, "data", "demo-images")
-DEFAULT_DEMO_SPLITS_DIR = os.path.join(PACKAGE_ROOT, "data", "dataset_files")
+
+
+def _resource_path(*parts):
+    return os.fspath(files("planktonclas").joinpath(*parts))
+
+
+DEFAULT_NOTEBOOKS_DIR = _resource_path("resources", "notebooks")
+DEFAULT_DEMO_IMAGES_DIR = _resource_path("resources", "demo-images")
+DEFAULT_DEMO_SPLITS_DIR = _resource_path("resources", "dataset_files")
 
 
 def _default_config_path():

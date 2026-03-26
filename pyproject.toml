@@ -1,10 +1,10 @@
 [build-system]
-requires = ["setuptools", "setuptools-scm"]
+requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "planktonclas"
-description = "add api to planktonclas"
+description = "Phytoplankton image classification package with CLI, training, reports, and DEEPaaS API support"
 # !! Authors and Authors_emails are taken from setup.py. Otherwise wrongly rendered !!
 readme = "README.md"
 requires-python = ">=3.8"
@@ -22,8 +22,9 @@ authors = [{name= "Ignacio Heredia (CSIC)", email= "iheredia@ifca.unican.es"} ,{
 #authors-email = ["iheredia@ifca.unican.es", "wout.decrop@vliz.be"]
 
 [project.urls]
-"Homepage" = "https://github.com/ai4os-hub/phyto-plankton-classification.git"
+"Homepage" = "https://github.com/ai4os-hub/phyto-plankton-classification"
 "Bug Tracker" = "https://github.com/ai4os-hub/phyto-plankton-classification/issues"
+"Documentation" = "https://phyto-plankton-classification.readthedocs.io/"
 
 [project.scripts]
 planktonclas = "planktonclas.cli:main"
@@ -40,7 +41,12 @@ include-package-data = true
 include = ["planktonclas*"]
 
 [tool.setuptools.package-data]
-planktonclas = ["resources/*.yaml"]
+planktonclas = [
+    "resources/*.yaml",
+    "resources/dataset_files/*",
+    "resources/notebooks/*.ipynb",
+    "resources/demo-images/*/*",
+]
 
 
 

@@ -1,18 +1,27 @@
 Phyto Plankton Classification
 =============================
 
-This documentation covers the main ways to work with ``planktonclas``:
+``planktonclas`` is a toolkit for training, evaluating, and serving phytoplankton image classifiers.
 
-* training a model on your own phytoplankton images
-* serving or testing the DEEPaaS API
-* calling the package directly from Python
-* using the included Jupyter notebooks
+This documentation is organized around the same user choices as the main README:
 
-The package is designed around three workflows:
+* local CLI workflow
+* local API workflow
+* notebook workflow
+* Docker workflow
+* AI4OS / OSCAR deployment workflow
 
-* **API workflow** for browser-based or service-based use through DEEPaaS
-* **Python workflow** for direct scripting with the package modules
-* **Notebook workflow** for exploration, training, evaluation, and explainability
+New users should start with:
+
+* :doc:`installation`
+* :doc:`quickstart`
+
+Then choose the workflow that matches how they want to use the package:
+
+* :doc:`api_usage`
+* :doc:`python_usage`
+* :doc:`notebooks`
+* :doc:`reference`
 
 Contents
 --------

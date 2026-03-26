@@ -1,0 +1,24 @@
+include README.md
+include LICENSE
+include VERSION
+include pyproject.toml
+include requirements.txt
+
+graft planktonclas
+
+prune .codex_tmp_cli_demo
+prune .github
+prune .sqa
+prune data
+prune docker
+prune docs
+prune models
+prune notebooks
+prune nvflare
+prune oscar
+prune references
+prune testing
+prune tests
+
+global-exclude __pycache__
+global-exclude *.py[cod]
