@@ -82,6 +82,10 @@ class PrefixedProgressStream:
         self.tag = tag
         self.stream = stream
         self.at_line_start = True
+        self.encoding = getattr(stream, "encoding", None)
+        self.errors = getattr(stream, "errors", None)
+        self.newlines = getattr(stream, "newlines", None)
+        self.line_buffering = getattr(stream, "line_buffering", False)
 
     def write(self, text):
         if not text:
@@ -105,6 +109,13 @@ class PrefixedProgressStream:
 
     def isatty(self):
         return self.stream.isatty()
+
+    def writelines(self, lines):
+        for line in lines:
+            self.write(line)
+
+    def __getattr__(self, name):
+        return getattr(self.stream, name)
 
 
 @contextmanager
