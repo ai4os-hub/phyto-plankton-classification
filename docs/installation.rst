@@ -31,6 +31,19 @@ Notes:
 * new user projects should use a project-local ``config.yaml`` created by ``planktonclas init``
 * report generation uses the saved training statistics and test predictions from a completed run
 
+Package-first install
+---------------------
+
+If you publish the package, users can also work from an installed package rather than a cloned repository:
+
+.. code-block:: bash
+
+   pip install planktonclas
+   planktonclas init my_project
+   planktonclas train --config ./my_project/config.yaml
+
+This is the best option for users who only want the CLI workflow.
+
 Initialize a project
 --------------------
 
@@ -57,6 +70,31 @@ If you already use the published image, mount the repository into the container 
 
 Inside the container, use the same CLI workflow with ``planktonclas init``, ``planktonclas train``, and ``planktonclas api``.
 
+If the image includes the AI4OS helper commands, you can also start notebook mode from inside the container:
+
+.. code-block:: bash
+
+   deep-start -j
+
+and DEEPaaS service mode with:
+
+.. code-block:: bash
+
+   deep-start --deepaas
+
+These ``deep-start`` commands are deployment/container helpers rather than standard local package commands.
+
+Direct API startup after cloning
+--------------------------------
+
+After ``git clone`` and ``pip install -e .``, you can start the DEEPaaS service directly:
+
+.. code-block:: powershell
+
+   $env:PLANKTONCLAS_CONFIG = (Resolve-Path .\my_project\config.yaml)
+   $env:DEEPAAS_V2_MODEL = "planktonclas"
+   deepaas-run --listen-ip 0.0.0.0
+
 Project layout
 --------------
 
@@ -70,9 +108,13 @@ The main directories in a generated project are:
 Dataset files
 -------------
 
-The training pipeline expects these split and metadata files under ``data/dataset_files/``:
+The only mandatory input is the image directory.
 
-* required: ``classes.txt``, ``train.txt``
+If ``data/dataset_files/`` is empty, the training pipeline can generate the split files automatically from the image-folder structure.
+
+If you provide your own split and metadata files under ``data/dataset_files/``, the expected files are:
+
+* custom-split required: ``classes.txt``, ``train.txt``
 * optional: ``val.txt``, ``test.txt``, ``info.txt``, ``aphia_ids.txt``
 
 The split files map image names to numeric labels starting at ``0``. ``classes.txt`` maps those labels back to class names.

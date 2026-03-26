@@ -33,6 +33,22 @@ Then open:
 
 Use ``127.0.0.1`` in the browser. ``0.0.0.0`` is only the bind address.
 
+Direct DEEPaaS startup
+----------------------
+
+If you cloned the repository and installed it locally, you can also start the API without the CLI wrapper:
+
+.. code-block:: powershell
+
+   $env:PLANKTONCLAS_CONFIG = (Resolve-Path .\my_project\config.yaml)
+   $env:DEEPAAS_V2_MODEL = "planktonclas"
+   deepaas-run --listen-ip 0.0.0.0
+
+Then open:
+
+* ``http://127.0.0.1:5000/ui``
+* ``http://127.0.0.1:5000/api#/``
+
 Main API functions
 ------------------
 
@@ -82,8 +98,17 @@ Predict endpoint
 
 The prediction endpoint accepts one of these inputs:
 
-* ``image``: a single uploaded image
+* ``image``: a single uploaded image or file argument
 * ``zip``: a ZIP archive containing one or more images, including nested folders
+
+Typical browser flow:
+
+1. start the API
+2. open ``/ui`` or ``/api#/``
+3. find the ``PREDICT`` ``POST`` method
+4. click ``Try it out``
+5. provide either ``image`` or ``zip``
+6. click ``Execute``
 
 Prediction response
 -------------------

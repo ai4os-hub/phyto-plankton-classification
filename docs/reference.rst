@@ -42,7 +42,8 @@ Important conventions
 ---------------------
 
 * images are read from ``general.images_directory``
-* dataset split files are expected under ``data/dataset_files/``
+* if ``data/dataset_files/`` is empty, training can generate split files automatically from the image-folder structure
+* if you provide custom split files, ``classes.txt`` and ``train.txt`` are the minimum expected files under ``data/dataset_files/``
 * outputs are organized by training timestamp under ``models/<timestamp>/``
 * inference defaults to the latest available trained timestamp
 

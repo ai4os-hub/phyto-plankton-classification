@@ -47,6 +47,13 @@ def _copy_tree(src, dst):
     shutil.copytree(src, dst, dirs_exist_ok=True)
 
 
+def _resolve_executable(name):
+    executable = shutil.which(name)
+    if executable is None:
+        raise FileNotFoundError(f"Executable not found in PATH: {name}")
+    return executable
+
+
 def init_project(args):
     target_dir = os.path.abspath(args.directory)
     config_path = os.path.join(target_dir, DEFAULT_PROJECT_CONFIG_NAME)
@@ -133,11 +140,12 @@ def run_api(args):
     env[config.CONFIG_ENV_VAR] = conf_path
     env["DEEPAAS_V2_MODEL"] = "planktonclas"
 
-    command = ["deepaas-run", "--listen-ip", args.host]
+    command = [_resolve_executable("deepaas-run"), "--listen-ip", args.host]
     if args.port is not None:
         command.extend(["--listen-port", str(args.port)])
 
-    raise SystemExit(subprocess.call(command, env=env))
+    completed = subprocess.run(command, env=env, check=False)
+    raise SystemExit(completed.returncode)
 
 
 def list_models(args):
@@ -222,7 +230,7 @@ def build_parser():
         "api", help="Launch the DEEPaaS API with a selected config file."
     )
     api_parser.add_argument("--config")
-    api_parser.add_argument("--host", default="0.0.0.0")
+    api_parser.add_argument("--host", default="127.0.0.1")
     api_parser.add_argument("--port", type=int, default=5000)
     api_parser.set_defaults(func=run_api)
 

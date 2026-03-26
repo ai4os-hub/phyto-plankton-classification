@@ -4,7 +4,7 @@
 **Flowchart:** The flow inside the module
 
 
-<img src="Flowchart_github_call_in_h.png" alt="Flowchart: Phytoplankton Classifier Process" width="1000"/>
+<img src="https://github.com/ai4os-hub/phyto-plankton-classification/blob/main/references/Flowchart_github.png" alt="Flowchart: Phytoplankton Classifier Process" width="1000"/>
 
 Call-in on Imagine Marketplace and follow the [Tutorial](https://docs.ai4os.eu/en/latest/user/howto/train/dashboard.html).  
 Important to remember here: if you have coding experience through the flowchart, use 'Jupyter', if not, use 'Deepaas' when you fill in the general information.
@@ -69,7 +69,9 @@ rclone copy rshare:/data/images /srv/phyto-plankton-classification/data/images
 
 ### 1.2 Prepare the data splits (optional)
 
-Next, you need add to the [./data/dataset_files](https://github.com/ai4os-hub/phyto-plankton-classification/tree/main/data/dataset_files) directory the following files:
+If you do not provide dataset files, training can generate the splits automatically from the image-folder structure.
+
+If you want to provide your own dataset metadata files, add to the [./data/dataset_files](https://github.com/ai4os-hub/phyto-plankton-classification/tree/main/data/dataset_files) directory the following files:
 
 | *Mandatory files* | *Optional files*  | 
 |:-----------------------:|:---------------------:|

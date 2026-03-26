@@ -4,6 +4,10 @@ AI4OS/DEEP Open Catalogue: Phytoplankton Classification
 
 **Authors:** [Ignacio Heredia & Wout Decrop](https://github.com/IgnacioHeredia) (CSIC & VLIZ)
 
+**Project:** This work is part of the [iMagine](https://www.imagine-ai.eu/) project.
+
+**Project:** This work is also connected to the [DEEP Hybrid-DataCloud](https://deep-hybrid-datacloud.eu/) ecosystem and AI4OS services.
+
 This package trains and serves phytoplankton image classifiers. It supports:
 
 * local training from a project config file
@@ -11,8 +15,24 @@ This package trains and serves phytoplankton image classifiers. It supports:
 * notebook-based exploration and evaluation
 * reusable timestamped model outputs under a single `models/` directory
 
+With the `planktonclas` package, users can choose the workflow they prefer:
+
+* train locally from the CLI or Python
+* use the DEEPaaS API for browser-based or service-based usage
+* work in notebooks for interactive exploration
+
+You do not have to use both local training and the API. They are alternative ways to work with the same package.
+
+Useful links:
+
+* [AI4OS / iMagine Marketplace entry](https://dashboard.cloud.imagine-ai.eu/marketplace/)
+* [AI4OS training and deployment docs](https://docs.ai4os.eu/en/latest/)
+* [OSCAR deployment guide](https://docs.ai4eosc.eu/en/latest/howtos/deploy/oscar.html)
+
 **Related publication:**  
 [*Automated image classification workflow for phytoplankton monitoring*](https://doi.org/10.3389/fmars.2025.1699781)
+
+![Workflow overview](https://github.com/ai4os-hub/phyto-plankton-classification/blob/main/references/Flowchart_github.png)
 
 Quick start
 -----------
@@ -27,6 +47,21 @@ python -m venv .venv
 pip install -U pip
 pip install -e .
 ```
+
+You can use the repository in four main ways:
+
+* `git clone` + `pip install -e .` for local development and training
+* `pip install planktonclas` for a package-first workflow with the CLI
+* Docker for a containerized API, training, and notebook workflow
+* AI4OS / OSCAR deployments for hosted API or hosted notebook usage
+
+The first choice to make is simple:
+
+* choose `planktonclas train` if you want local training from a config file
+* choose `planktonclas api` or `deepaas-run` if you want to work through the API
+* choose notebooks if you want an interactive workflow
+
+These workflows can be combined, but they do not depend on each other.
 
 Initialize a project directory with a user-editable `config.yaml`:
 
@@ -46,13 +81,13 @@ Validate the generated config:
 planktonclas validate-config --config .\my_project\config.yaml
 ```
 
-Train a model:
+If you want local training, run:
 
 ```bash
 planktonclas train --config .\my_project\config.yaml
 ```
 
-Start the DEEPaaS API:
+If you want API usage instead, run:
 
 ```bash
 planktonclas api --config .\my_project\config.yaml
@@ -62,6 +97,35 @@ Then open:
 
 * `http://127.0.0.1:5000/api`
 * `http://127.0.0.1:5000/ui`
+
+If you want to start DEEPaaS directly after cloning the repository, you can also run:
+
+```powershell
+$env:PLANKTONCLAS_CONFIG = (Resolve-Path .\my_project\config.yaml)
+$env:DEEPAAS_V2_MODEL = "planktonclas"
+deepaas-run --listen-ip 0.0.0.0
+```
+
+Then open:
+
+* `http://127.0.0.1:5000/ui`
+* `http://127.0.0.1:5000/api#/`
+
+For users who install from PyPI rather than from a clone, the package-first flow is:
+
+```bash
+pip install planktonclas
+planktonclas init my_project
+planktonclas train --config .\my_project\config.yaml
+```
+
+or, if they prefer the API:
+
+```bash
+pip install planktonclas
+planktonclas init my_project
+planktonclas api --config .\my_project\config.yaml
+```
 
 Command overview
 ----------------
@@ -91,9 +155,13 @@ my_project/
   models/
 ```
 
-The expected dataset metadata files under `data/dataset_files/` are:
+The only mandatory input is your image folder under `data/images/` or the directory pointed to by `images_directory` in `config.yaml`.
 
-* required: `classes.txt`, `train.txt`
+If `data/dataset_files/` is empty, training can generate the split files automatically from the image-folder structure.
+
+If you provide your own dataset metadata files under `data/dataset_files/`, these are used:
+
+* custom-split required: `classes.txt`, `train.txt`
 * optional: `val.txt`, `test.txt`, `info.txt`, `aphia_ids.txt`
 
 The split files map image paths to integer labels starting at `0`.
@@ -171,6 +239,48 @@ docker run -ti -p 8888:8888 -p 5000:5000 -v "$(pwd):/srv/phyto-plankton-classifi
 ```
 
 Inside the container, use the same CLI workflow.
+
+If your container image includes the AI4OS helper scripts, you can also start Jupyter from inside the container with:
+
+```bash
+deep-start -j
+```
+
+and start DEEPaaS with:
+
+```bash
+deep-start --deepaas
+```
+
+Those `deep-start` commands are deployment/container helpers, not part of the local `planktonclas` CLI.
+
+API usage from Swagger UI
+-------------------------
+
+After the API is running, open `/ui` or `/api#/` and look for the `PREDICT` `POST` method.
+
+Click `Try it out`, adjust the parameters, and execute the request. Depending on the endpoint and environment, you can supply:
+
+* an `image` argument for a single image
+* a `zip` argument for a ZIP archive containing images
+
+The same API also exposes training operations, so users who prefer the browser/API path can train there instead of using the local CLI.
+
+OSCAR
+-----
+
+The repository also contains OSCAR deployment assets under `oscar/`.
+
+Use OSCAR when you want hosted inference rather than local training. The main files are:
+
+* `oscar/phyto-plankton-classifier.yaml`
+* example helper scripts in `oscar/`
+
+For direct site-based usage or deployment details, see:
+
+* [references/README_marketplace.md](c:/Users/wout.decrop/Documents/environments/phytoplankton_classifier/phyto-plankton-classification/references/README_marketplace.md)
+* [OSCAR manual deployment guide](https://docs.ai4eosc.eu/en/latest/howtos/deploy/oscar-manual.html)
+* [OSCAR scripted deployment guide](https://docs.ai4eosc.eu/en/latest/howtos/deploy/oscar.html)
 
 Notes
 -----

@@ -61,6 +61,19 @@ Then open one of:
 * ``http://127.0.0.1:5000/ui``
 * ``http://127.0.0.1:5000/api``
 
+You can also start DEEPaaS directly after cloning and installing the repository:
+
+.. code-block:: powershell
+
+   $env:PLANKTONCLAS_CONFIG = (Resolve-Path .\my_project\config.yaml)
+   $env:DEEPAAS_V2_MODEL = "planktonclas"
+   deepaas-run --listen-ip 0.0.0.0
+
+Then use:
+
+* ``http://127.0.0.1:5000/ui``
+* ``http://127.0.0.1:5000/api#/``
+
 List trained models
 -------------------
 
@@ -78,7 +91,11 @@ Open notebooks
 Dataset files
 -------------
 
-The training workflow expects these files under ``data/dataset_files/``:
+The only mandatory input is the image directory.
 
-* required: ``classes.txt``, ``train.txt``
+If ``data/dataset_files/`` is empty, training can create the split files automatically from the image-folder structure.
+
+If you provide your own dataset metadata files, the expected files under ``data/dataset_files/`` are:
+
+* custom-split required: ``classes.txt``, ``train.txt``
 * optional: ``val.txt``, ``test.txt``, ``info.txt``, ``aphia_ids.txt``

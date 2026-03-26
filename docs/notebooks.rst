@@ -51,6 +51,14 @@ Print the notebooks directory with:
 
 If you are already running Jupyter in your environment, open that directory and navigate to ``notebooks/``.
 
+If you are working inside an AI4OS deployment or a container image that ships the helper commands, you can start Jupyter with:
+
+.. code-block:: bash
+
+   deep-start -j
+
+That command is deployment-specific. It is not part of the local ``planktonclas`` CLI.
+
 Recommended workflow
 --------------------
 
