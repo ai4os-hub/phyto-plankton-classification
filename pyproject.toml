@@ -10,8 +10,8 @@ readme = "README.md"
 requires-python = ">=3.8"
 license = { text = "apache 2.0" }
 classifiers = [
-    "Intended Audience :: Information Technology",
-    "Intended Audience :: AI/ML/DL Researchers",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
     "Operating System :: POSIX :: Linux",
     "Programming Language :: Python :: 3",
 ]
