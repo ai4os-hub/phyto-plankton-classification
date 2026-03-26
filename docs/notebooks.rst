@@ -40,16 +40,16 @@ Use the notebooks when you want:
 * interactive training and debugging
 * prediction analysis without going through the web API
 
-Working inside Docker
+Finding the notebooks
 ---------------------
 
-Inside the prepared environment, start Jupyter with:
+Print the notebooks directory with:
 
 .. code-block:: bash
 
-   deep-start -j
+   planktonclas notebooks
 
-Then open the generated URL in a browser and navigate to ``notebooks/``.
+If you are already running Jupyter in your environment, open that directory and navigate to ``notebooks/``.
 
 Recommended workflow
 --------------------

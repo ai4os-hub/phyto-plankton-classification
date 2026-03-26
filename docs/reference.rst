@@ -11,10 +11,13 @@ Package entry points
    Direct training runner. Creates output directories, builds generators, trains the TensorFlow model, stores metrics, saves checkpoints, and optionally evaluates a test split.
 
 ``planktonclas.config``
-   Loads ``etc/config.yaml``, validates values, and exposes the flattened configuration dictionary used across the package.
+   Loads the packaged default config template or a user-provided project ``config.yaml``, validates values, and exposes the flattened configuration dictionary used across the package.
 
 ``planktonclas.paths``
    Central path resolver for images, models, checkpoints, logs, stats, and predictions.
+
+``planktonclas.report_utils``
+   Generates evaluation plots and summary files in the timestamped ``results/`` directory.
 
 ``planktonclas.test_utils``
    Inference helpers for crop-based prediction and top-k accuracy computation.
@@ -25,7 +28,7 @@ Package entry points
 Configuration map
 -----------------
 
-The runtime configuration is grouped in ``etc/config.yaml`` under:
+The runtime configuration is grouped in the active ``config.yaml`` under:
 
 * ``general``
 * ``model``

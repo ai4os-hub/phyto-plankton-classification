@@ -92,7 +92,7 @@ If you don't want to create your own datasplit, this will be done automatically 
 ### 2.1: Train with cmd
 
 #### 2.1.1: Adapting the yaml file
-Clarify the location of the images inside the [yaml file](https://github.com/ai4os-hub/phyto-plankton-classification/tree/main/etc/config.yaml) file. If not, [./data/images](https://github.com/ai4os-hub/phyto-plankton-classification/tree/main/data/images) will be taken. 
+Clarify the location of the images inside your project-local `config.yaml` file created by `planktonclas init`. If not, `./data/images` will be taken.
 Any additional parameter can also be changed here such as the type of split for training/validation/testing, batch size, etc
 
 You can change the config file directly as shown below, or you can change it when running the api.
@@ -122,7 +122,7 @@ Now you can go back to the deployments and run the API and change the paramters 
 
 ### 2.2: Train with Jupyter Notebooks (Recommended)
 #### 2.2.1: Adapting the yaml file
-Similar to [2.1.2: Running the training](#2.1.2:_Running_the_training),clarify the location of the images inside the [yaml file](https://github.com/ai4os-hub/phyto-plankton-classification/tree/main/etc/config.yaml) file. If not, [./data/images](https://github.com/ai4os-hub/phyto-plankton-classification/tree/main/data/images) will be taken. 
+Similar to [2.1.2: Running the training](#2.1.2:_Running_the_training), clarify the location of the images inside your project-local `config.yaml` file created by `planktonclas init`. If not, `./data/images` will be taken.
 Any additional parameter can also be changed here such as the type of split for training/validation/testing, batch size, etc
 
 You can change the config file directly as shown below.

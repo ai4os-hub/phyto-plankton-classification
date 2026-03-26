@@ -72,7 +72,6 @@ _import_loader.start()
 
 try:
     import numpy as np
-    import pkg_resources
     import requests
     import tensorflow as tf
     from deepaas.model.v2.wrapper import UploadedFile

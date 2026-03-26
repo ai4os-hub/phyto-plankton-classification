@@ -4,7 +4,7 @@ Installation
 Recommended setup
 -----------------
 
-The repository supports local Python use, Docker-based use, and DEEPaaS service execution. For most users, Docker is the safest option because the ML stack is heavy and the project has historically been tested around Python 3.9.
+The repository supports local Python use, Docker-based use, and DEEPaaS service execution. For local use, prefer a dedicated virtual environment.
 
 Clone the repository first:
 
@@ -16,8 +16,6 @@ Clone the repository first:
 Local install
 -------------
 
-Use a dedicated virtual environment. The project metadata and current configuration live in ``pyproject.toml`` and ``etc/config.yaml``.
-
 .. code-block:: bash
 
    python -m venv .venv
@@ -27,9 +25,24 @@ Use a dedicated virtual environment. The project metadata and current configurat
 
 Notes:
 
-* the package entry point is ``planktonclas``
+* the package CLI entry point is ``planktonclas``
 * the DEEPaaS model entry point is ``planktonclas.api``
-* training and inference depend on TensorFlow and the packages listed in ``requirements.txt``
+* training and inference require TensorFlow and the packages listed in ``requirements.txt``
+* new user projects should use a project-local ``config.yaml`` created by ``planktonclas init``
+* report generation uses the saved training statistics and test predictions from a completed run
+
+Initialize a project
+--------------------
+
+.. code-block:: bash
+
+   planktonclas init my_project
+
+Or create a demo project:
+
+.. code-block:: bash
+
+   planktonclas init my_project --demo
 
 Docker install
 --------------
@@ -42,20 +55,14 @@ If you already use the published image, mount the repository into the container 
      -v "${PWD}:/srv/phyto-plankton-classification" ^
      ai4oshub/phyto-plankton-classification:latest /bin/bash
 
-Inside the container, the repository is expected at:
-
-.. code-block:: text
-
-   /srv/phyto-plankton-classification
+Inside the container, use the same CLI workflow with ``planktonclas init``, ``planktonclas train``, and ``planktonclas api``.
 
 Project layout
 --------------
 
-The main directories are:
+The main directories in a generated project are:
 
-* ``planktonclas/``: package source code
-* ``etc/config.yaml``: runtime and training configuration
-* ``notebooks/``: end-user notebooks
+* ``config.yaml``: runtime and training configuration
 * ``data/images/``: input images
 * ``data/dataset_files/``: train/validation/test split files and class metadata
 * ``models/``: trained model outputs

@@ -110,10 +110,28 @@ def train_model(args):
     train_fn(TIMESTAMP=timestamp, CONF=conf)
 
 
+def generate_report_cmd(args):
+    conf_path = os.path.abspath(args.config or _default_config_path())
+    _apply_config(conf_path)
+
+    from planktonclas.report_utils import generate_report
+
+    summary = generate_report(timestamp=args.timestamp)
+    print(f"Report generated for timestamp: {summary['timestamp']}")
+    print(f"Results: {summary['results_dir']}")
+    print(f"Predictions: {summary['predictions_file']}")
+    print(f"Top-1 accuracy: {summary['top1_accuracy']:.3f}")
+    print(f"Top-3 accuracy: {summary['top3_accuracy']:.3f}")
+    print(f"Top-5 accuracy: {summary['top5_accuracy']:.3f}")
+    print(f"Macro F1: {summary['macro_f1']:.3f}")
+    print(f"Weighted F1: {summary['weighted_f1']:.3f}")
+
+
 def run_api(args):
     conf_path = os.path.abspath(args.config or _default_config_path())
     env = os.environ.copy()
     env[config.CONFIG_ENV_VAR] = conf_path
+    env["DEEPAAS_V2_MODEL"] = "planktonclas"
 
     command = ["deepaas-run", "--listen-ip", args.host]
     if args.port is not None:
@@ -188,6 +206,17 @@ def build_parser():
         help="Number of dataset preprocessing workers.",
     )
     train_parser.set_defaults(func=train_model)
+
+    report_parser = subparsers.add_parser(
+        "report",
+        help="Generate evaluation plots and metrics for a trained run.",
+    )
+    report_parser.add_argument("--config")
+    report_parser.add_argument(
+        "--timestamp",
+        help="Timestamped model directory to report on. Defaults to the latest run.",
+    )
+    report_parser.set_defaults(func=generate_report_cmd)
 
     api_parser = subparsers.add_parser(
         "api", help="Launch the DEEPaaS API with a selected config file."

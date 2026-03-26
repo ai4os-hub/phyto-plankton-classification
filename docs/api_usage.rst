@@ -11,6 +11,31 @@ The DEEPaaS entry point is defined in ``pyproject.toml``:
    [project.entry-points."deepaas.v2.model"]
    planktonclas = "planktonclas.api"
 
+The CLI command:
+
+.. code-block:: bash
+
+   planktonclas api --config ./my_project/config.yaml
+
+sets the project config and starts DEEPaaS for the ``planktonclas`` model.
+
+Start the service
+-----------------
+
+.. code-block:: bash
+
+   planktonclas api --config ./my_project/config.yaml
+
+Then open:
+
+* ``http://127.0.0.1:5000/api``
+* ``http://127.0.0.1:5000/ui``
+
+Use ``127.0.0.1`` in the browser. ``0.0.0.0`` is only the bind address.
+
+Main API functions
+------------------
+
 The main public API functions are:
 
 * ``get_metadata()``: returns package metadata
@@ -22,7 +47,7 @@ The main public API functions are:
 Train endpoint
 --------------
 
-The training schema is generated from ``etc/config.yaml``. In practice, the most important fields are:
+The training schema is generated from the active config template and can be overridden by request parameters. In practice, the most important fields are:
 
 * ``images_directory``: folder containing the input images
 * ``modelname``: backbone architecture
@@ -34,8 +59,8 @@ The training schema is generated from ``etc/config.yaml``. In practice, the most
 
 Typical browser workflow:
 
-1. start ``deepaas-run --listen-ip 0.0.0.0``
-2. open ``/ui`` or ``/api#/``
+1. start ``planktonclas api --config ./my_project/config.yaml``
+2. open ``/ui`` or ``/api``
 3. find the ``TRAIN`` operation
 4. change the parameters you need
 5. execute the request
@@ -60,8 +85,6 @@ The prediction endpoint accepts one of these inputs:
 * ``image``: a single uploaded image
 * ``zip``: a ZIP archive containing one or more images, including nested folders
 
-Supported image formats in the current API include common image extensions such as ``png``, ``jpg``, and ``jpeg``.
-
 Prediction response
 -------------------
 
@@ -81,25 +104,10 @@ The API loads one timestamp and one checkpoint for inference:
 * if no checkpoint is provided, it prefers ``.keras`` checkpoints over older formats
 * when training stored ``use_best_model = true`` and ``best_model.keras`` exists, inference prefers that checkpoint
 
-Service examples
-----------------
-
-Start the service:
-
-.. code-block:: bash
-
-   deepaas-run --listen-ip 0.0.0.0
-
-Monitor TensorBoard, if enabled during training:
-
-.. code-block:: text
-
-   http://0.0.0.0:6006
-
 Operational notes
 -----------------
 
-* ZIP prediction extracts the archive to a temporary directory and scans recursively for image files.
-* Prediction writes a JSON artifact to the configured predictions directory.
-* Training validates the ``images_directory`` path before starting.
-* If there are no models yet, the API can still be used for training, but not for inference.
+* ZIP prediction extracts the archive to a temporary directory and scans recursively for image files
+* prediction writes a JSON artifact to the configured predictions directory
+* training validates the ``images_directory`` path before starting
+* if there are no models yet, the API can still be used for training, but not for inference
