@@ -30,15 +30,18 @@ _AUTHORS += MODEL_METADATA["Author-emails"].keys()
 MODEL_METADATA["Authors"] = sorted(_AUTHORS)
 
 homedir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-conf_path = os.path.join(homedir, "etc", "config.yaml")
-with open(conf_path, "r") as f:
-    CONF = yaml.safe_load(f)
+DEFAULT_CONFIG_PATH = os.path.join(homedir, "planktonclas", "resources", "config.yaml")
+CONFIG_ENV_VAR = "PLANKTONCLAS_CONFIG"
+CONF_PATH = None
+CONFIG_ROOT = homedir
+CONF = None
 
 
-def check_conf(conf=CONF):
+def check_conf(conf=None):
     """
     Checks for configuration parameters
     """
+    conf = CONF if conf is None else conf
     for group, val in sorted(conf.items()):
         for g_key, g_val in sorted(val.items()):
             gg_keys = g_val.keys()
@@ -107,13 +110,38 @@ def check_conf(conf=CONF):
                 format("rot_lim", d_name))
 
 
-check_conf()
+def _load_conf_file(conf_path):
+    with open(conf_path, "r") as f:
+        return yaml.safe_load(f)
 
 
-def get_conf_dict(conf=CONF):
+def _get_resolution_root(conf_path):
+    if os.path.abspath(conf_path) == os.path.abspath(DEFAULT_CONFIG_PATH):
+        return homedir
+    return os.path.dirname(os.path.abspath(conf_path))
+
+
+def set_config_path(conf_path=None):
+    """
+    Load configuration from disk and refresh the exported module state.
+    """
+    global CONF_PATH, CONFIG_ROOT, CONF, conf_dict
+
+    selected_path = conf_path or os.getenv(CONFIG_ENV_VAR, DEFAULT_CONFIG_PATH)
+    selected_path = os.path.abspath(selected_path)
+    CONF_PATH = selected_path
+    CONFIG_ROOT = _get_resolution_root(selected_path)
+    CONF = _load_conf_file(selected_path)
+    check_conf(conf=CONF)
+    conf_dict = get_conf_dict(conf=CONF)
+    return CONF
+
+
+def get_conf_dict(conf=None):
     """
     Return configuration as dict
     """
+    conf = CONF if conf is None else conf
     conf_d = {}
     for group, val in conf.items():
         conf_d[group] = {}
@@ -126,13 +154,14 @@ def get_conf_dict(conf=CONF):
     return conf_d
 
 
-conf_dict = get_conf_dict()
+set_config_path()
 
 
-def print_full_conf(conf=CONF):
+def print_full_conf(conf=None):
     """
     Print all configuration parameters (including help, range, choices, ...)
     """
+    conf = CONF if conf is None else conf
     for group, val in sorted(conf.items()):
         print("=" * 75)
         print("{}".format(group))
@@ -157,10 +186,11 @@ def print_full_conf(conf=CONF):
             print("\n")
 
 
-def print_conf_table(conf=conf_dict):
+def print_conf_table(conf=None):
     """
     Print configuration parameters in a table
     """
+    conf = conf_dict if conf is None else conf
     print("{:<25}{:<30}{:<30}".format("group", "key", "value"))
     print("=" * 75)
     for group, val in sorted(conf.items()):

@@ -13,8 +13,6 @@ from datetime import datetime
 
 from planktonclas import config
 
-homedir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 CONF = config.get_conf_dict()
 timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
 
@@ -24,7 +22,7 @@ def get_base_dir():
     if os.path.isabs(base_dir):
         return base_dir
     else:
-        return os.path.abspath(os.path.join(homedir, base_dir))
+        return os.path.abspath(os.path.join(config.CONFIG_ROOT, base_dir))
 
 
 def get_images_dir():
@@ -32,7 +30,7 @@ def get_images_dir():
     if os.path.isabs(img_dir):
         return img_dir
     else:
-        return os.path.abspath(os.path.join(homedir, img_dir))
+        return os.path.abspath(os.path.join(config.CONFIG_ROOT, img_dir))
 
 
 def get_splits_dir():
