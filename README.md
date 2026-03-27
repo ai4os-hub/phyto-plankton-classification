@@ -116,6 +116,7 @@ pip install -e .
 ```
 
 ### Option B: Install as a package
+[Read the Docs site](https://phyto-plankton-classification.readthedocs.io/)
 
 ```bash
 pip install planktonclas
@@ -356,14 +357,19 @@ The repository also contains deployment assets under `oscar/`, including:
 
 ## More Documentation
 
-The full docs are in `docs/` and cover:
+The full documentation is available here:
 
-- installation
-- quickstart
-- API usage
-- Python usage
-- notebooks
-- reference
+- [Read the Docs site](https://phyto-plankton-classification.readthedocs.io/)
+- [Documentation entry page](docs/index.rst)
+
+Main documentation pages:
+
+- [Installation](docs/installation.rst)
+- [Quickstart](docs/quickstart.rst)
+- [API usage](docs/api_usage.rst)
+- [Python usage](docs/python_usage.rst)
+- [Notebooks](docs/notebooks.rst)
+- [Reference](docs/reference.rst)
 
 ## Acknowledgements
 
