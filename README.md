@@ -94,6 +94,8 @@ planktonclas notebooks my_project
 
 This copies the packaged notebooks into `my_project/notebooks/`. It is the best choice for exploration, augmentation experiments, prediction analysis, and explainability.
 
+`pip install planktonclas` installs the package dependencies used by the notebooks, including TensorFlow, plotting, and reporting libraries. It does not install the Jupyter application itself, so if you want to open the notebooks locally you should also install `jupyterlab` or `notebook`.
+
 ### 4. I want a containerized environment
 
 Use Docker. This is useful when you want an environment that is closer to deployment, or when you want notebook and API tooling already available inside the image.
@@ -160,11 +162,16 @@ For the bundled legacy pretrained model `Phytoplankton_EfficientNetV2B0`, use th
 checkpoint `final_model.h5`. New training runs created by `planktonclas train`
 save their final exported model as `final_model.keras`.
 
+In the model-based notebooks (`3.0`, `3.1`, and `3.2`), the first variables to check are `TIMESTAMP` and `MODEL_NAME`. They are prefilled for the published pretrained model so the notebooks work out of the box, but when you want to inspect a model from your own training run you should change those two values first.
+
 Report generation after training:
 
 ```bash
 planktonclas report --config ./my_project/config.yaml
 ```
+
+If you leave out `--timestamp`, `planktonclas report` suggests the most recent run, lists the available timestamps, and lets you choose another one by number.
+It also lets you choose between `quick` and `full` mode. `quick` is the default and creates the core figures only; `full` also generates the threshold-based plots in the `results/` subfolders.
 
 ### Option B: Use Docker
 

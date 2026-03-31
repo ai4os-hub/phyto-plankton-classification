@@ -20,6 +20,8 @@ Package install
 
 This is the best option for users who just want the CLI workflow without cloning the repository.
 
+This install includes the runtime dependencies used by training, prediction, reporting, and the packaged notebooks. It does not install the Jupyter application itself, so if you want to open notebooks locally you should also install ``jupyterlab`` or ``notebook``.
+
 Then initialize a project:
 
 .. code-block:: bash

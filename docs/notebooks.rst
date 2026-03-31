@@ -16,6 +16,8 @@ The repository includes notebooks for:
 
 They are the best choice when you want an interactive workflow.
 
+The normal package install includes the Python dependencies used by these notebooks, but it does not install the Jupyter application itself. For local notebook use, install ``jupyterlab`` or ``notebook`` in the same environment.
+
 Notebook list
 -------------
 
@@ -50,6 +52,8 @@ Copy the packaged notebooks into your project with:
    planktonclas notebooks my_project
 
 This creates ``my_project/notebooks/`` and copies the packaged notebooks there.
+
+For the model-based notebooks ``3.0-Computing_predictions.ipynb``, ``3.1-Prediction_statistics.ipynb``, and ``3.2-Saliency_maps.ipynb``, the most important variables are ``TIMESTAMP`` and ``MODEL_NAME`` near the top of the notebook. They are prefilled for the published pretrained model ``Phytoplankton_EfficientNetV2B0`` so the notebooks run immediately, but you should change them to your own training timestamp and checkpoint name when you want to inspect a newly trained model.
 
 If you are already running Jupyter locally, open that directory and work from there.
 

@@ -44,21 +44,28 @@ def create_pred_path(save_path, dir="", weighted=False, **kwargs):
     return pred_path
 
 
-def plt_conf_matrix(conf_mat, labels=False):
-    fig, ax = plt.subplots(figsize=(30, 30))
+def plt_conf_matrix(conf_mat, labels=False, normalized=False):
+    num_classes = conf_mat.shape[0]
+    fig_size = min(max(12, num_classes * 0.28), 34)
+    tick_fontsize = min(max(5, 12 - (num_classes // 12)), 9)
+    cbar_kws = {"fraction": 0.035, "pad": 0.03}
+
+    fig, ax = plt.subplots(figsize=(fig_size, fig_size), facecolor="white")
     hm = seaborn.heatmap(
         conf_mat,
         annot=False,
         square=True,
-        cbar_kws={
-            "fraction": 0.046,
-            "pad": 0.04
-        },
+        cmap="Blues",
+        linewidths=0.35,
+        linecolor="#d9d9d9",
+        vmin=0,
+        vmax=1 if normalized else None,
+        cbar_kws=cbar_kws,
         xticklabels=labels,
         yticklabels=labels,
         ax=ax,
     )
-    fontsize = None
+    fontsize = tick_fontsize
     hm.yaxis.set_ticklabels(
         hm.yaxis.get_ticklabels(),
         rotation=0,
@@ -72,8 +79,13 @@ def plt_conf_matrix(conf_mat, labels=False):
         fontsize=fontsize,
     )
 
-    ax.set_ylabel("True label")
-    ax.set_xlabel("Predicted label")
+    ax.set_facecolor("white")
+    ax.tick_params(axis="both", length=0)
+    ax.set_ylabel("True Class", fontsize=12)
+    ax.set_xlabel("Predicted Class", fontsize=12)
+
+    colorbar = hm.collections[0].colorbar
+    colorbar.ax.tick_params(labelsize=max(fontsize - 1, 5), length=0)
 
     return fig, ax
 

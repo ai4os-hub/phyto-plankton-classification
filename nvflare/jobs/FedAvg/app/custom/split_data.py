@@ -32,8 +32,16 @@ def split_train_file(input_file, num_clients, split):
     
     print(f"Successfully split data among {num_clients} clients.")
 
-# Example usage
-input_file = '/Users/leo/Desktop/plankton/nvflare/phyto-plankton-classification/data/demo-dataset_files/val.txt'
-num_clients = 2  # Change this to your desired number of clients
-split = "val"
-split_train_file(input_file, num_clients, split) 
+if __name__ == "__main__":
+    example_input = os.path.join(
+        os.path.dirname(__file__),
+        "..",
+        "..",
+        "..",
+        "..",
+        "..",
+        "data",
+        "demo-dataset_files",
+        "val.txt",
+    )
+    split_train_file(os.path.abspath(example_input), num_clients=2, split="val")

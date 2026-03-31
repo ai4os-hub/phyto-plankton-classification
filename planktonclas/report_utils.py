@@ -19,6 +19,9 @@ from sklearn.metrics import (
 from planktonclas import paths, plot_utils
 
 
+REPORT_THRESHOLD_LEVELS = np.array([0.0, 0.50, 0.75, 0.95], dtype=float)
+
+
 def _latest_timestamp(models_dir):
     timestamps = sorted(
         [
@@ -67,13 +70,15 @@ def _save_training_plot(stats, conf, results_dir):
 
 def _save_confusion_plots(true_labels, pred_labels, class_names, results_dir):
     cm = confusion_matrix(true_labels, pred_labels)
-    fig, _ = plot_utils.plt_conf_matrix(cm, labels=class_names)
+    fig, _ = plot_utils.plt_conf_matrix(cm, labels=class_names, normalized=False)
     fig.tight_layout()
     fig.savefig(os.path.join(results_dir, "confusion_matrix_counts.png"), dpi=200)
     plt.close(fig)
 
     cm_norm = confusion_matrix(true_labels, pred_labels, normalize="true")
-    fig, _ = plot_utils.plt_conf_matrix(np.round(cm_norm, 3), labels=class_names)
+    fig, _ = plot_utils.plt_conf_matrix(
+        np.round(cm_norm, 3), labels=class_names, normalized=True
+    )
     fig.tight_layout()
     fig.savefig(os.path.join(results_dir, "confusion_matrix_normalized.png"), dpi=200)
     plt.close(fig)
@@ -217,7 +222,7 @@ def _save_threshold_confusion_plots(data, results_dir):
     os.makedirs(threshold_dir_weighted, exist_ok=True)
 
     for weighted, save_dir in [(False, threshold_dir), (True, threshold_dir_weighted)]:
-        for threshold in np.arange(0, 1, 0.25):
+        for threshold in REPORT_THRESHOLD_LEVELS:
             subset = data[data["probability"] > threshold]
             if subset.empty:
                 continue
@@ -230,7 +235,9 @@ def _save_threshold_confusion_plots(data, results_dir):
             )
             row_sums = conf_mat.sum(axis=1, keepdims=True)
             normed = np.divide(conf_mat, row_sums, out=np.zeros_like(conf_mat, dtype=float), where=row_sums != 0)
-            fig, _ = plot_utils.plt_conf_matrix(normed, labels=class_names)
+            fig, _ = plot_utils.plt_conf_matrix(
+                normed, labels=class_names, normalized=True
+            )
             fig.tight_layout()
             suffix = f"weighted_{threshold:.2f}" if weighted else f"{threshold:.2f}"
             fig.savefig(os.path.join(save_dir, f"confusion_matrix_{suffix}.png"), dpi=200)
@@ -265,7 +272,7 @@ def _compute_metrics_for_subset(slice_data, class_name):
 def _save_cutoff_evolution_plots(data, results_dir):
     cutoff_dir = os.path.join(results_dir, "cut_off_changes")
     os.makedirs(cutoff_dir, exist_ok=True)
-    thresholds = np.arange(0, 1, 0.02)
+    thresholds = REPORT_THRESHOLD_LEVELS
 
     for class_name in np.unique(data["top1"]):
         metrics = []
@@ -305,7 +312,7 @@ def _save_cutoff_evolution_plots(data, results_dir):
 def _save_classwise_progression_plots(data, results_dir):
     progression_dir = os.path.join(results_dir, "proportional_progression")
     os.makedirs(progression_dir, exist_ok=True)
-    thresholds = np.arange(0, 1, 0.02)
+    thresholds = REPORT_THRESHOLD_LEVELS
 
     for class_name in np.unique(data["top1"]):
         base_counts = pd.DataFrame(data[data["top1"] == class_name]["true_label"].value_counts())
@@ -374,7 +381,7 @@ def _masked_data_for_target(data, precision_target):
 def _save_threshold_summary_plot(data, results_dir):
     summary_dir = os.path.join(results_dir, "summary_threshold")
     os.makedirs(summary_dir, exist_ok=True)
-    thresholds = np.concatenate((np.arange(0.5, 0.95, 0.01), np.arange(0.95, 0.995, 0.005)))
+    thresholds = REPORT_THRESHOLD_LEVELS[1:]
 
     acc = np.zeros(len(thresholds))
     pr_weighted = np.zeros(len(thresholds))
@@ -424,7 +431,7 @@ def _save_threshold_summary_plot(data, results_dir):
     plt.close(fig)
 
 
-def generate_report(timestamp=None, progress=None):
+def generate_report(timestamp=None, progress=None, mode="quick"):
     progress = progress or (lambda message: None)
     models_dir = paths.get_models_dir()
     if timestamp is None:
@@ -486,17 +493,19 @@ def generate_report(timestamp=None, progress=None):
         class_names=class_names,
         results_dir=results_dir,
     )
-    progress("Creating threshold confusion plots")
-    _save_threshold_confusion_plots(data=data, results_dir=results_dir)
-    progress("Creating cutoff evolution plots")
-    _save_cutoff_evolution_plots(data=data, results_dir=results_dir)
-    progress("Creating classwise progression plots")
-    _save_classwise_progression_plots(data=data, results_dir=results_dir)
-    progress("Creating threshold summary plot")
-    _save_threshold_summary_plot(data=data, results_dir=results_dir)
+    if mode == "full":
+        progress("Creating threshold confusion plots")
+        _save_threshold_confusion_plots(data=data, results_dir=results_dir)
+        progress("Creating cutoff evolution plots")
+        _save_cutoff_evolution_plots(data=data, results_dir=results_dir)
+        progress("Creating classwise progression plots")
+        _save_classwise_progression_plots(data=data, results_dir=results_dir)
+        progress("Creating threshold summary plot")
+        _save_threshold_summary_plot(data=data, results_dir=results_dir)
 
     summary = {
         "timestamp": timestamp,
+        "mode": mode,
         "results_dir": results_dir,
         "predictions_file": predictions_path,
         **topk_summary,

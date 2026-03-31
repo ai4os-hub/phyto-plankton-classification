@@ -52,6 +52,9 @@ Generate a report
 
 This writes evaluation images and metric files under ``my_project/models/<timestamp>/results/``.
 
+If you leave out ``--timestamp``, the CLI suggests the newest run automatically, shows the available timestamps, and lets you choose another one by number.
+If you leave out ``--mode``, the CLI suggests ``quick`` automatically. Quick mode creates the core figures only, while full mode also generates the threshold-based plots in the ``results/`` subfolders.
+
 Local API
 ---------
 

@@ -48,6 +48,8 @@ Important conventions
 * training with test evaluation saves both prediction JSON files and a compact metrics JSON under ``models/<timestamp>/predictions/``
 * inference defaults to the latest available trained timestamp
 * new local training runs save their final exported model as ``final_model.keras``, while the legacy pretrained ``Phytoplankton_EfficientNetV2B0`` model still uses ``final_model.h5``
+* ``planktonclas report`` suggests the most recent timestamp when ``--timestamp`` is omitted and can prompt for another run by number
+* ``planktonclas report`` defaults to ``quick`` mode and only generates the subfolder threshold plots in ``full`` mode
 
 Source files
 ------------

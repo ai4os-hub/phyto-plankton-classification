@@ -104,6 +104,71 @@ def _display_path(path):
         return path
 
 
+def _list_model_timestamps():
+    models_dir = paths.get_models_dir()
+    if not os.path.isdir(models_dir):
+        raise FileNotFoundError(f"No models directory found: {models_dir}")
+
+    timestamps = sorted(
+        [
+            name
+            for name in os.listdir(models_dir)
+            if os.path.isdir(os.path.join(models_dir, name))
+        ]
+    )
+    if not timestamps:
+        raise FileNotFoundError(f"No models found in: {models_dir}")
+    return timestamps
+
+
+def _choose_report_timestamp(explicit_timestamp=None):
+    if explicit_timestamp:
+        return explicit_timestamp
+
+    timestamps = _list_model_timestamps()
+    suggested = timestamps[-1]
+
+    if len(timestamps) == 1:
+        print(f"Only one model run found. Using: {suggested}")
+        return suggested
+
+    print("Available model runs:")
+    for idx, timestamp in enumerate(timestamps, start=1):
+        marker = " (suggested)" if timestamp == suggested else ""
+        print(f"  {idx}. {timestamp}{marker}")
+
+    print(f"Suggested most recent run: {suggested}")
+    print("Press Enter to use the suggested run, or type a number from the list.")
+
+    while True:
+        selection = input("Report model selection: ").strip()
+        if not selection:
+            return suggested
+        if selection.isdigit():
+            choice = int(selection)
+            if 1 <= choice <= len(timestamps):
+                return timestamps[choice - 1]
+        print(f"Please enter a number between 1 and {len(timestamps)}, or press Enter.")
+
+
+def _choose_report_mode(explicit_mode=None):
+    if explicit_mode:
+        return explicit_mode
+
+    print("Report detail level:")
+    print("  1. quick (suggested) - core figures only")
+    print("  2. full - also generates the threshold-based figures in results subfolders")
+    print("Press Enter to use quick, or type 1 or 2.")
+
+    while True:
+        selection = input("Report mode selection: ").strip().lower()
+        if selection in {"", "1", "quick"}:
+            return "quick"
+        if selection in {"2", "full"}:
+            return "full"
+        print("Please enter 1, 2, quick, full, or press Enter.")
+
+
 def init_project(args):
     target_dir = os.path.abspath(args.directory)
     config_path = os.path.join(target_dir, DEFAULT_PROJECT_CONFIG_NAME)
@@ -173,12 +238,16 @@ def generate_report_cmd(args):
 
     from planktonclas.report_utils import generate_report
 
+    selected_timestamp = _choose_report_timestamp(args.timestamp)
+    selected_mode = _choose_report_mode(args.mode)
     print("Starting report generation...")
     summary = generate_report(
-        timestamp=args.timestamp,
+        timestamp=selected_timestamp,
+        mode=selected_mode,
         progress=lambda message: print(f"[report] {message}"),
     )
     print(f"Report generated for timestamp: {summary['timestamp']}")
+    print(f"Mode: {summary['mode']}")
     print(f"Results: {_display_path(summary['results_dir'])}")
     print(f"Predictions: {_display_path(summary['predictions_file'])}")
     print(f"Top-1 accuracy: {summary['top1_accuracy']:.3f}")
@@ -321,6 +390,11 @@ def build_parser():
     report_parser.add_argument(
         "--timestamp",
         help="Timestamped model directory to report on. Defaults to the latest run.",
+    )
+    report_parser.add_argument(
+        "--mode",
+        choices=["quick", "full"],
+        help="Report detail level. Quick skips the subfolder threshold plots.",
     )
     report_parser.set_defaults(func=generate_report_cmd)
 

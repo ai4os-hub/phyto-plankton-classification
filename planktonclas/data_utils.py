@@ -678,11 +678,30 @@ def compute_meanRGB(im_list, verbose=False, workers=4):
 
     total = len(im_list)
     logger.info("[data] Computing RGB statistics for %s images", total)
-    with utils.prefixed_stdout("planktonclas.data_utils", "[data]"):
-        with Pool(workers) as p:
+    iterator = None
+    if workers is None or workers <= 1:
+        iterator = map(im_stats, im_list)
+    else:
+        with utils.prefixed_stdout("planktonclas.data_utils", "[data]"):
+            with Pool(workers) as p:
+                r = list(
+                    tqdm(
+                        p.imap(im_stats, im_list),
+                        total=total,
+                        disable=verbose,
+                        file=sys.stdout,
+                        dynamic_ncols=True,
+                        desc="Computing RGB statistics",
+                        unit="img",
+                    )
+                )
+        iterator = None
+
+    if iterator is not None:
+        with utils.prefixed_stdout("planktonclas.data_utils", "[data]"):
             r = list(
                 tqdm(
-                    p.imap(im_stats, im_list),
+                    iterator,
                     total=total,
                     disable=verbose,
                     file=sys.stdout,
