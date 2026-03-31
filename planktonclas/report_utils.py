@@ -19,7 +19,7 @@ from sklearn.metrics import (
 from planktonclas import paths, plot_utils
 
 
-REPORT_THRESHOLD_LEVELS = np.array([0.0, 0.50, 0.75, 0.95], dtype=float)
+REPORT_THRESHOLD_LEVELS = np.array([0.0, 0.50, 0.75, 0.90, 0.95], dtype=float)
 
 
 def _latest_timestamp(models_dir):
