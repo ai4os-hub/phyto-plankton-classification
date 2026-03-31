@@ -26,6 +26,12 @@ For a runnable demo project:
 
    planktonclas init my_project --demo
 
+To download the published pretrained model into the project:
+
+.. code-block:: bash
+
+   planktonclas pretrained my_project
+
 Local training
 --------------
 
@@ -69,9 +75,9 @@ Notebook workflow
 
 .. code-block:: bash
 
-   planktonclas notebooks
+   planktonclas notebooks my_project
 
-This prints the notebook directory packaged with the project.
+This copies the packaged notebooks into ``my_project/notebooks/``.
 
 Useful commands
 ---------------
@@ -79,6 +85,7 @@ Useful commands
 .. code-block:: bash
 
    planktonclas list-models --config ./my_project/config.yaml
+   planktonclas pretrained my_project
 
 Dataset notes
 -------------

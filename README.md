@@ -45,7 +45,7 @@ The important thing for new users is this:
 
 ## Workflow Overview
 
-![Workflow overview](references/Flowchart_github.png)
+![Workflow overview](references/Flowchart_github_plankton.drawio.png)
 
 The repository supports five main approaches:
 
@@ -53,7 +53,7 @@ The repository supports five main approaches:
 | --- | --- | --- |
 | Local CLI | straightforward training and reporting | `planktonclas train --config ...` |
 | Local API | browser-based testing through Swagger / DEEPaaS | `planktonclas api --config ...` |
-| Notebooks | interactive exploration and debugging | `planktonclas notebooks` |
+| Notebooks | interactive exploration and debugging | `planktonclas notebooks my_project` |
 | Docker | isolated reproducible runtime | `docker run ...` |
 | AI4OS / OSCAR | hosted or remote deployment | deployment-specific |
 
@@ -89,10 +89,10 @@ This is the best choice if you want to interact through the DEEPaaS UI or integr
 Use:
 
 ```bash
-planktonclas notebooks
+planktonclas notebooks my_project
 ```
 
-This is the best choice for exploration, augmentation experiments, prediction analysis, and explainability.
+This copies the packaged notebooks into `my_project/notebooks/`. It is the best choice for exploration, augmentation experiments, prediction analysis, and explainability.
 
 ### 4. I want a containerized environment
 
@@ -104,18 +104,8 @@ Use AI4OS or OSCAR. This is useful when you want a remote API, remote notebooks,
 
 ## Quick Start
 
-### Option A: Install from the repository
+### Option A: Install as a package
 
-```bash
-git clone https://github.com/ai4os-hub/phyto-plankton-classification
-cd phyto-plankton-classification
-python -m venv .venv
-.venv\Scripts\activate
-pip install -U pip
-pip install -e .
-```
-
-### Option B: Install as a package
 [Read the Docs site](https://phyto-plankton-classification.readthedocs.io/)
 
 ```bash
@@ -154,10 +144,47 @@ Local API:
 planktonclas api --config ./my_project/config.yaml
 ```
 
+Copy notebooks into the project:
+
+```bash
+planktonclas notebooks my_project
+```
+
+Download the published pretrained model into the project:
+
+```bash
+planktonclas pretrained my_project
+```
+
 Report generation after training:
 
 ```bash
 planktonclas report --config ./my_project/config.yaml
+```
+
+### Option B: Use Docker
+
+This is the simplest repository-based workflow if you want the project files but do not want to install all Python dependencies on your machine.
+
+```bash
+git clone https://github.com/ai4os-hub/phyto-plankton-classification
+cd phyto-plankton-classification
+docker run -ti -p 8888:8888 -p 5000:5000 -v "$(pwd):/srv/phyto-plankton-classification" ai4oshub/phyto-plankton-classification:latest /bin/bash
+```
+
+Inside the container, you can use the same `planktonclas` CLI workflow.
+
+### Option C: Repository install for development
+
+Choose this only if you want to work on the package itself.
+
+```bash
+git clone https://github.com/ai4os-hub/phyto-plankton-classification
+cd phyto-plankton-classification
+python -m venv .venv
+.venv\Scripts\activate
+pip install -U pip
+pip install -e .
 ```
 
 ## Project Structure
@@ -171,6 +198,7 @@ my_project/
     images/
     dataset_files/
   models/
+  notebooks/
 ```
 
 ### What is required?
@@ -222,13 +250,16 @@ The package installs a `planktonclas` command with these main subcommands:
 - `planktonclas train --config PATH`
 - `planktonclas report --config PATH [--timestamp TS]`
 - `planktonclas api --config PATH`
+- `planktonclas pretrained [DIR]`
 - `planktonclas list-models --config PATH`
-- `planktonclas notebooks`
+- `planktonclas notebooks [DIR]`
 
 Typical local workflow:
 
 ```bash
 planktonclas init my_project
+planktonclas pretrained my_project
+planktonclas notebooks my_project
 planktonclas validate-config --config ./my_project/config.yaml
 planktonclas train --config ./my_project/config.yaml
 planktonclas report --config ./my_project/config.yaml
@@ -274,10 +305,10 @@ The repository includes notebooks for:
 - prediction statistics
 - saliency and explainability
 
-Print the notebooks directory with:
+Copy the packaged notebooks into your project with:
 
 ```bash
-planktonclas notebooks
+planktonclas notebooks my_project
 ```
 
 Notebook overview:
@@ -327,6 +358,8 @@ docker run -ti -p 8888:8888 -p 5000:5000 -v "$(pwd):/srv/phyto-plankton-classifi
 ```
 
 Inside the container, you can use the same `planktonclas` CLI workflow.
+
+The container image also downloads the published pretrained model during the image build, so it is ready inside `models/` without an extra manual download step.
 
 If the image or deployment provides AI4OS helper scripts, you may also have:
 

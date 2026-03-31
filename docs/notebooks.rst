@@ -43,11 +43,13 @@ Notebook list
 Finding the notebooks
 ---------------------
 
-Print the packaged notebook directory with:
+Copy the packaged notebooks into your project with:
 
 .. code-block:: bash
 
-   planktonclas notebooks
+   planktonclas notebooks my_project
+
+This creates ``my_project/notebooks/`` and copies the packaged notebooks there.
 
 If you are already running Jupyter locally, open that directory and work from there.
 

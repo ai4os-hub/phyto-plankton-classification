@@ -6,24 +6,10 @@ Choose your installation mode
 
 There are four common ways to use ``planktonclas``:
 
-* install from the repository for local development
 * install as a package for normal CLI usage
 * use Docker for a containerized runtime
+* install from the repository for local development
 * use AI4OS / OSCAR for hosted deployment
-
-Repository install
-------------------
-
-.. code-block:: bash
-
-   git clone https://github.com/ai4os-hub/phyto-plankton-classification
-   cd phyto-plankton-classification
-   python -m venv .venv
-   .venv\Scripts\activate
-   pip install -U pip
-   pip install -e .
-
-This is the best option for development work on the repository itself.
 
 Package install
 ---------------
@@ -46,6 +32,13 @@ Or create a runnable demo project:
 
    planktonclas init my_project --demo
 
+Optional helpers:
+
+.. code-block:: bash
+
+   planktonclas pretrained my_project
+   planktonclas notebooks my_project
+
 Docker install
 --------------
 
@@ -55,7 +48,9 @@ Docker install
      -v "${PWD}:/srv/phyto-plankton-classification" ^
      ai4oshub/phyto-plankton-classification:latest /bin/bash
 
-Inside the container, use the same CLI workflow with ``planktonclas init``, ``planktonclas train``, and ``planktonclas api``.
+Inside the container, use the same CLI workflow with ``planktonclas init``, ``planktonclas train``, ``planktonclas pretrained``, and ``planktonclas api``.
+
+The container image also ships with the published pretrained model under ``models/``.
 
 If the image or deployment provides the AI4OS helper scripts, you may also have:
 
@@ -69,6 +64,20 @@ Important:
 * a normal local install does not provide ``deep-start``
 * for local installs, use ``planktonclas ...`` or ``deepaas-run``
 * ``deep-start`` is typically available only in AI4OS/container/deployment environments that ship those helpers
+
+Repository install
+------------------
+
+.. code-block:: bash
+
+   git clone https://github.com/ai4os-hub/phyto-plankton-classification
+   cd phyto-plankton-classification
+   python -m venv .venv
+   .venv\Scripts\activate
+   pip install -U pip
+   pip install -e .
+
+This is the best option for development work on the repository itself.
 
 Direct API startup
 ------------------
@@ -94,6 +103,13 @@ After ``planktonclas init``, a project looks like this:
        images/
        dataset_files/
      models/
+
+If you also copy the packaged notebooks, the project gains:
+
+.. code-block:: text
+
+   my_project/
+     notebooks/
 
 Required input
 --------------

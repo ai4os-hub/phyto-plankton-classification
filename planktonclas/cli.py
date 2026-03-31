@@ -7,8 +7,12 @@ import os
 import shutil
 import subprocess
 import sys
+import tarfile
+import tempfile
 from datetime import datetime
 from importlib.resources import files
+
+import requests
 
 from planktonclas import config, paths
 
@@ -24,6 +28,11 @@ def _resource_path(*parts):
 DEFAULT_NOTEBOOKS_DIR = _resource_path("resources", "notebooks")
 DEFAULT_DEMO_IMAGES_DIR = _resource_path("resources", "demo-images")
 DEFAULT_DEMO_SPLITS_DIR = _resource_path("resources", "dataset_files")
+PRETRAINED_MODEL_NAME = "Phytoplankton_EfficientNetV2B0"
+PRETRAINED_MODEL_TAR = f"{PRETRAINED_MODEL_NAME}.tar.gz"
+PRETRAINED_MODEL_URL = (
+    f"https://zenodo.org/records/15269453/files/{PRETRAINED_MODEL_TAR}?download=1"
+)
 
 
 def _default_config_path():
@@ -59,6 +68,25 @@ def _resolve_executable(name):
     if executable is None:
         raise FileNotFoundError(f"Executable not found in PATH: {name}")
     return executable
+
+
+def _resolve_project_dir(directory=None, conf_path=None):
+    if conf_path:
+        _apply_config(os.path.abspath(conf_path))
+        return paths.get_base_dir()
+    if directory is not None:
+        return os.path.abspath(directory)
+    return os.path.abspath(".")
+
+
+def _safe_extract_tar(archive_path, destination):
+    destination = os.path.abspath(destination)
+    with tarfile.open(archive_path, "r:gz") as tar:
+        for member in tar.getmembers():
+            member_path = os.path.abspath(os.path.join(destination, member.name))
+            if os.path.commonpath([destination, member_path]) != destination:
+                raise ValueError(f"Unsafe path found in tar archive: {member.name}")
+        tar.extractall(path=destination)
 
 
 def init_project(args):
@@ -181,7 +209,51 @@ def list_models(args):
 
 
 def notebooks(args):
-    print(DEFAULT_NOTEBOOKS_DIR)
+    project_dir = _resolve_project_dir(args.directory, args.config)
+    target_dir = os.path.join(project_dir, "notebooks")
+    _ensure_dir(project_dir)
+
+    if os.path.exists(target_dir) and not args.force:
+        raise FileExistsError(
+            f"{target_dir} already exists. Use --force to overwrite notebook files."
+        )
+
+    _copy_tree(DEFAULT_NOTEBOOKS_DIR, target_dir)
+    print(f"Notebooks copied to: {target_dir}")
+
+
+def download_pretrained(args):
+    project_dir = _resolve_project_dir(args.directory, args.config)
+    models_dir = os.path.join(project_dir, "models")
+    target_dir = os.path.join(models_dir, PRETRAINED_MODEL_NAME)
+    _ensure_dir(models_dir)
+
+    if os.path.exists(target_dir) and not args.force:
+        raise FileExistsError(
+            f"{target_dir} already exists. Use --force to re-download the pretrained model."
+        )
+
+    print(f"Downloading pretrained model: {PRETRAINED_MODEL_NAME}")
+    print(f"Source: {PRETRAINED_MODEL_URL}")
+
+    temp_archive = None
+    try:
+        with requests.get(PRETRAINED_MODEL_URL, stream=True, timeout=120) as response:
+            response.raise_for_status()
+            with tempfile.NamedTemporaryFile(
+                suffix=".tar.gz", delete=False
+            ) as tmp_file:
+                temp_archive = tmp_file.name
+                for chunk in response.iter_content(chunk_size=1024 * 1024):
+                    if chunk:
+                        tmp_file.write(chunk)
+
+        _safe_extract_tar(temp_archive, models_dir)
+    finally:
+        if temp_archive and os.path.exists(temp_archive):
+            os.remove(temp_archive)
+
+    print(f"Pretrained model available at: {target_dir}")
 
 
 def build_parser():
@@ -248,9 +320,29 @@ def build_parser():
     models_parser.set_defaults(func=list_models)
 
     notebooks_parser = subparsers.add_parser(
-        "notebooks", help="Print the package notebooks directory."
+        "notebooks", help="Copy packaged notebooks into a project directory."
+    )
+    notebooks_parser.add_argument("directory", nargs="?", default=".")
+    notebooks_parser.add_argument("--config")
+    notebooks_parser.add_argument(
+        "--force",
+        action="store_true",
+        help="Overwrite notebook files in an existing notebooks directory.",
     )
     notebooks_parser.set_defaults(func=notebooks)
+
+    pretrained_parser = subparsers.add_parser(
+        "pretrained",
+        help="Download the packaged pretrained phytoplankton model into a project.",
+    )
+    pretrained_parser.add_argument("directory", nargs="?", default=".")
+    pretrained_parser.add_argument("--config")
+    pretrained_parser.add_argument(
+        "--force",
+        action="store_true",
+        help="Re-download into an existing pretrained model directory.",
+    )
+    pretrained_parser.set_defaults(func=download_pretrained)
 
     return parser
 
