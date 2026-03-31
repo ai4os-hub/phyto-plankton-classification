@@ -47,6 +47,7 @@ Important conventions
 * outputs are organized by training timestamp under ``models/<timestamp>/``
 * training with test evaluation saves both prediction JSON files and a compact metrics JSON under ``models/<timestamp>/predictions/``
 * inference defaults to the latest available trained timestamp
+* new local training runs save their final exported model as ``final_model.keras``, while the legacy pretrained ``Phytoplankton_EfficientNetV2B0`` model still uses ``final_model.h5``
 
 Source files
 ------------

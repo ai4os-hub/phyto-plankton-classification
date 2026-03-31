@@ -156,6 +156,10 @@ Download the published pretrained model into the project:
 planktonclas pretrained my_project
 ```
 
+For the bundled legacy pretrained model `Phytoplankton_EfficientNetV2B0`, use the
+checkpoint `final_model.h5`. New training runs created by `planktonclas train`
+save their final exported model as `final_model.keras`.
+
 Report generation after training:
 
 ```bash
