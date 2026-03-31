@@ -28,6 +28,7 @@ def _resource_path(*parts):
 DEFAULT_NOTEBOOKS_DIR = _resource_path("resources", "notebooks")
 DEFAULT_DEMO_IMAGES_DIR = _resource_path("resources", "demo-images")
 DEFAULT_DEMO_SPLITS_DIR = _resource_path("resources", "dataset_files")
+DEFAULT_TRANSFORMATION_DATA_DIR = _resource_path("resources", "data_transformation")
 PRETRAINED_MODEL_NAME = "Phytoplankton_EfficientNetV2B0"
 PRETRAINED_MODEL_TAR = f"{PRETRAINED_MODEL_NAME}.tar.gz"
 PRETRAINED_MODEL_URL = (
@@ -228,6 +229,13 @@ def train_model(args):
 
     conf = config.get_conf_dict()
     conf["dataset"]["num_workers"] = args.workers
+    if args.mode:
+        conf["training"]["mode"] = args.mode
+    if args.epochs is not None:
+        conf["training"]["epochs"] = args.epochs
+    if args.quick:
+        conf["training"]["mode"] = "fast"
+        conf["training"]["epochs"] = 1
     timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
     train_fn(TIMESTAMP=timestamp, CONF=conf)
 
@@ -299,15 +307,25 @@ def list_models(args):
 def notebooks(args):
     project_dir = _resolve_project_dir(args.directory, args.config)
     target_dir = os.path.join(project_dir, "notebooks")
+    transformation_dir = os.path.join(project_dir, "data", "data_transformation")
     _ensure_dir(project_dir)
+    _ensure_dir(os.path.join(project_dir, "data"))
 
     if os.path.exists(target_dir) and not args.force:
         raise FileExistsError(
             f"{target_dir} already exists. Use --force to overwrite notebook files."
         )
 
+    if os.path.exists(transformation_dir) and not args.force:
+        print(
+            f"Transformation data directory already exists: {transformation_dir}"
+        )
+        print("Use --force to refresh the packaged transformation data files.")
+
     _copy_tree(DEFAULT_NOTEBOOKS_DIR, target_dir)
+    _copy_tree(DEFAULT_TRANSFORMATION_DATA_DIR, transformation_dir)
     print(f"Notebooks copied to: {target_dir}")
+    print(f"Transformation data copied to: {transformation_dir}")
 
 
 def download_pretrained(args):
@@ -379,6 +397,21 @@ def build_parser():
         type=int,
         default=4,
         help="Number of dataset preprocessing workers.",
+    )
+    train_parser.add_argument(
+        "--mode",
+        choices=["normal", "fast"],
+        help="Override the training mode from the config file.",
+    )
+    train_parser.add_argument(
+        "--epochs",
+        type=int,
+        help="Override the number of training epochs from the config file.",
+    )
+    train_parser.add_argument(
+        "--quick",
+        action="store_true",
+        help="Quick smoke-test run: uses fast mode and 1 epoch.",
     )
     train_parser.set_defaults(func=train_model)
 

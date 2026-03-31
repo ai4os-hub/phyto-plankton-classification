@@ -11,7 +11,7 @@ It supports:
 - containerized execution with Docker
 - hosted deployment through AI4OS and OSCAR
 
-**Authors:** [Ignacio Heredia & Wout Decrop](https://github.com/IgnacioHeredia) (CSIC & VLIZ)
+**Authors:** [Ignacio Heredia](https://github.com/IgnacioHeredia) and [Wout Decrop](https://github.com/woutdecrop) (CSIC & VLIZ)
 
 **Projects:**
 - [iMagine](https://www.imagine-ai.eu/)
@@ -151,6 +151,12 @@ Local training:
 planktonclas train --config ./my_project/config.yaml
 ```
 
+For a quick smoke test on the demo project:
+
+```bash
+planktonclas train --config ./my_project/config.yaml --quick
+```
+
 Local API:
 
 ```bash
@@ -162,6 +168,14 @@ Copy notebooks into the project:
 ```bash
 planktonclas notebooks my_project
 ```
+
+To refresh a project with updated packaged notebooks:
+
+```bash
+planktonclas notebooks my_project --force
+```
+
+This also copies the transformation workspace used by `1.1-Image_transformation.ipynb` into `my_project/data/data_transformation/`.
 
 Download the published pretrained model into the project:
 
@@ -287,6 +301,14 @@ planktonclas train --config ./my_project/config.yaml
 planktonclas report --config ./my_project/config.yaml
 ```
 
+For a faster package smoke test with the demo data:
+
+```bash
+planktonclas init my_project --demo
+planktonclas train --config ./my_project/config.yaml --quick
+planktonclas report --config ./my_project/config.yaml
+```
+
 ## API Workflow
 
 Start the API with:
@@ -333,6 +355,9 @@ Copy the packaged notebooks into your project with:
 planktonclas notebooks my_project
 ```
 
+The copied notebooks auto-detect the nearest project `config.yaml`, so they use the paths inside your local project folder rather than the installed package directory.
+They also copy `data/data_transformation/start`, `reference_style`, and `end` for the transformation notebook.
+
 Notebook overview:
 
 - `1.0-Dataset_exploration.ipynb`
@@ -342,6 +367,12 @@ Notebook overview:
 - `3.0-Computing_predictions.ipynb`
 - `3.1-Prediction_statistics.ipynb`
 - `3.2-Saliency_maps.ipynb`
+
+For `1.1-Image_transformation.ipynb`:
+
+- put your new raw images in `data/data_transformation/start/`
+- keep one or more reference images in `data/data_transformation/reference_style/`
+- the transformed outputs are written to `data/data_transformation/end/`
 
 ## Outputs
 

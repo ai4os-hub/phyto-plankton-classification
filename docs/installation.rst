@@ -42,6 +42,12 @@ Or create a runnable demo project:
 
    planktonclas init my_project --demo
 
+For a quick demo smoke test:
+
+.. code-block:: bash
+
+   planktonclas train --config ./my_project/config.yaml --quick
+
 Optional helpers:
 
 .. code-block:: bash

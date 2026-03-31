@@ -55,6 +55,8 @@ planktonclas = [
     "resources/dataset_files/*",
     "resources/notebooks/*.ipynb",
     "resources/demo-images/*/*",
+    "resources/data_transformation/*",
+    "resources/data_transformation/*/*",
 ]
 
 

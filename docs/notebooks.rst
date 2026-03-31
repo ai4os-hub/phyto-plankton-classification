@@ -59,6 +59,21 @@ Copy the packaged notebooks into your project with:
 
 This creates ``my_project/notebooks/`` and copies the packaged notebooks there.
 
+To refresh an existing project with updated packaged notebooks:
+
+.. code-block:: bash
+
+   planktonclas notebooks my_project --force
+
+The copied notebooks auto-detect the nearest project ``config.yaml``, so they use the paths inside your local project folder rather than the installed package directory.
+They also copy ``data/data_transformation/start``, ``reference_style``, and ``end`` for the image-transformation notebook.
+
+For ``1.1-Image_transformation.ipynb``:
+
+* put your new raw images in ``data/data_transformation/start/``
+* keep one or more reference images in ``data/data_transformation/reference_style/``
+* the transformed outputs are written to ``data/data_transformation/end/``
+
 For the model-based notebooks ``3.0-Computing_predictions.ipynb``, ``3.1-Prediction_statistics.ipynb``, and ``3.2-Saliency_maps.ipynb``, the most important variables are ``TIMESTAMP`` and ``MODEL_NAME`` near the top of the notebook. They are prefilled for the published pretrained model ``Phytoplankton_EfficientNetV2B0`` so the notebooks run immediately, but you should change them to your own training timestamp and checkpoint name when you want to inspect a newly trained model.
 
 If you are already running Jupyter locally, open that directory and work from there.
