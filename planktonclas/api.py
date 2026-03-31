@@ -664,18 +664,25 @@ def get_directory_choices(base_path="/srv/data/"):
         return []
 
 
-def validate_directory(path):
-    # Convert the input to a Path object if it's a string
+def resolve_directory(path):
+    """Resolve a user-provided directory using the active config root."""
     if isinstance(path, str):
-        path = Path(
-            path.strip("'\"")
-        )  # Remove any leading/trailing quotes
+        path = path.strip("'\"")
+        candidate = Path(path)
+    else:
+        candidate = Path(path)
 
-    # Check if the path is a valid directory
-    if not path.is_dir():
-        raise ValidationError(f"{path} is not a valid directory")
+    if not candidate.is_absolute():
+        candidate = Path(config.CONFIG_ROOT) / candidate
 
-    return path
+    return candidate.resolve()
+
+
+def validate_directory(path):
+    resolved = resolve_directory(path)
+    if not resolved.is_dir():
+        raise ValueError(f"{resolved} is not a valid directory")
+    return resolved
 
 
 from pathlib import Path
@@ -699,7 +706,9 @@ def train(**args):
         
         # Clear session and validate
         K.clear_session()
-        validate_directory(args["images_directory"])
+        resolved_images_dir = validate_directory(args["images_directory"])
+        args["images_directory"] = str(resolved_images_dir)
+        CONF["general"]["images_directory"] = str(resolved_images_dir)
         
         # Print config table
         config.print_conf_table(CONF)
@@ -720,7 +729,7 @@ def train(**args):
         logger.critical("✗ Training failed: %s", str(err), exc_info=True)
         # Sanitize error message for HTTPException (cannot contain newlines)
         error_msg = str(err).replace('\n', ' ').replace('\r', ' ')
-        raise HTTPException(reason=error_msg) from err
+        raise ValueError(error_msg) from err
 
 
 def populate_parser(parser, default_conf):
