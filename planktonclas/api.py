@@ -24,6 +24,7 @@ import glob
 import json
 import os
 import re
+import shutil
 import sys
 import tempfile
 import threading
@@ -65,6 +66,20 @@ class LoadingBar:
             self.thread.join()
         sys.stdout.write('\r' + ' ' * (len(self.message) + 10) + '\r')
         sys.stdout.flush()
+
+
+def _safe_extract_zip(zip_ref, destination):
+    destination = os.path.abspath(destination)
+    for member in zip_ref.infolist():
+        member_path = os.path.abspath(os.path.join(destination, member.filename))
+        if os.path.commonpath([destination, member_path]) != destination:
+            raise ValueError(f"Unsafe path found in zip archive: {member.filename}")
+        if member.is_dir():
+            os.makedirs(member_path, exist_ok=True)
+            continue
+        os.makedirs(os.path.dirname(member_path), exist_ok=True)
+        with zip_ref.open(member) as src, open(member_path, "wb") as dst:
+            shutil.copyfileobj(src, dst)
 
 
 _import_loader = LoadingBar("Initializing Phytoplankton Classifier...")
@@ -450,7 +465,7 @@ def predict(**args):
                 with zipfile.ZipFile(
                     zip_file.filename, "r"
                 ) as zip_ref:
-                    zip_ref.extractall(temp_dir)
+                    _safe_extract_zip(zip_ref, temp_dir)
 
                 # Recursively find all image files in extracted zip
                 image_files = get_image_files_recursive(temp_dir)

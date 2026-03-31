@@ -86,7 +86,15 @@ def _safe_extract_tar(archive_path, destination):
             member_path = os.path.abspath(os.path.join(destination, member.name))
             if os.path.commonpath([destination, member_path]) != destination:
                 raise ValueError(f"Unsafe path found in tar archive: {member.name}")
-        tar.extractall(path=destination)
+            if member.isdir():
+                os.makedirs(member_path, exist_ok=True)
+                continue
+            extracted = tar.extractfile(member)
+            if extracted is None:
+                continue
+            os.makedirs(os.path.dirname(member_path), exist_ok=True)
+            with extracted, open(member_path, "wb") as dst:
+                shutil.copyfileobj(extracted, dst)
 
 
 def init_project(args):
