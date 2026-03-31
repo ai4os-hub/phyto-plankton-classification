@@ -94,7 +94,12 @@ planktonclas notebooks my_project
 
 This copies the packaged notebooks into `my_project/notebooks/`. It is the best choice for exploration, augmentation experiments, prediction analysis, and explainability.
 
-`pip install planktonclas` installs the package dependencies used by the notebooks, including TensorFlow, plotting, and reporting libraries. It does not install the Jupyter application itself, so if you want to open the notebooks locally you should also install `jupyterlab` or `notebook`.
+`pip install planktonclas` installs the package dependencies used by the notebooks, including TensorFlow, plotting, and reporting libraries.
+For local notebook use, install the notebook extra instead:
+
+```bash
+pip install "planktonclas[notebooks]"
+```
 
 ### 4. I want a containerized environment
 
@@ -112,6 +117,12 @@ Use AI4OS or OSCAR. This is useful when you want a remote API, remote notebooks,
 
 ```bash
 pip install planktonclas
+```
+
+For local notebook use:
+
+```bash
+pip install "planktonclas[notebooks]"
 ```
 
 Then create a project:

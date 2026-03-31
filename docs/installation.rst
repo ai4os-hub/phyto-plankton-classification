@@ -20,7 +20,15 @@ Package install
 
 This is the best option for users who just want the CLI workflow without cloning the repository.
 
-This install includes the runtime dependencies used by training, prediction, reporting, and the packaged notebooks. It does not install the Jupyter application itself, so if you want to open notebooks locally you should also install ``jupyterlab`` or ``notebook``.
+This install includes the runtime dependencies used by training, prediction, reporting, and the packaged notebooks.
+
+For local notebook use, install the notebook extra:
+
+.. code-block:: bash
+
+   pip install "planktonclas[notebooks]"
+
+The ``notebooks`` extra adds the Jupyter runtime packages needed for opening and executing the packaged notebooks locally.
 
 Then initialize a project:
 

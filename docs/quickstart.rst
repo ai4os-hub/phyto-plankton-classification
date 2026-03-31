@@ -78,6 +78,12 @@ You can also start DEEPaaS directly after a repository install:
 Notebook workflow
 -----------------
 
+For local notebook use:
+
+.. code-block:: bash
+
+   pip install "planktonclas[notebooks]"
+
 .. code-block:: bash
 
    planktonclas notebooks my_project

@@ -16,7 +16,13 @@ The repository includes notebooks for:
 
 They are the best choice when you want an interactive workflow.
 
-The normal package install includes the Python dependencies used by these notebooks, but it does not install the Jupyter application itself. For local notebook use, install ``jupyterlab`` or ``notebook`` in the same environment.
+The normal package install includes the Python dependencies used by these notebooks. For local notebook use, install the notebook extra in the same environment:
+
+.. code-block:: bash
+
+   pip install "planktonclas[notebooks]"
+
+This extra installs the Jupyter runtime packages needed to open and execute the notebooks locally.
 
 Notebook list
 -------------
