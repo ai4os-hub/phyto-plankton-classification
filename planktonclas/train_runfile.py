@@ -2,9 +2,10 @@
 Training runfile
 
 Date: September 2023
+Last updated: March 2026
 Author: Wout Decrop (based on code from Ignacio Heredia)
 Email: wout.decrop@VLIZ.be
-Github: lifewatch
+Github: ai4os-hub / phyto-plankton-classification
 
 Description:
 This file contains the commands for training a convolutional net for image
@@ -84,6 +85,13 @@ def display_path(path):
         return os.path.relpath(path, os.getcwd()).replace("\\", "/")
     except ValueError:
         return path
+
+
+def prediction_display_path(path):
+    try:
+        return os.path.relpath(path, paths.get_base_dir()).replace("\\", "/")
+    except ValueError:
+        return display_path(path)
 
 
 def get_preferred_testing_checkpoint(conf):
@@ -424,7 +432,7 @@ def train_fn(TIMESTAMP, CONF):
         y_test_names = [class_index_map.get(index) for index in y_test]
 
         pred_dict = {
-            "filenames": list(X_test),
+            "filenames": [prediction_display_path(path) for path in X_test],
             "pred_lab": pred_lab.tolist(),
             "pred_prob": pred_prob.tolist(),
             "pred_lab_names": pred_lab_names,

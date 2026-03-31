@@ -2,11 +2,11 @@
 Custom optimizers to implement lr_mult as in caffe
 
 Date: April 2025
-Original Author: Ignacio Heredia
-Updated for TensorFlow 2.10
-Maintainer: Wout Decrop (VLIZ)
+Last updated: March 2026
+Original Author: Ignacio Heredia (CSIC)
+Updated for TensorFlow 2.10 and maintained by: Wout Decrop (VLIZ)
 Contact: wout.decrop@vliz.be
-Github: woutdecrop / lifewatch
+Github: ai4os-hub / phyto-plankton-classification
 
 References
 ----------

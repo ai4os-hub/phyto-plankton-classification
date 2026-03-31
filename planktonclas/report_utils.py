@@ -32,6 +32,13 @@ def _latest_timestamp(models_dir):
     return timestamps[-1]
 
 
+def _display_path(path):
+    try:
+        return os.path.relpath(path, paths.get_base_dir()).replace("\\", "/")
+    except ValueError:
+        return path
+
+
 def _find_predictions_file(predictions_dir):
     if not os.path.isdir(predictions_dir):
         raise FileNotFoundError(f"Predictions directory not found: {predictions_dir}")
@@ -417,7 +424,8 @@ def _save_threshold_summary_plot(data, results_dir):
     plt.close(fig)
 
 
-def generate_report(timestamp=None):
+def generate_report(timestamp=None, progress=None):
+    progress = progress or (lambda message: None)
     models_dir = paths.get_models_dir()
     if timestamp is None:
         timestamp = _latest_timestamp(models_dir)
@@ -425,11 +433,16 @@ def generate_report(timestamp=None):
     paths.timestamp = timestamp
     results_dir = paths.get_results_dir()
     os.makedirs(results_dir, exist_ok=True)
+    progress(f"Preparing report for: {timestamp}")
+    progress(f"Results directory: {_display_path(results_dir)}")
 
     stats_path = os.path.join(paths.get_stats_dir(), "stats.json")
     conf_path = os.path.join(paths.get_conf_dir(), "conf.json")
     class_path = os.path.join(paths.get_ts_splits_dir(), "classes.txt")
     predictions_path = _find_predictions_file(paths.get_predictions_dir())
+    progress(f"Loading stats: {_display_path(stats_path)}")
+    progress(f"Loading config: {_display_path(conf_path)}")
+    progress(f"Loading predictions: {_display_path(predictions_path)}")
 
     with open(stats_path) as f:
         stats = json.load(f)
@@ -444,33 +457,42 @@ def generate_report(timestamp=None):
     pred_labels = pred_lab[:, 0]
     data = _build_prediction_dataframe(predictions=predictions, class_names=class_names)
 
+    progress("Creating training metric plots")
     _save_training_plot(stats=stats, conf=conf, results_dir=results_dir)
+    progress("Creating confusion matrices")
     _save_confusion_plots(
         true_labels=true_labels,
         pred_labels=pred_labels,
         class_names=class_names,
         results_dir=results_dir,
     )
+    progress("Creating top-k accuracy plots")
     topk_summary = _save_topk_plot(
         true_labels=true_labels,
         pred_lab=pred_lab,
         results_dir=results_dir,
     )
+    progress("Writing classification report")
     class_report = _save_class_report(
         true_labels=true_labels,
         pred_labels=pred_labels,
         class_names=class_names,
         results_dir=results_dir,
     )
+    progress("Creating per-class metric plots")
     _save_per_class_plot(
         true_labels=true_labels,
         pred_labels=pred_labels,
         class_names=class_names,
         results_dir=results_dir,
     )
+    progress("Creating threshold confusion plots")
     _save_threshold_confusion_plots(data=data, results_dir=results_dir)
+    progress("Creating cutoff evolution plots")
     _save_cutoff_evolution_plots(data=data, results_dir=results_dir)
+    progress("Creating classwise progression plots")
     _save_classwise_progression_plots(data=data, results_dir=results_dir)
+    progress("Creating threshold summary plot")
     _save_threshold_summary_plot(data=data, results_dir=results_dir)
 
     summary = {
@@ -484,5 +506,6 @@ def generate_report(timestamp=None):
 
     with open(os.path.join(results_dir, "summary.json"), "w") as f:
         json.dump(summary, f, indent=2, sort_keys=True)
+    progress(f"Summary saved to: {_display_path(os.path.join(results_dir, 'summary.json'))}")
 
     return summary

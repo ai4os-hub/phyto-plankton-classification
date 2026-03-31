@@ -2,10 +2,11 @@
 Miscellaneous functions manage data.
 
 Date: April 2025
+Last updated: March 2026
 Original Author: Ignacio Heredia (CSIC)
 Updated and maintained by: Wout Decrop (VLIZ)
 Contact: wout.decrop@vliz.be
-Github: woutdecrop / lifewatch
+Github: ai4os-hub / phyto-plankton-classification
 """
 
 import base64

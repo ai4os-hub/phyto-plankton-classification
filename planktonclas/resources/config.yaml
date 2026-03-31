@@ -1,9 +1,11 @@
 # Configuration file for the image classification application
 #
 # Date: September 2018
-# Author: Ignacio Heredia
-# Email: iheredia@ifca.unican.es
-# Github: ignacioheredia
+# Last updated: March 2026
+# Original Author: Ignacio Heredia (CSIC)
+# Updated and maintained by: Wout Decrop (VLIZ)
+# Contact: wout.decrop@vliz.be
+# Github: ai4os-hub / phyto-plankton-classification
 #
 # References
 # ----------

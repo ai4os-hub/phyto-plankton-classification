@@ -2,10 +2,11 @@
 Miscellanous functions to handle models.
 
 Date: September 2018
+Last updated: March 2026
 Original Author: Ignacio Heredia (CSIC)
-Maintainer: Wout Decrop (VLIZ)
+Updated and maintained by: Wout Decrop (VLIZ)
 Contact: wout.decrop@vliz.be
-Github: woutdecrop / lifewatch
+Github: ai4os-hub / phyto-plankton-classification
 """
 
 import json

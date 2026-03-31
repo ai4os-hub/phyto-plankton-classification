@@ -97,6 +97,13 @@ def _safe_extract_tar(archive_path, destination):
                 shutil.copyfileobj(extracted, dst)
 
 
+def _display_path(path):
+    try:
+        return os.path.relpath(path, os.getcwd()).replace("\\", "/")
+    except ValueError:
+        return path
+
+
 def init_project(args):
     target_dir = os.path.abspath(args.directory)
     config_path = os.path.join(target_dir, DEFAULT_PROJECT_CONFIG_NAME)
@@ -166,10 +173,14 @@ def generate_report_cmd(args):
 
     from planktonclas.report_utils import generate_report
 
-    summary = generate_report(timestamp=args.timestamp)
+    print("Starting report generation...")
+    summary = generate_report(
+        timestamp=args.timestamp,
+        progress=lambda message: print(f"[report] {message}"),
+    )
     print(f"Report generated for timestamp: {summary['timestamp']}")
-    print(f"Results: {summary['results_dir']}")
-    print(f"Predictions: {summary['predictions_file']}")
+    print(f"Results: {_display_path(summary['results_dir'])}")
+    print(f"Predictions: {_display_path(summary['predictions_file'])}")
     print(f"Top-1 accuracy: {summary['top1_accuracy']:.3f}")
     print(f"Top-3 accuracy: {summary['top3_accuracy']:.3f}")
     print(f"Top-5 accuracy: {summary['top5_accuracy']:.3f}")

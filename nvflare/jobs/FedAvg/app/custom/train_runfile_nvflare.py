@@ -2,9 +2,10 @@
 Training runfile
 
 Date: September 2023
+Last updated: March 2026
 Author: Wout Decrop (based on code from Ignacio Heredia)
 Email: wout.decrop@VLIZ.be
-Github: lifewatch
+Github: ai4os-hub / phyto-plankton-classification
 
 Description:
 This file contains the commands for training a convolutional net for image classification for phytoplankton.
