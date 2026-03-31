@@ -247,7 +247,7 @@ def main(TIMESTAMP, CONF):
         model_utils.save_conf(CONF)
 
         print("Saving the model to h5...")
-        fpath = os.path.join(paths.get_checkpoints_dir(), "final_model.h5")
+        fpath = os.path.join(paths.get_checkpoints_dir(), "final_model.keras")
         #model.save(fpath, include_optimizer=False)
 
     
@@ -330,7 +330,7 @@ def main(TIMESTAMP, CONF):
 
             pred_path = os.path.join(
                 paths.get_predictions_dir(),
-                "{}+{}+top{}.json".format("final_model.h5", "DS_split", top_K),
+                "{}+{}+top{}.json".format("final_model.keras", "DS_split", top_K),
             )
             with open(pred_path, "w") as outfile:
                 json.dump(pred_dict, outfile, sort_keys=True)

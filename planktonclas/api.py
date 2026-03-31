@@ -289,14 +289,27 @@ def load_inference_model(timestamp=None, ckpt_name=None):
     best_model_path = os.path.join(paths.get_checkpoints_dir(), best_model_name)
     if (
         conf.get("training", {}).get("use_best_model", False)
-        and ckpt_name == "final_model.h5"
+        and ckpt_name in {"final_model.h5", "final_model.keras"}
         and os.path.exists(best_model_path)
     ):
         logger.info(
-            "Switching inference checkpoint from final_model.h5 to %s because training.use_best_model=true.",
+            "Switching inference checkpoint from %s to %s because training.use_best_model=true.",
+            ckpt_name,
             best_model_name,
         )
         ckpt_name = best_model_name
+
+    if ckpt_name == "final_model.keras":
+        final_model_path = os.path.join(paths.get_checkpoints_dir(), ckpt_name)
+        legacy_final_model_path = os.path.join(
+            paths.get_checkpoints_dir(), "final_model.h5"
+        )
+        if not os.path.exists(final_model_path) and os.path.exists(legacy_final_model_path):
+            logger.info(
+                "Requested checkpoint %s not found, falling back to legacy checkpoint final_model.h5.",
+                ckpt_name,
+            )
+            ckpt_name = "final_model.h5"
 
     logger.info("Loading model weights...")
     loader = LoadingBar("✓ Loading model weights...")

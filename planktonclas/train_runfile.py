@@ -339,8 +339,8 @@ def train_fn(TIMESTAMP, CONF):
     with open(os.path.join(stats_dir, "stats.json"), "w") as outfile:
         json.dump(stats, outfile, sort_keys=True, indent=4)
 
-    log_step("Saving model in HDF5 format")
-    fpath = os.path.join(paths.get_checkpoints_dir(), "final_model.h5")
+    log_step("Saving final model")
+    fpath = os.path.join(paths.get_checkpoints_dir(), "final_model.keras")
 
     stderr_backup = sys.stderr
     sys.stderr = io.StringIO()
@@ -361,7 +361,7 @@ def train_fn(TIMESTAMP, CONF):
 
     if CONF["training"]["use_test"]:
         log_section("Evaluating test split")
-        if preferred_ckpt_name != "final_model.h5":
+        if preferred_ckpt_name != "final_model.keras":
             preferred_ckpt_path = os.path.join(
                 paths.get_checkpoints_dir(), preferred_ckpt_name
             )

@@ -306,7 +306,8 @@ testing:
     type: "str"
     help: >
       Checkpoint inside the timestamp to use for prediction. If empty, the API prefers `best_model.keras` when available,
-      otherwise it falls back to the latest supported checkpoint such as `final_model.h5`.
+      otherwise it falls back to the latest supported checkpoint such as `final_model.keras`.
+      For legacy pretrained models such as `Phytoplankton_EfficientNetV2B0`, use `final_model.h5`.
 
   output_directory:
     value: null
