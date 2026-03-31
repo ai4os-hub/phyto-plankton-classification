@@ -26,6 +26,7 @@ import time
 from datetime import datetime
 import argparse
 import numpy as np
+from sklearn.metrics import f1_score, precision_score, recall_score
 
 # Configure warnings before importing TensorFlow/Keras.
 from planktonclas import warnings_config
@@ -47,6 +48,7 @@ from planktonclas.data_utils import (
     load_data_splits,
 )
 from planktonclas.optimizers import customAdam
+from planktonclas import test_utils
 
 # TODO: Add additional metrics for test time in addition to accuracy
 
@@ -94,6 +96,66 @@ def get_preferred_testing_checkpoint(conf):
     if use_best_model and use_validation and os.path.exists(best_model_path):
         return best_model_name
     return "final_model.keras"
+
+
+def _safe_metric(metric_fn, true_lab, pred_top1, labels, average):
+    kwargs = {"average": average, "zero_division": 0}
+    if labels is not None:
+        kwargs["labels"] = labels
+    return float(metric_fn(true_lab, pred_top1, **kwargs))
+
+
+def _build_test_metrics_summary(true_lab, pred_lab, class_names):
+    true_lab = np.array(true_lab, dtype=int)
+    pred_lab = np.array(pred_lab, dtype=int)
+    pred_top1 = pred_lab[:, 0]
+    labels = list(range(len(class_names)))
+    max_k = min(5, pred_lab.shape[1])
+
+    topk = {
+        f"top{k}_accuracy": float(test_utils.topK_accuracy(true_lab, pred_lab, K=k))
+        for k in range(1, max_k + 1)
+    }
+
+    recall = {
+        "micro": _safe_metric(recall_score, true_lab, pred_top1, labels, "micro"),
+        "macro": _safe_metric(recall_score, true_lab, pred_top1, labels, "macro"),
+        "macro_no_labels": _safe_metric(
+            recall_score, true_lab, pred_top1, None, "macro"
+        ),
+        "weighted": _safe_metric(
+            recall_score, true_lab, pred_top1, labels, "weighted"
+        ),
+    }
+    precision = {
+        "micro": _safe_metric(
+            precision_score, true_lab, pred_top1, labels, "micro"
+        ),
+        "macro": _safe_metric(
+            precision_score, true_lab, pred_top1, labels, "macro"
+        ),
+        "macro_no_labels": _safe_metric(
+            precision_score, true_lab, pred_top1, None, "macro"
+        ),
+        "weighted": _safe_metric(
+            precision_score, true_lab, pred_top1, labels, "weighted"
+        ),
+    }
+    f1 = {
+        "micro": _safe_metric(f1_score, true_lab, pred_top1, labels, "micro"),
+        "macro": _safe_metric(f1_score, true_lab, pred_top1, labels, "macro"),
+        "macro_no_labels": _safe_metric(f1_score, true_lab, pred_top1, None, "macro"),
+        "weighted": _safe_metric(f1_score, true_lab, pred_top1, labels, "weighted"),
+    }
+
+    return {
+        "num_samples": int(len(true_lab)),
+        "num_classes": int(len(class_names)),
+        "topk_accuracy": topk,
+        "recall": recall,
+        "precision": precision,
+        "f1_score": f1,
+    }
 
 
 def train_fn(TIMESTAMP, CONF):
@@ -379,6 +441,26 @@ def train_fn(TIMESTAMP, CONF):
         with open(pred_path, "w") as outfile:
             json.dump(pred_dict, outfile, sort_keys=True)
         logger.info("[train] Predictions saved to: %s", display_path(pred_path))
+
+        metrics_summary = _build_test_metrics_summary(
+            true_lab=y_test,
+            pred_lab=pred_lab,
+            class_names=class_names,
+        )
+        metrics_summary.update(
+            {
+                "timestamp": TIMESTAMP,
+                "checkpoint": preferred_ckpt_name,
+                "predictions_file": display_path(pred_path),
+            }
+        )
+        metrics_path = os.path.join(
+            paths.get_predictions_dir(),
+            "{}+{}+metrics.json".format(preferred_ckpt_name, "DS_split"),
+        )
+        with open(metrics_path, "w") as outfile:
+            json.dump(metrics_summary, outfile, sort_keys=True, indent=2)
+        logger.info("[train] Test metrics saved to: %s", display_path(metrics_path))
         logger.info("[train] Test set evaluation completed.")
 
 

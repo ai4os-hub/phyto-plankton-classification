@@ -74,6 +74,13 @@ def progress_prefix(logger_name, tag):
     return f"{timestamp} - {logger_name} - INFO - {tag} "
 
 
+def display_path(path):
+    try:
+        return os.path.relpath(path, os.getcwd()).replace("\\", "/")
+    except ValueError:
+        return path
+
+
 class PrefixedProgressStream:
     """Prefix stdout progress-bar lines so tqdm/Keras output aligns with logs."""
 
@@ -314,7 +321,7 @@ def get_callbacks(CONF, use_lr_decay=True):
             "Monitor your training in Tensorboard by executing the "
             "following comand on your console:"
         )
-        print("    tensorboard --logdir={}".format(paths.get_logs_dir()))
+        print("    tensorboard --logdir={}".format(display_path(paths.get_logs_dir())))
 
         # Get the full path to the 'fuser' executable
         # fuser_path = shutil.which("fuser")
@@ -365,10 +372,11 @@ def get_callbacks(CONF, use_lr_decay=True):
 
     if CONF["training"].get("use_best_model", True) and CONF["training"]["use_validation"]:
         best_model_path = os.path.join(paths.get_checkpoints_dir(), "best_model.keras")
+        best_model_display_path = display_path(best_model_path)
 
         calls.append(
             callbacks.ModelCheckpoint(
-                filepath=best_model_path,
+                filepath=best_model_display_path,
                 monitor="val_accuracy",
                 save_best_only=True,
                 save_weights_only=False,
@@ -377,7 +385,7 @@ def get_callbacks(CONF, use_lr_decay=True):
             )
         )
 
-        print("Best model will be saved to:", best_model_path)
+        print("Best model will be saved to:", best_model_display_path)
 
     if not calls:
         calls = None

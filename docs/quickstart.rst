@@ -41,6 +41,8 @@ Local training
 
 Outputs are written into a timestamped directory under ``my_project/models/``.
 
+When test evaluation is enabled, training also writes a compact metrics JSON next to the saved prediction JSON in ``my_project/models/<timestamp>/predictions/``. That file includes top-k accuracy plus precision, recall, and F1 summaries.
+
 Generate a report
 -----------------
 

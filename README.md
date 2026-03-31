@@ -341,6 +341,7 @@ Useful outputs include:
 - checkpoints like `best_model.keras`
 - `stats.json`
 - saved prediction JSON files
+- saved test metrics JSON files with top-k accuracy, precision, recall, and F1 summaries
 - report images and CSV summaries under `results/`
 
 To generate performance plots after training:

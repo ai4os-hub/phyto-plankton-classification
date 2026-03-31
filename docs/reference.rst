@@ -45,6 +45,7 @@ Important conventions
 * if ``data/dataset_files/`` is empty, training can generate split files automatically from the image-folder structure
 * if you provide custom split files, ``classes.txt`` and ``train.txt`` are the minimum expected files under ``data/dataset_files/``
 * outputs are organized by training timestamp under ``models/<timestamp>/``
+* training with test evaluation saves both prediction JSON files and a compact metrics JSON under ``models/<timestamp>/predictions/``
 * inference defaults to the latest available trained timestamp
 
 Source files
