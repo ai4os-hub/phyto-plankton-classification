@@ -11,7 +11,7 @@ It supports:
 - containerized execution with Docker
 - hosted deployment through AI4OS and OSCAR
 
-**Authors:** [Ignacio Heredia](https://github.com/IgnacioHeredia) and [Wout Decrop](https://github.com/woutdecrop) (CSIC & VLIZ)
+**Authors:** [Wout Decrop](https://github.com/woutdecrop) (VLIZ) && [Ignacio Heredia](https://github.com/IgnacioHeredia)
 
 **Projects:**
 - [iMagine](https://www.imagine-ai.eu/)

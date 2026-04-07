@@ -18,8 +18,8 @@ classifiers = [
 dynamic = ["version", "dependencies"]
 
 # Add author and author email here
-authors = [{name= "Ignacio Heredia (CSIC)", email= "iheredia@ifca.unican.es"} ,{name= "Wout Decrop (VLIZ)", email= "wout.decrop@vliz.be"} ]
-#authors-email = ["iheredia@ifca.unican.es", "wout.decrop@vliz.be"]
+authors = [ {name= "Wout Decrop (VLIZ)", email= "wout.decrop@vliz.be"} ]
+#authors-email = [ "wout.decrop@vliz.be"]
 
 [project.urls]
 "Homepage" = "https://github.com/ai4os-hub/phyto-plankton-classification"

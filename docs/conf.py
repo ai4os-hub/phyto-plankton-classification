@@ -2,8 +2,8 @@ import os
 import sys
 
 project = "Phyto Plankton Classification"
-author = "Ignacio Heredia, Wout Decrop"
-copyright = "2026, Ignacio Heredia, Wout Decrop"
+author = "Wout Decrop"
+copyright = "2026, Wout Decrop"
 release = "0.1.0"
 
 extensions = [
