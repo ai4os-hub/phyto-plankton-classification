@@ -4,6 +4,24 @@ Notebooks
 Overview
 --------
 
+This page is Option 3 in the full repository workflow.
+
+It explains notebook usage in the full repository context.
+
+If you want the package-only notebook documentation, use:
+
+* ``planktonclas``: https://github.com/woutdecrop/planktonclas
+
+When to use this option
+-----------------------
+
+Choose Option 3 when you want:
+
+* interactive exploration
+* transformation or augmentation experiments
+* interactive training and prediction analysis
+* explainability workflows
+
 The repository includes notebooks for:
 
 * dataset exploration
@@ -78,14 +96,6 @@ For the model-based notebooks ``3.0-Computing_predictions.ipynb``, ``3.1-Predict
 
 If you are already running Jupyter locally, open that directory and work from there.
 
-If you are inside an AI4OS deployment or a container image that ships the helper commands, you may also have:
-
-.. code-block:: bash
-
-   deep-start -j
-
-That command is deployment-specific. It is not part of the local ``planktonclas`` CLI.
-
 Recommended order
 -----------------
 
@@ -95,3 +105,11 @@ Recommended order
 4. predictions
 5. prediction statistics
 6. saliency maps
+
+What comes next
+---------------
+
+After Option 3, continue with:
+
+* :doc:`reference` for outputs and project structure
+* ``planktonclas`` docs for package-level notebook detail

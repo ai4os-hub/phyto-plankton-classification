@@ -3,57 +3,67 @@ Phyto Plankton Classification
 
 This documentation belongs to the full ``phyto-plankton-classification`` repository.
 
-It is the main documentation set for:
+It is the general project-level home for:
 
-* the complete phytoplankton workflow
-* notebooks and bundled assets
+* local CLI workflows
+* local DEEPaaS API workflows
+* notebook workflows
 * Docker usage
-* AI4OS deployment
-* OSCAR deployment
-* project-level examples and integration material
+* AI4OS and OSCAR deployment
+* project-level models, assets, and integration material
 
-If you are looking for package-focused usage and a more thorough explanation of the reusable ``planktonclas`` package itself, use the companion repository instead:
+If you want package-focused installation, command explanations, and reusable package documentation, use the companion repository instead:
 
 * ``planktonclas`` package repo: https://github.com/woutdecrop/planktonclas
 
-Scope of This Repository
-------------------------
+Home
+----
 
-Use this repository and documentation when you want:
+This repository supports five main approaches:
 
-* the full application layout
-* project folders, models, and notebook workflows
-* deployment-ready Docker images
-* AI4OS or OSCAR deployment assets
-* broader usage examples around phytoplankton classification
+1. package / local CLI usage through ``planktonclas``
+2. local API usage through DEEPaaS
+3. notebook usage
+4. Docker usage
+5. AI4OS / OSCAR deployment
 
-Use the ``planktonclas`` repository when you want:
+The important thing for new users is:
+
+* you do not have to use every workflow
+* these are alternative ways to use the same project and package
+* package-only details live in ``planktonclas``
+
+How To Read These Docs
+----------------------
+
+Read the docs in this order:
+
+1. :doc:`installation` to decide how you want to set up or launch the project
+2. :doc:`quickstart` to choose your path
+3. one of the numbered workflow pages below
+4. :doc:`reference` for project structure, outputs, and conventions
+
+Use ``planktonclas`` for:
 
 * package installation
-* CLI reference
-* Python/package usage
-* local API usage from the package point of view
+* package command explanations
+* command-line workflow details
+* package-level API and notebook documentation
 
-Recommended Reading Path
-------------------------
+Workflow Pages
+--------------
 
-Start here if you want the full project:
+* :doc:`python_usage` is Option 1 and explains the package / local CLI path at a high level, then points to the fuller ``planktonclas`` docs
+* :doc:`api_usage` is Option 2 and explains the local API path in this repository
+* :doc:`notebooks` is Option 3 and explains the notebook path in this repository
+* Docker and AI4OS / OSCAR are described in :doc:`installation` and :doc:`quickstart` as Options 4 and 5
 
-* :doc:`installation`
-* :doc:`quickstart`
+Citation
+--------
 
-Then continue with the part that matches your goal:
+If you use this project, please consider citing:
 
-* :doc:`api_usage`
-* :doc:`notebooks`
-* :doc:`reference`
-
-Cross-Repository Navigation
----------------------------
-
-For the package-only view of the commands and workflows used in this repository, see:
-
-* ``planktonclas`` repository: https://github.com/woutdecrop/planktonclas
+* Decrop, W., Lagaisse, R., Mortelmans, J., Muñiz, C., Heredia, I., Calatrava, A., & Deneudt, K. (2025). *Automated image classification workflow for phytoplankton monitoring*. **Frontiers in Marine Science, 12**. https://doi.org/10.3389/fmars.2025.1699781
 
 Contents
 --------

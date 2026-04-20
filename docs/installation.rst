@@ -1,88 +1,60 @@
 Installation
 ============
 
-Choose your installation mode
------------------------------
+This page explains the setup choices for the full repository.
 
-There are four common ways to use ``planktonclas``:
+If you want the package-only installation page, use the companion repository:
 
-* install as a package for normal CLI usage
+* ``planktonclas``: https://github.com/woutdecrop/planktonclas
+
+Setup choices
+-------------
+
+This repository supports four common setup paths:
+
+* install ``planktonclas`` as a package for normal local usage
 * use Docker for a containerized runtime
-* install from the repository for local development
+* install the repository locally for development
 * use AI4OS / OSCAR for hosted deployment
 
-Package install
----------------
+Option 1: Package install
+-------------------------
 
 .. code-block:: bash
 
    pip install planktonclas
 
-This is the best option for users who just want the CLI workflow without cloning the repository.
-
-This install includes the runtime dependencies used by training, prediction, reporting, and the packaged notebooks.
-
-For local notebook use, install the notebook extra:
+For local notebook use:
 
 .. code-block:: bash
 
    pip install "planktonclas[notebooks]"
 
-The ``notebooks`` extra adds the Jupyter runtime packages needed for opening and executing the packaged notebooks locally.
+This is the best option if you want the local CLI, API, or notebook workflow without cloning the whole repository.
 
-Then initialize a project:
+For the package-focused explanation of this path, use:
 
-.. code-block:: bash
+* https://github.com/woutdecrop/planktonclas
 
-   planktonclas init my_project
+Option 4: Docker
+----------------
 
-Or create a runnable demo project:
-
-.. code-block:: bash
-
-   planktonclas init my_project --demo
-
-For a quick demo smoke test:
+This is the simplest repository-based workflow if you want the full project files but do not want to install all Python dependencies on your machine.
 
 .. code-block:: bash
 
-   planktonclas train --config ./my_project/config.yaml --quick
+   git clone https://github.com/ai4os-hub/phyto-plankton-classification
+   cd phyto-plankton-classification
+   docker run -ti -p 8888:8888 -p 5000:5000 -v "$(pwd):/srv/phyto-plankton-classification" ai4oshub/phyto-plankton-classification:latest /bin/bash
 
-Optional helpers:
-
-.. code-block:: bash
-
-   planktonclas pretrained my_project
-   planktonclas notebooks my_project
-
-Docker install
---------------
-
-.. code-block:: bash
-
-   docker run -ti -p 8888:8888 -p 5000:5000 ^
-     -v "${PWD}:/srv/phyto-plankton-classification" ^
-     ai4oshub/phyto-plankton-classification:latest /bin/bash
-
-Inside the container, use the same CLI workflow with ``planktonclas init``, ``planktonclas train``, ``planktonclas pretrained``, and ``planktonclas api``.
+Inside the container, you can use the same ``planktonclas`` commands as in the local workflow.
 
 The container image also ships with the published pretrained model under ``models/``.
 
-If the image or deployment provides the AI4OS helper scripts, you may also have:
+Option 1b: Repository install for development
+---------------------------------------------
 
-.. code-block:: bash
-
-   deep-start -j
-   deep-start --deepaas
-
-Important:
-
-* a normal local install does not provide ``deep-start``
-* for local installs, use ``planktonclas ...`` or ``deepaas-run``
-* ``deep-start`` is typically available only in AI4OS/container/deployment environments that ship those helpers
-
-Repository install
-------------------
+Choose this only if you want to work on the repository itself.
 
 .. code-block:: bash
 
@@ -93,11 +65,6 @@ Repository install
    pip install -U pip
    pip install -e .
 
-This is the best option for development work on the repository itself.
-
-Direct API startup
-------------------
-
 After a repository install, you can also start DEEPaaS directly:
 
 .. code-block:: powershell
@@ -106,8 +73,21 @@ After a repository install, you can also start DEEPaaS directly:
    $env:DEEPAAS_V2_MODEL = "planktonclas"
    deepaas-run --listen-ip 0.0.0.0
 
-Project layout
---------------
+Option 5: AI4OS / OSCAR
+-----------------------
+
+Use this path when you want hosted deployment or a managed remote runtime.
+
+Useful links:
+
+* `AI4OS / iMagine Marketplace <https://dashboard.cloud.imagine-ai.eu/marketplace/>`_
+* `AI4OS docs <https://docs.ai4os.eu/en/latest/>`_
+* `OSCAR manual deployment guide <https://docs.ai4eosc.eu/en/latest/howtos/deploy/oscar-manual.html>`_
+* `OSCAR scripted deployment guide <https://docs.ai4eosc.eu/en/latest/howtos/deploy/oscar.html>`_
+* `Marketplace notes <https://github.com/ai4os-hub/phyto-plankton-classification/blob/main/references/README_marketplace.md>`_
+
+Project structure
+-----------------
 
 After ``planktonclas init``, a project looks like this:
 
@@ -119,22 +99,9 @@ After ``planktonclas init``, a project looks like this:
        images/
        dataset_files/
      models/
-
-If you also copy the packaged notebooks, the project gains:
-
-.. code-block:: text
-
-   my_project/
      notebooks/
 
-Required input
---------------
+Next step
+---------
 
-The only mandatory input is the image directory.
-
-If ``data/dataset_files/`` is empty, training can generate split files automatically from the image-folder structure.
-
-If you provide your own dataset metadata files, the expected files are:
-
-* custom-split required: ``classes.txt``, ``train.txt``
-* optional: ``val.txt``, ``test.txt``, ``info.txt``, ``aphia_ids.txt``
+After installation or setup, continue with :doc:`quickstart` to choose your path.

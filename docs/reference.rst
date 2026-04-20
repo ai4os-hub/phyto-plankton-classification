@@ -1,6 +1,14 @@
 Reference
 =========
 
+This page describes project-level structure and conventions in the full repository.
+
+Use this page after any of the numbered options.
+
+For package internals and reusable package reference material, use:
+
+* ``planktonclas``: https://github.com/woutdecrop/planktonclas
+
 Package entry points
 --------------------
 

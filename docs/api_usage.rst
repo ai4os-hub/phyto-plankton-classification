@@ -4,6 +4,23 @@ API Usage
 Overview
 --------
 
+This page is Option 2 in the full repository workflow.
+
+It explains the local API path in the full repository context.
+
+If you want the package-only API explanation, use the companion repository:
+
+* ``planktonclas``: https://github.com/woutdecrop/planktonclas
+
+When to use this option
+-----------------------
+
+Choose Option 2 when you want:
+
+* a browser UI for training or prediction
+* a local DEEPaaS service for integration
+* the same project assets and outputs as the CLI path, but through HTTP
+
 The DEEPaaS entry point is defined in ``pyproject.toml``:
 
 .. code-block:: text
@@ -108,3 +125,11 @@ Runtime behavior
 * ZIP prediction extracts the archive to a temporary directory and scans recursively for images
 * training validates ``images_directory`` before starting
 * if there are no models yet, the API can still be used for training, but not for inference
+
+What comes next
+---------------
+
+After using Option 2, continue with:
+
+* :doc:`reference` to understand outputs and project structure
+* ``planktonclas`` docs if you want package-level API detail

@@ -1,68 +1,45 @@
 Quickstart
 ==========
 
+This page is the practical chooser for the main ways you can use this repository.
+
+If you want the package-only quickstart and command explanations, use:
+
+* ``planktonclas``: https://github.com/woutdecrop/planktonclas
+
 Choose your path
 ----------------
 
 Most users should choose one of these workflows:
 
-1. local training
-2. local API
-3. notebooks
+1. Package / Local CLI
+2. Local API
+3. Notebooks
+4. Docker
+5. AI4OS / OSCAR
 
-These are alternative entry points. You do not need to use all of them.
+Option 1: Package / Local CLI
+-----------------------------
 
-Minimal project setup
----------------------
+Typical local workflow:
 
 .. code-block:: bash
 
    planktonclas init my_project
    planktonclas validate-config --config ./my_project/config.yaml
-
-For a runnable demo project:
-
-.. code-block:: bash
-
-   planktonclas init my_project --demo
-
-To download the published pretrained model into the project:
-
-.. code-block:: bash
-
-   planktonclas pretrained my_project
-
-Local training
---------------
-
-.. code-block:: bash
-
    planktonclas train --config ./my_project/config.yaml
-
-Outputs are written into a timestamped directory under ``my_project/models/``.
-
-For a quick smoke test on the demo project:
-
-.. code-block:: bash
-
-   planktonclas train --config ./my_project/config.yaml --quick
-
-When test evaluation is enabled, training also writes a compact metrics JSON next to the saved prediction JSON in ``my_project/models/<timestamp>/predictions/``. That file includes top-k accuracy plus precision, recall, and F1 summaries.
-
-Generate a report
------------------
-
-.. code-block:: bash
-
    planktonclas report --config ./my_project/config.yaml
 
-This writes evaluation images and metric files under ``my_project/models/<timestamp>/results/``.
+For package-level details and command meaning:
 
-If you leave out ``--timestamp``, the CLI suggests the newest run automatically, shows the available timestamps, and lets you choose another one by number.
-If you leave out ``--mode``, the CLI suggests ``quick`` automatically. Quick mode creates the core figures only, while full mode also generates the threshold-based plots in the ``results/`` subfolders.
+* https://github.com/woutdecrop/planktonclas
 
-Local API
----------
+Next page in this docs set:
+
+* :doc:`python_usage`
+
+Option 2: Local API
+-------------------
 
 .. code-block:: bash
 
@@ -73,45 +50,61 @@ Then open:
 * ``http://127.0.0.1:5000/ui``
 * ``http://127.0.0.1:5000/api#/``
 
-You can also start DEEPaaS directly after a repository install:
+For package-focused API details:
 
-.. code-block:: powershell
+* https://github.com/woutdecrop/planktonclas
 
-   $env:PLANKTONCLAS_CONFIG = (Resolve-Path .\my_project\config.yaml)
-   $env:DEEPAAS_V2_MODEL = "planktonclas"
-   deepaas-run --listen-ip 0.0.0.0
+Next page in this docs set:
 
-Notebook workflow
------------------
+* :doc:`api_usage`
 
-For local notebook use:
+Option 3: Notebooks
+-------------------
 
 .. code-block:: bash
 
    pip install "planktonclas[notebooks]"
-
-.. code-block:: bash
-
    planktonclas notebooks my_project
 
 This copies the packaged notebooks into ``my_project/notebooks/``.
 
-Useful commands
----------------
+For package-focused notebook details:
+
+* https://github.com/woutdecrop/planktonclas
+
+Next page in this docs set:
+
+* :doc:`notebooks`
+
+Option 4: Docker
+----------------
 
 .. code-block:: bash
 
-   planktonclas list-models --config ./my_project/config.yaml
-   planktonclas pretrained my_project
+   git clone https://github.com/ai4os-hub/phyto-plankton-classification
+   cd phyto-plankton-classification
+   docker run -ti -p 8888:8888 -p 5000:5000 -v "$(pwd):/srv/phyto-plankton-classification" ai4oshub/phyto-plankton-classification:latest /bin/bash
 
-Dataset notes
--------------
+Inside the container, you can use the same ``planktonclas`` workflow.
 
-The only mandatory input is the image directory.
+Option 5: AI4OS / OSCAR
+-----------------------
 
-If ``data/dataset_files/`` is empty, training can create split files automatically.
+Use this path when you want hosted execution or deployment.
 
-If you provide your own metadata files, the expected files are:
+Useful links:
 
-* custom-split required: ``classes.txt``, ``train.txt``
-* optional: ``val.txt``, ``test.txt``, ``info.txt``, ``aphia_ids.txt``
+* `AI4OS / iMagine Marketplace <https://dashboard.cloud.imagine-ai.eu/marketplace/>`_
+* `AI4OS docs <https://docs.ai4os.eu/en/latest/>`_
+* `OSCAR manual deployment guide <https://docs.ai4eosc.eu/en/latest/howtos/deploy/oscar-manual.html>`_
+* `OSCAR scripted deployment guide <https://docs.ai4eosc.eu/en/latest/howtos/deploy/oscar.html>`_
+
+What comes next
+---------------
+
+After your chosen setup:
+
+* use :doc:`python_usage` for Option 1 context
+* use :doc:`api_usage` for Option 2 details
+* use :doc:`notebooks` for Option 3 details
+* use :doc:`reference` for project structure, outputs, and conventions
