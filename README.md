@@ -2,18 +2,6 @@ AI4OS/DEEP Open Catalogue: Phytoplankton Classification
 =======================================================
 [![Build Status](https://jenkins.services.ai4os.eu/buildStatus/icon?job=AI4OS-hub/phyto-plankton-classification/main)](https://jenkins.services.ai4os.eu/job/AI4OS-hub/job/phyto-plankton-classification/job/main/)
 
-`planktonclas` is a toolkit for training, evaluating, and serving phytoplankton image classifiers.
-
-If you want package-focused usage and a more thorough explanation of the reusable Python package itself, see the companion repository:
-- `planktonclas`: https://github.com/woutdecrop/planktonclas
-
-It supports:
-- local training from a project config
-- browser and service-based use through a DEEPaaS API
-- interactive notebook workflows
-- containerized execution with Docker
-- hosted deployment through AI4OS and OSCAR
-
 **Authors:** [Wout Decrop](https://github.com/woutdecrop) (VLIZ) & [Ignacio Heredia](https://github.com/IgnacioHeredia)
 
 **Projects:**
@@ -27,8 +15,25 @@ It supports:
 - [OSCAR manual deployment guide](https://docs.ai4eosc.eu/en/latest/howtos/deploy/oscar-manual.html)
 - [OSCAR scripted deployment guide](https://docs.ai4eosc.eu/en/latest/howtos/deploy/oscar.html)
 
+**Resources:** [Documentation](https://phyto-plankton-classification.readthedocs.io/)
+
 **Related publication:**  
 [*Automated image classification workflow for phytoplankton monitoring*](https://doi.org/10.3389/fmars.2025.1699781)
+
+
+This repo supports:
+- local training from a project config
+- browser and service-based use through a DEEPaaS API
+- interactive notebook workflows
+- containerized execution with Docker
+- hosted deployment through AI4OS and OSCAR
+
+An important functionality is `planktonclas`, this is a toolkit for training, evaluating, and serving phytoplankton image classifiers.
+
+If you want package-focused usage and a more thorough explanation of the reusable Python package itself, see the companion repository:
+- `planktonclas`: https://github.com/woutdecrop/planktonclas
+
+
 
 ## What This Repository Gives You
 
