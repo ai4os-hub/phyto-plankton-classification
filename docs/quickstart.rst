@@ -87,6 +87,12 @@ Option 4: Docker
 
 Inside the container, you can use the same ``planktonclas`` workflow.
 
+This can also lead to the same local API workflow as Option 2 if you start the API inside the container.
+
+Next page in this docs set:
+
+* :doc:`api_usage`
+
 Option 5: AI4OS / OSCAR
 -----------------------
 
@@ -105,6 +111,6 @@ What comes next
 After your chosen setup:
 
 * use :doc:`python_usage` for Option 1 context
-* use :doc:`api_usage` for Option 2 details
+* use :doc:`api_usage` for Option 2 and Option 4 details
 * use :doc:`notebooks` for Option 3 details
 * use :doc:`reference` for project structure, outputs, and conventions

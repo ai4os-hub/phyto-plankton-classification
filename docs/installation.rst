@@ -17,7 +17,7 @@ This repository supports four common setup paths:
 * install the repository locally for development
 * use AI4OS / OSCAR for hosted deployment
 
-Option 1: Package install
+Option A: Package install
 -------------------------
 
 .. code-block:: bash
@@ -36,7 +36,7 @@ For the package-focused explanation of this path, use:
 
 * https://github.com/woutdecrop/planktonclas
 
-Option 4: Docker
+Option B: Docker
 ----------------
 
 This is the simplest repository-based workflow if you want the full project files but do not want to install all Python dependencies on your machine.
@@ -51,8 +51,8 @@ Inside the container, you can use the same ``planktonclas`` commands as in the l
 
 The container image also ships with the published pretrained model under ``models/``.
 
-Option 1b: Repository install for development
----------------------------------------------
+Option C: Repository install for development
+--------------------------------------------
 
 Choose this only if you want to work on the repository itself.
 
@@ -73,7 +73,7 @@ After a repository install, you can also start DEEPaaS directly:
    $env:DEEPAAS_V2_MODEL = "planktonclas"
    deepaas-run --listen-ip 0.0.0.0
 
-Option 5: AI4OS / OSCAR
+Option D: AI4OS / OSCAR
 -----------------------
 
 Use this path when you want hosted deployment or a managed remote runtime.
