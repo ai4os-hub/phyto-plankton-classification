@@ -4,6 +4,9 @@ AI4OS/DEEP Open Catalogue: Phytoplankton Classification
 
 `planktonclas` is a toolkit for training, evaluating, and serving phytoplankton image classifiers.
 
+If you want package-focused usage and a more thorough explanation of the reusable Python package itself, see the companion repository:
+- `planktonclas`: https://github.com/woutdecrop/planktonclas
+
 It supports:
 - local training from a project config
 - browser and service-based use through a DEEPaaS API
@@ -43,6 +46,9 @@ The important thing for new users is this:
 - local training, API usage, and notebooks are **alternative entry points**
 - they all use the same package and the same project structure
 
+For the package-only view of those commands and workflows, use:
+- `planktonclas`: https://github.com/woutdecrop/planktonclas
+
 ## Workflow Overview
 
 ![Workflow overview](references/Flowchart_github_plankton.drawio.png)
@@ -69,6 +75,9 @@ planktonclas train --config ./my_project/config.yaml
 
 This is the best choice if you already know where your image folder is and want a direct local workflow.
 
+For package-focused training guidance, see:
+- https://github.com/woutdecrop/planktonclas
+
 ### 2. I want to use a browser UI / API
 
 Use:
@@ -83,6 +92,9 @@ Then open:
 - `http://127.0.0.1:5000/api#/`
 
 This is the best choice if you want to interact through the DEEPaaS UI or integrate with an external service.
+
+For package-focused API usage, see:
+- https://github.com/woutdecrop/planktonclas
 
 ### 3. I want notebooks
 
@@ -100,6 +112,9 @@ For local notebook use, install the notebook extra instead:
 ```bash
 pip install "planktonclas[notebooks]"
 ```
+
+The package repository also explains the notebook-related package commands in more detail:
+- https://github.com/woutdecrop/planktonclas
 
 ### 4. I want a containerized environment
 
@@ -197,6 +212,9 @@ planktonclas report --config ./my_project/config.yaml
 
 If you leave out `--timestamp`, `planktonclas report` suggests the most recent run, lists the available timestamps, and lets you choose another one by number.
 It also lets you choose between `quick` and `full` mode. `quick` is the default and creates the core figures only; `full` also generates the threshold-based plots in the `results/` subfolders.
+
+For a package-focused explanation of the CLI workflow in Option A, see:
+- https://github.com/woutdecrop/planktonclas
 
 ### Option B: Use Docker
 
@@ -457,6 +475,9 @@ Main documentation pages:
 - [Python usage](docs/python_usage.rst)
 - [Notebooks](docs/notebooks.rst)
 - [Reference](docs/reference.rst)
+
+For package-focused documentation and command explanations, see:
+- https://github.com/woutdecrop/planktonclas
 
 ## Acknowledgements
 
